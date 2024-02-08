@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  lastname  String
+  email     String
+  phone     Int
+}
+
+model users {
+  id        Int      @id @default(autoincrement())
+  name      String
+  username  String
+  password String
+  role String
+}
+
+model bedrooms {
+  id        Int      @id @default(autoincrement())
+  typeBedroom String
+  description String
+  lowSeasonPrice Int 
+  highSeasonPrice Int
+  status Boolean
+  numberBedroom Int
+
+}
+
+model Bookings {
+    id        Int      @id @default(autoincrement())
+    clientId  String
+    status  BookingsStatus
+    created_at DateTime @default(now())
+
+}
+
+enum BookingsStatus {
+    PENDING
+    CONFIRMED
+    CANCELLED
+}
+
+model comments {
+  id        Int      @id @default(autoincrement())
+  comment   String
+  boookingId Int 
+  comments String
+}
+
+model events {
+  id        Int      @id @default(autoincrement())
+  nameEvents      String
+  date      DateTime
+  hours      DateTime
+  location String
+}
+
+model testimonials {
+  id        Int      @id @default(autoincrement())
+  name String
+  date DateTime
+  testimonials String
+}
+
+model historicReservations {
+  id        Int      @id @default(autoincrement())
+  bookingId Int
+  events EventStatus
+  description String
+  date DateTime
+}
+
+enum EventStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model promotions {
+  id        Int      @id @default(autoincrement())
+  codePromotions String
+  porcentageDescuent Int
+  dateStart DateTime
+  dateEnd DateTime
+}
+
+model services {
+  id        Int      @id @default(autoincrement())
+  nameService String
+  description String
+  price Int
+ 
+}
+
+model seasons {
+  id        Int      @id @default(autoincrement())
+  nameSeason String
+  dateStart DateTime
+  dateEnd DateTime
+}
+
+model bookingsServices {
+  id        Int      @id @default(autoincrement())
+  bookingId Int
+  serviceId Int
+  price Int
+
+
+}
+
+model bookingsDetails {
+  id        Int      @id @default(autoincrement())
+  bookingId Int
+  bedroomId Int
+  price Int
+  dateStart DateTime
+  dateEnd DateTime
+  promotionId Int
+  status Status
+  created_at DateTime @default(now())
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model invoce {
+  id Int @id @default(autoincrement())
+  clientId Int
+  date DateTime
+}
+
+model invoceDetails {
+  id Int @id @default(autoincrement())
+  invoceId Int
+  item String
+  price Int
+  amount Int
+}
+
+
+
+
+
