@@ -19,7 +19,8 @@
     },
     "plugins": [
         "@typescript-eslint",
-        "react"
+        "react",
+        "prettier"
     ],
     "rules": {
         "dot-notation": "error",
@@ -41,6 +42,7 @@
         "jsx-a11y/href-no-hash": [
             0
         ],
+        "react/prop-types": 0,
         "react/display-name": 0,
         "react/no-deprecated": "error",
         "react/no-unsafe": [
