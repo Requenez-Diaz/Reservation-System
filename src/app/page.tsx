@@ -1,11 +1,12 @@
-"use client ";
-
+import Navbar from "@/components/ui/navbar/navigation";
 import SingInForm from "@/forms/loginForm";
 
 export default function Home() {
   return (
-    <div>
-      <SingInForm />
-    </div>
+    <>
+      <div>
+        <Navbar />
+      </div>
+    </>
   );
 }

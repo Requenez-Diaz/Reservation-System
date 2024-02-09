@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Inter as FontSans } from "next/font/google";
+import { Link } from "lucide-react";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -18,6 +19,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const menus = [
+    { texto: "Inicio", link: "/" },
+    { texto: "Ofertas", link: "/ofertas" },
+    { texto: "Habitaciones", link: "/habitaciones" },
+    { texto: "Reservaciones", link: "/reservaciones" },
+    { texto: "Contacto", link: "/contacto" },
+  ];
+
   return (
     <html lang='en'>
       <body
@@ -26,9 +35,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <main className='h-screen flex flex-col justify-center items-center'>
-          {children}
-        </main>
+        <main className=''>{children}</main>
       </body>
     </html>
   );
