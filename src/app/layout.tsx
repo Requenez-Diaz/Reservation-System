@@ -19,14 +19,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const menus = [
-    { texto: "Inicio", link: "/" },
-    { texto: "Ofertas", link: "/ofertas" },
-    { texto: "Habitaciones", link: "/habitaciones" },
-    { texto: "Reservaciones", link: "/reservaciones" },
-    { texto: "Contacto", link: "/contacto" },
-  ];
-
   return (
     <html lang='en'>
       <body
