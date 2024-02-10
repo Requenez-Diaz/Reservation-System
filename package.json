@@ -24,10 +24,8 @@
     "pg": "^8.11.3",
     "prettier": "^3.2.5",
     "react": "^18",
-    "react-datepicker": "^6.1.0",
     "react-dom": "^18",
     "react-hook-form": "^7.50.1",
-    "tabler-icons-react": "^1.56.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
