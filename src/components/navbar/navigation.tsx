@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { Button } from '../button';
-import { useRouter } from 'next/router';
+import { Button } from '../ui/button';
 
 const Navbar = () => {
   return (

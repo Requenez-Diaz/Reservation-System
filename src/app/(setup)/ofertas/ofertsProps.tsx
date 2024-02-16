@@ -1,6 +1,11 @@
-// OfertsProps.tsx
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { TwentyFourHours } from 'tabler-icons-react';
 
 interface OfertsProps {
   title: string;
@@ -24,28 +29,61 @@ const OfertsProps: React.FC<OfertsProps> = ({
   price
 }: OfertsProps) => {
   return (
-    <div className="w-screen bg-gray-400 m-3 p-4 md:p-8 flex flex-col ">
-      <p>{title}</p>
-      <div className="text-center">
+    <div className="bg-white mt-4 ml-4 mr-4">
+      <p className="text-blue-300">{title}</p>
+      <div className="flex flex-row items-center justify-between m-8">
         <p>{slogan}</p>
-        <Button className="bg-blue-500">Comprar</Button>
-        <div>{description}</div>
+        <button className="text-blue-500 font-bold">Ver mas</button>
       </div>
+      <div>{description}</div>
       <div className="flex flex-col items-center md:flex-row md:justify-between md:space-x-4 mt-4">
-        <div className="w-full md:w-1/2 p-3">
-          <img src={image} className="w-full h-auto" />
-          <p>{name}</p>
-          <p>{description2}</p>
-          <p>{subtitle}</p>
-          <p>{price}</p>
-        </div>
-        <div className="w-full md:w-1/2 p-3 mt-4 md:mt-0">
-          <img src={image} className="w-full h-auto" />
-          <p>{name}</p>
-          <p>{description2}</p>
-          <p>{subtitle}</p>
-          <p>{price}</p>
-        </div>
+        <Card className=" bg-gray-200 style={{ boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)' }}">
+          <CardHeader>
+            <div>
+              <img src={image} className="w-full h-auto rounded-xl" />
+            </div>
+            <CardTitle>
+              <p className="text-black font-light">{name}</p>
+            </CardTitle>
+            <CardDescription className="text-white">
+              <p className="text-black">{description2}</p>
+              <p className="text-black">{subtitle}</p>
+              <p className="text-black">{price}</p>
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        <Card className="bg-gray-200">
+          <CardHeader>
+            <div>
+              <img src={image} className="w-full h-auto rounded-xl" />
+            </div>
+            <CardTitle>
+              <p className="text-black font-light">{name}</p>
+            </CardTitle>
+            <CardDescription className="text-white">
+              <p className="text-black">{description2}</p>
+              <p className="text-black">{subtitle}</p>
+              <p className="text-black">{price}</p>
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        <Card className="bg-gray-200">
+          <CardHeader>
+            <div>
+              <img src={image} className="w-full h-auto rounded-xl" />
+            </div>
+            <CardTitle>
+              <p className="text-black font-light">{name}</p>
+            </CardTitle>
+            <CardDescription className="text-white">
+              <p className="text-black">{description2}</p>
+              <p className="text-black">{subtitle}</p>
+              <p className="text-black">{price}</p>
+            </CardDescription>
+          </CardHeader>
+        </Card>
       </div>
     </div>
   );
