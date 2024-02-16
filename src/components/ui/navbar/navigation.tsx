@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '../button';
+import { useRouter } from 'next/router';
 
 const Navbar = () => {
   return (
@@ -33,9 +34,8 @@ const Navbar = () => {
           </ul>
           <div className="flex gap-x-6">
             <Button variant="ghost" className="bg-blue-600 text-white">
-              Registrarme
+              Registrarse
             </Button>
-            {/* {ShowLogin && <SignInForm />} */}
             <Button variant={'secondary'} className="bg-blue-600 text-white">
               Acceder
             </Button>
