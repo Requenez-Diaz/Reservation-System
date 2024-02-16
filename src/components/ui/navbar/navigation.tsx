@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { Button } from '../ui/button';
+import { Button } from '../button';
 
 const Navbar = () => {
+  // };
   return (
     <nav className="bg-blue-950 p-4">
       <div className="container mx-auto flex justify-between items-center">

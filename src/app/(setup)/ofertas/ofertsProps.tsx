@@ -1,11 +1,11 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
 import React from 'react';
 import { TwentyFourHours } from 'tabler-icons-react';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription
+} from '@/components/ui/card';
 
 interface OfertsProps {
   title: string;
@@ -37,7 +37,7 @@ const OfertsProps: React.FC<OfertsProps> = ({
       </div>
       <div>{description}</div>
       <div className="flex flex-col items-center md:flex-row md:justify-between md:space-x-4 mt-4">
-        <Card className=" bg-gray-200 style={{ boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)' }}">
+        <Card className="bg-gray-200 shadow-md">
           <CardHeader>
             <div>
               <img src={image} className="w-full h-auto rounded-xl" />

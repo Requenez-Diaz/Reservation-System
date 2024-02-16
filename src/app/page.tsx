@@ -1,8 +1,3 @@
-import ExploreInterface from '@/components/home/Banner';
-import HabitacionesInterface from '@/components/home/room';
-import SelectRoom from '@/components/home/selectRoom';
-import ServicesInterface from '@/components/home/services';
-
 export default function Home() {
   return (
     <main className="">
@@ -23,10 +18,6 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <SelectRoom />
-      <ExploreInterface />
-      <ServicesInterface />
-      <HabitacionesInterface />
     </main>
   );
 }
