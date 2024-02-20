@@ -33,6 +33,6 @@ const Collage = () => {
       </div>
     </div>
   );
-};
+};   
 
 export default Collage;
