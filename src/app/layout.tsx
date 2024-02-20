@@ -3,8 +3,8 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 import { Link } from 'lucide-react';
-import Navbar from '@/components/ui/navbar/navigation';
 import Footer from '@/components/footer/footer';
+import Navbar from '@/components/navbar/navigation';
 
 export const fontSans = FontSans({
   subsets: ['latin'],

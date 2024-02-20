@@ -1,5 +1,5 @@
 import React from 'react';
-import { TwentyFourHours } from 'tabler-icons-react';
+
 import {
   Card,
   CardHeader,
