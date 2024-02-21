@@ -9,11 +9,14 @@ erDiagram
     SERVICES_BOOKING ||--o{ SERVICES  : makes
     INVOICE ||--o{ CUSTOMER  : makes
     INVOICE_DETAILS ||--o{ INVOICE  : makes
-
-
-
+    ROOM ||--o{ ROOM_TYPE : has
+    SERVICES ||--o{ SEASONS : has
+    USERS ||--o{ RESERVATION : makes
+    RESERVATION_DETAILS ||--o{ PROMOTION : applies
   
-    
+
+
+
 
     CUSTOMER {
         uuid id
@@ -28,6 +31,7 @@ erDiagram
         string number
         string type
         float price
+        uuid room_type_id
     }
 
     RESERVATION {
@@ -47,6 +51,7 @@ erDiagram
         uuid promo_id
         enum state
         float price
+        uuid reservation_details
     }
 
     COMMENTS {
@@ -69,6 +74,7 @@ erDiagram
         string users
         string password
         string rolle
+        uuid service_id
     }
     
     TESTIMONIALS {
@@ -79,7 +85,7 @@ erDiagram
     }
 
     ROOM_TYPE {
-        uuid room_type
+        uuid id
         string room_name
         string description
         number quantities
@@ -106,6 +112,7 @@ erDiagram
         string service_name
         number price
         string description
+        uuid season_id
     }
 
     SEASONS {
@@ -135,7 +142,5 @@ erDiagram
         number price
         number amount
     }
-
-
 
 ```
