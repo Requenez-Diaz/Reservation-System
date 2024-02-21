@@ -29,10 +29,9 @@ const Collage = () => {
           description="Creamos un mundo donde podes reservar a un solo click"
           images={imagenes}
         />
-        {/* <CollageImage /> */}
       </div>
     </div>
   );
-};   
+};
 
 export default Collage;
