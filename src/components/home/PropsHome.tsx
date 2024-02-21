@@ -12,7 +12,7 @@ interface PropsHomeProps {
 
 const PropsHome = () => {
   return (
-    <div className="bg-blue-400 w-3/4 p-2 m-4 flex flex-col mx-auto content-center rounded-xl">
+    <div className="bg-blue-400 w-3/4 p-2 m-4 flex flex-col mx-auto content-center rounded-xl shadow-2xl shadow-black">
       <div className="text-white text-center">
         <h1 className="font-bold">Selecciona una habitacion</h1>
         <p>Descubre el mejor lugar para ti!!</p>
