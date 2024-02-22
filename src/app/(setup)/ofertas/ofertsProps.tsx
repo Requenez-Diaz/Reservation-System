@@ -6,6 +6,7 @@ import {
   CardTitle,
   CardDescription
 } from '@/components/ui/card';
+import Image from 'next/image';
 
 interface OfertsProps {
   title: string;
@@ -36,11 +37,17 @@ const OfertsProps: React.FC<OfertsProps> = ({
         <button className="text-blue-500 font-bold">Ver mas</button>
       </div>
       <div>{description}</div>
-      <div className="flex flex-col items-center md:flex-row md:justify-between md:space-x-4 mt-4">
+      <div className="flex flex-col items-center md:flex-row md:justify-between md:space-x-4 mt-4 p-4 shadow-md rounded-xl  transform transition-transform hover:scale-105">
         <Card className="bg-gray-200 shadow-md">
           <CardHeader>
             <div>
-              <img src={image} className="w-full h-auto rounded-xl" />
+              <Image
+                src={image}
+                alt=""
+                width={200}
+                height={200}
+                className="w-full h-auto rounded-xl"
+              />
             </div>
             <CardTitle>
               <p className="text-black font-light">{name}</p>

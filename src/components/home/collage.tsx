@@ -1,6 +1,5 @@
 import React from 'react';
 import BannerProps from './bannerProps';
-import CollageImage from './collageImage';
 
 const Collage = () => {
   const imagenes = [

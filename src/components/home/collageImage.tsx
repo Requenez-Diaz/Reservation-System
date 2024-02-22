@@ -1,6 +1,5 @@
 import React from 'react';
 import Images from './images';
-import { Button } from '../ui/button';
 
 const CollageImage = () => {
   const images = [

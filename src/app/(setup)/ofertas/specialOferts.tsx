@@ -9,7 +9,7 @@ const SpecialOferts = () => {
         slogan="Las mejores ofertas las encuentras aquí"
         description="lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo"
         subtitle="Las mejores ofertas"
-        image=" https://images.hola.com/imagenes/decoracion/20230425230358/dormitorios-inspirados-en-habitaciones-hoteles-am/1-237-31/habitaciones-hotel-8a-a.jpg"
+        image=" https://media.istockphoto.com/id/1467126728/es/foto/dise%C3%B1o-interior-de-dormitorio-moderno-escandinavo-y-japon%C3%A9sdi-con-cama-color-blanco-mesa-y.jpg?s=2048x2048&w=is&k=20&c=iFU05E8kHNDlRYQeF4lyXZmAW53WUpfM8fJRANmRWvI="
         name="Habitaión de hotel"
         description2="Las mejores ofertas del mercado"
         price={100}
