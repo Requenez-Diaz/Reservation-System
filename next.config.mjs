@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
-//TODO: configurar el uso de las imagenes desde la web
-// next.config.js
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: ['media.istockphoto.com']
+  }
+};
 
 export default nextConfig;

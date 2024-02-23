@@ -1,19 +1,59 @@
 import React from 'react';
 import OfertsProps from './ofertsProps';
+import OfertsBanner from './ofertsBanner';
+
+interface OfertsCards {
+  title: string;
+  slogan: string;
+  subtitle: string;
+  description: string;
+  name: string;
+  description2: string;
+  price: number;
+  images: string;
+}
 
 const SpecialOferts = () => {
+  const containerImage: OfertsCards[] = [
+    {
+      title: 'Ofertas Especiales',
+      slogan: '¡Aprovecha nuestras ofertas especiales!',
+      subtitle: 'Incluye desayuno gratuito',
+      description: 'Descripción de la habitación estándar.',
+      name: 'Habitación Estándar',
+      description2: 'Descripción de la habitación estándar.',
+      price: 100,
+      images:
+        'https://media.istockphoto.com/id/1467126728/es/foto/dise%C3%B1o-interior-de-dormitorio-moderno-escandinavo-y-japon%C3%A9sdi-con-cama-color-blanco-mesa-y.jpg?s=2048x2048&w=is&k=20&c=iFU05E8kHNDlRYQeF4lyXZmAW53WUpfM8fJRANmRWvI='
+    },
+    {
+      title: 'Ofertas Especiales',
+      slogan: '¡Aprovecha nuestras ofertas especiales!',
+      subtitle: 'Vista panorámica y servicios exclusivos',
+      description: 'Descripción de la suite de lujo.',
+      name: 'Suite de Lujo',
+      description2: 'Descripción de la suite de lujo.',
+      price: 200,
+      images:
+        'https://media.istockphoto.com/id/1467126728/es/foto/dise%C3%B1o-interior-de-dormitorio-moderno-escandinavo-y-japon%C3%A9sdi-con-cama-color-blanco-mesa-y.jpg?s=2048x2048&w=is&k=20&c=iFU05E8kHNDlRYQeF4lyXZmAW53WUpfM8fJRANmRWvI='
+    }
+  ];
+
   return (
-    <div>
-      <OfertsProps
-        title="Ofertas Especiales"
-        slogan="Las mejores ofertas las encuentras aquí"
-        description="lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo"
-        subtitle="Las mejores ofertas"
-        image=" https://media.istockphoto.com/id/1467126728/es/foto/dise%C3%B1o-interior-de-dormitorio-moderno-escandinavo-y-japon%C3%A9sdi-con-cama-color-blanco-mesa-y.jpg?s=2048x2048&w=is&k=20&c=iFU05E8kHNDlRYQeF4lyXZmAW53WUpfM8fJRANmRWvI="
-        name="Habitaión de hotel"
-        description2="Las mejores ofertas del mercado"
-        price={100}
-      />
+    <div className="p-8">
+      {containerImage.map((ofert, index) => (
+        <OfertsProps
+          key={index}
+          title={ofert.title}
+          slogan={ofert.slogan}
+          subtitle={ofert.subtitle}
+          description={ofert.description}
+          name={ofert.name}
+          description2={ofert.description2}
+          price={ofert.price}
+          images={[{ src: ofert.images, alt: ofert.name }]}
+        />
+      ))}
     </div>
   );
 };
