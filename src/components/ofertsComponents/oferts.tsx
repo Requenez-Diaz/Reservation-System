@@ -11,5 +11,4 @@ const OfertsBook = () => {
     </div>
   );
 };
-
 export default OfertsBook;
