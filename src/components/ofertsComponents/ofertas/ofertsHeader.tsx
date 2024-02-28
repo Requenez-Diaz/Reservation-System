@@ -7,7 +7,7 @@ interface OfertsBannerProps {
   description: string;
 }
 
-const OfertsBanner = ({ title, slogan, description }: OfertsBannerProps) => {
+const OfertsHeader = ({ title, slogan, description }: OfertsBannerProps) => {
   return (
     <>
       <div>
@@ -22,4 +22,4 @@ const OfertsBanner = ({ title, slogan, description }: OfertsBannerProps) => {
   );
 };
 
-export default OfertsBanner;
+export default OfertsHeader;

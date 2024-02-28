@@ -8,8 +8,6 @@ import {
 import Image from 'next/image';
 
 interface OfertsProps {
-  title: string;
-  slogan: string;
   subtitle: string;
   description: string;
   name: string;
@@ -27,7 +25,7 @@ const OfertsProps: React.FC<OfertsProps> = ({
 }: OfertsProps) => {
   return (
     <div className="bg-white mt-4 ml-4 mr-4">
-      <div className="flex flex-col items-center md:flex-row md:justify-between md:space-x-4 mt-4 p-4 shadow-md rounded-xl  transform transition-transform hover:scale-105">
+      <div className="flex flex-row items-center md:flex-row md:justify-between md:space-x-4 mt-4 p-4 shadow-md rounded-xl  transform transition-transform hover:scale-105">
         <Card className="bg-gray-200 shadow-md">
           <CardHeader>
             {images.map((image, index) => (
@@ -51,7 +49,6 @@ const OfertsProps: React.FC<OfertsProps> = ({
             </CardDescription>
           </CardHeader>
         </Card>
-        O O
       </div>
     </div>
   );
