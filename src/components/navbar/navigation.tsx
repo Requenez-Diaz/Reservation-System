@@ -34,10 +34,10 @@ const Navbar = () => {
           </ul>
           <div className="flex gap-x-6">
             <Button variant="ghost" className="bg-blue-600 text-white">
-              Registrarse
+              <Link href="/sign-in">Iniciar sesión</Link>
             </Button>
             <Button variant={'secondary'} className="bg-blue-600 text-white">
-              Acceder
+              <Link href="/sign-up">Registrarse</Link>
             </Button>
           </div>
         </div>
