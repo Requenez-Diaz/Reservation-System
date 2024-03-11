@@ -10,20 +10,28 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { LucideEyeOff } from 'lucide-react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const SignInForm = () => {
+const SignUpForms = () => {
   const formSchema = z.object({
+    name: z.string().min(15),
+    lastName: z.string().min(15),
     email: z.string().email(),
-    password: z.string().min(8)
+    password: z.string().min(8),
+    confirmPassword: z.string().min(8)
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
+      lastName: '',
       email: '',
-      password: ''
+      password: '',
+      confirmPassword: ''
     }
   });
 
@@ -38,6 +46,35 @@ const SignInForm = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="max-w-md w-full p-4 border border-gray-300 rounded-md"
         >
+          <div className="flex items-center justify-center content-center top-2 ">
+            <Image src={'/next.svg'} height={120} width={120} alt="image" />
+          </div>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Apellido</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
@@ -51,7 +88,6 @@ const SignInForm = () => {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="password"
@@ -65,13 +101,29 @@ const SignInForm = () => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirmar contraseña</FormLabel>
+                <FormControl className="relative">
+                  <div className="flex items-center">
+                    <Input type="password" placeholder="" {...field}></Input>
+                    {/* <LucideEyeOff className="ml-2" /> */}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button
             type="submit"
             className="bg-blue-600 mt-2 justify-center content-center min-w-min text-white"
           >
             Iniciar sesión
           </Button>
-
           <div className="flex items-center mt-4">
             <div className="flex-grow border-b border-gray-300"></div>
             <div className="mx-4">or</div>
@@ -87,4 +139,4 @@ const SignInForm = () => {
   );
 };
 
-export default SignInForm;
+export default SignUpForms;
