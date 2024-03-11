@@ -1,6 +1,6 @@
 import React from 'react';
-import Collage from './collage';
 import { Button } from '../ui/button';
+import Image from 'next/image';
 
 interface CollageProps {
   images: { src: string; alt: string }[];
@@ -12,7 +12,7 @@ const Images = ({ images }: CollageProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {images.map((image, index) => (
           <div key={index} className="relative">
-            <img
+            <Image
               src={image.src}
               alt={image.alt}
               width={300}

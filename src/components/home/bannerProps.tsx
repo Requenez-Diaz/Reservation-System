@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 interface ImagesProps {
@@ -12,7 +13,7 @@ const BannerProps = ({ title, description, images }: ImagesProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
           {images.map((image, index) => (
-            <img
+            <Image
               key={index}
               src={image.src}
               alt={image.alt}
