@@ -4,7 +4,7 @@ import React from 'react';
 
 const AboutUsComponent = () => {
   return (
-    <div className="grid grid-cols-4 gap-4 justify-center items-center gap-x-4">
+    <div className="grid grid-cols-4 gap-4 justify-center items-center gap-x-4 border mx-20 pt-4 mt-4 border-black">
       <div className="col-span-2">
         <div className="p-4 ">
           <h1 className="text-5xl font-bold">
@@ -14,7 +14,7 @@ const AboutUsComponent = () => {
 
         <div className="p-4 ">
           <h1 className="text-xl font-bold">¿Qué ofrecemos?</h1>
-          <p>
+          <p style={{ textAlign: 'justify' }}>
             Ofrecemos habitaciones y apartamentos en diferentes zonas de la
             ciudad de Nueva Guinea. Nuestros alojamientos están completamente
             amueblados y equipados con todo lo necesario para que nuestros
@@ -27,7 +27,7 @@ const AboutUsComponent = () => {
         </div>
       </div>
 
-      <div className="col-span-2 flex justify-center items-center">
+      <div className="col-span-2 flex justify-center items-center bg-gradient-to-tr from-blue-500 to-purple-500 ">
         <Image
           src={'/focused-working-flatline.svg'}
           alt=""
