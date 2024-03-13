@@ -2,7 +2,7 @@ import CardsComponents from '@/components/ofertsComponents/cardsComponents';
 import OfertsBook from '@/components/ofertsComponents/oferts';
 import React from 'react';
 
-const Oferts = () => {
+const Ofertas = () => {
   return (
     <div>
       <OfertsBook />
@@ -11,4 +11,4 @@ const Oferts = () => {
   );
 };
 
-export default Oferts;
+export default Ofertas;

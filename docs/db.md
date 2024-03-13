@@ -1,5 +1,6 @@
 ```mermaid
-erDiagram
+erDiagram    RESERVATION ||--o{ RESERVATION_HISTORY  : makes
+
     CUSTOMER ||--o{ RESERVATION : places
     RESERVATION ||--o{ RESERVATION_DETAILS : makes
     ROOM ||--o{ RESERVATION_DETAILS : makes

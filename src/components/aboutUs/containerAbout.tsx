@@ -24,20 +24,24 @@ const ContainerAbout = () => {
   ];
 
   return (
-    <div className="grid grid-rows-3 justify-center content-center shadow-lg rounded-lg p-8 gap-8">
+    <div className="grid grid-rows-3 justify-center content-center shadow-lg rounded-lg p-2 mx-8 gap-4 mb-8 ">
       {items.map((item, index) => (
-        <div className="grid grid-cols-2 items-center" key={index}>
+        <div className="grid grid-cols-2 items-center mx-4" key={index}>
           <div className="flex justify-center">
             <Image
               src={`${item.image}`}
               alt={item.title}
               height={500}
               width={500}
+              className=" rounded-lg shadow-lg"
+              style={{ filter: 'drop-shadow(0 0 0.2rem #000)' }}
             />
           </div>
-          <div className="">
-            <h1 className="text-3xl font-bold text-black mb-4">{item.title}</h1>
-            <p className="text-black">{item.description}</p>
+          <div className="shadow-lg shadow-slate-400">
+            <h1 className="text-3xl font-bold text-black  mx-4 my-4">
+              {item.title}
+            </h1>
+            <p className="text-black mx-4 my-4">{item.description}</p>
           </div>
         </div>
       ))}
