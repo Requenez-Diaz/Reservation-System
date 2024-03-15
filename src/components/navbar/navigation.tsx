@@ -29,7 +29,7 @@ const Navbar = () => {
               <Link href="/reservaciones">Reservaciones </Link>
             </li>
             <li>
-              <Link href="/aboutUs">Acerca de nosotro</Link>
+              <Link href="/aboutUs">Acerca de nosotros</Link>
             </li>
           </ul>
           <div className="flex gap-x-6">

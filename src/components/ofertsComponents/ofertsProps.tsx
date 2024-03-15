@@ -6,6 +6,8 @@ import {
   CardDescription
 } from '@/components/ui/card';
 import Image from 'next/image';
+import { Button } from '../ui/button';
+import ModalComponent from './modal';
 
 interface OfertsProps {
   subtitle: string;
@@ -45,9 +47,12 @@ const OfertsProps: React.FC<OfertsProps> = ({
             <CardDescription className="text-gray-800">
               <p className="text-sm md:text-base font-light mb-2">{subtitle}</p>
               <p className="text-sm md:text-base mb-2">{description2}</p>
-              <p className="text-yellow-600 text-lg md:text-xl font-semibold">
-                ${price}
-              </p>
+              <div className="flex flex-row justify-around items-center">
+                <p className="text-yellow-600 text-lg md:text-xl font-semibold">
+                  ${price} / noche
+                </p>
+                <ModalComponent />
+              </div>
             </CardDescription>
           </CardHeader>
         </Card>
