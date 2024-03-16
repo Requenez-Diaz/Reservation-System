@@ -7,12 +7,17 @@ const Navbar = () => {
     <nav className="bg-blue-950 p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div>
-          <h1
-            className="text-white font-extrabold text-2xl md:text-3xl"
-            style={{ fontFamily: 'cursive', textShadow: '2px 2px 4px #000000' }}
-          >
-            Hotel Madroño
-          </h1>
+          <Link href="https://www.facebook.com/hotelito.madrono">
+            <h1
+              className="text-white font-extrabold text-2xl md:text-3xl"
+              style={{
+                fontFamily: 'cursive',
+                textShadow: '2px 2px 4px #000000'
+              }}
+            >
+              Hotel Madroño
+            </h1>
+          </Link>
         </div>
         <div className="hidden md:flex items-center gap-x-6">
           <ul className="flex gap-x-6 text-white">
@@ -27,9 +32,6 @@ const Navbar = () => {
             </li>
             <li>
               <Link href="/reservaciones">Reservaciones </Link>
-            </li>
-            <li>
-              <Link href="/aboutUs">Acerca de nosotros</Link>
             </li>
           </ul>
           <div className="flex gap-x-6">

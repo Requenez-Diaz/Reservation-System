@@ -1,54 +1,64 @@
 'use client';
 
-import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button
-} from '@nextui-org/react';
-import ModalForm from './forms/forms';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-export default function ModalComponent() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const onOpen = () => {
-    setIsOpen(true);
-  };
-
-  const onClose = () => {
-    setIsOpen(false);
-  };
-
+export function DialogModal() {
   return (
-    <>
-      <Button onClick={onOpen}>Reservar</Button>
-      <Modal
-        placement="top"
-        backdrop="blur"
-        isOpen={isOpen}
-        onOpenChange={onClose}
-        isDismissable={false}
-      >
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            Reserva tu habitacion
-          </ModalHeader>
-          <ModalBody>
-            <ModalForm />
-          </ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="light" onClick={onClose}>
-              Cerrar
-            </Button>
-            <Button color="success" onClick={onClose}>
-              Reservar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Reservar</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Selecciona tu habitacion</DialogTitle>
+          <DialogDescription>
+            Por favor, selecciona la habitacion que deseas reservar.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Personas
+            </Label>
+            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="username" className="text-right">
+              Cantidad
+            </Label>
+            <Input id="username" value="@peduarte" className="col-span-3" />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="email" className="text-right">
+              Fecha de llegada
+            </Label>
+            <Input
+              id="email"
+              value="
+            2022-10-10"
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit" className="bg-blue-600">
+            Confirmar
+          </Button>
+          <Button variant="destructive">Cancelar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
