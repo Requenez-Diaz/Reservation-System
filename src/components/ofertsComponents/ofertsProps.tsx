@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-import ModalComponent from './modal';
+import { DialogModal } from './modal';
 
 interface OfertsProps {
   subtitle: string;
@@ -51,7 +51,7 @@ const OfertsProps: React.FC<OfertsProps> = ({
                 <p className="text-yellow-600 text-lg md:text-xl font-semibold">
                   ${price} / noche
                 </p>
-                <ModalComponent />
+                <DialogModal />
               </div>
             </CardDescription>
           </CardHeader>
