@@ -1,10 +1,18 @@
-import React from 'react';
-import { User } from 'lucide-react';
+'use client';
+import React, { useState } from 'react';
+import { Import, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CalendarForm } from './cards/calendar';
 import { PopoverForms } from './cards/popover';
+import SearchBar from './cards/searchBar';
 
-const PropsHome = () => {
+const PropsHome: React.FC = () => {
+  const [mostrarBarraBusqueda, setMostrarBarraBusqueda] = useState<boolean>(false);
+
+  const toggleMostrarBarraBusqueda = () => {
+    setMostrarBarraBusqueda(!mostrarBarraBusqueda);
+  };
+
   return (
     <div className="flex justify-center items-center p-4">
       <div className="bg-gray-400 w-2/3 p-4 flex flex-col items-center rounded-xl shadow-2xl">
@@ -33,10 +41,12 @@ const PropsHome = () => {
           </div>
         </div>
         <div className="w-full md:w-1/3 flex justify-center mt-4 md:mt-0 mx-auto">
-          <Button className="bg-blue-700 hover:bg-black">
+          <Button className="bg-blue-700 hover:bg-black" onClick={toggleMostrarBarraBusqueda}>
             Buscar Habitación
           </Button>
         </div>
+
+        {mostrarBarraBusqueda && <SearchBar mostrar={mostrarBarraBusqueda} onClose={() => setMostrarBarraBusqueda(false)} />}
       </div>
     </div>
   );

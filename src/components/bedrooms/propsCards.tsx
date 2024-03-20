@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { Button } from '../ui/button';
+import { DialogModal } from '../ofertsComponents/modal';
 
 interface PropsCardsProps {
   name: string;
@@ -44,9 +45,7 @@ const PropsCards: React.FC<PropsCardsProps> = ({
           <p className="text-lg font-bold">{price}</p>
         </div>
         <div className="flex flex-row mx-3 space-x-4 ">
-          <Button className="bg-blue-300 hover:bg-transparent text-black">
-            Reservar
-          </Button>
+        <DialogModal />
 
           <Button className="bg-white-300 border rounded-lg hover:bg-transparent text-black">
             Ver Disponibilidad
