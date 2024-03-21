@@ -1,5 +1,5 @@
 // PropsCards.tsx
-'use client'
+'use client';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
@@ -61,13 +61,13 @@ const PropsCards: React.FC<PropsCardsProps> = ({
           <DialogModal />
 
           <Button className="bg-white-300 border rounded-lg hover:bg-transparent text-black"
-            onClick={handleOpenModal}
+          onClick={handleOpenModal}
           >
             Ver Disponibilidad
           </Button>
         </div>
       </div>
-      <RoomAvailability open={isModalOpen} onClose={handleCloseModal} />
+      <RoomAvailability open={isModalOpen} onClose={handleCloseModal} isAvailable={true}/>
     </div>
   );
 };
