@@ -1,8 +1,10 @@
 // PropsCards.tsx
+'use client'
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { DialogModal } from '../ofertsComponents/modal';
+import { RoomAvailability } from './roomAvailability';
 
 interface PropsCardsProps {
   name: string;
@@ -23,6 +25,17 @@ const PropsCards: React.FC<PropsCardsProps> = ({
   description,
   price
 }: PropsCardsProps) => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="bg-gray-300 mb-4 p-4 ">
       <Image
@@ -45,13 +58,16 @@ const PropsCards: React.FC<PropsCardsProps> = ({
           <p className="text-lg font-bold">{price}</p>
         </div>
         <div className="flex flex-row mx-3 space-x-4 ">
-        <DialogModal />
+          <DialogModal />
 
-          <Button className="bg-white-300 border rounded-lg hover:bg-transparent text-black">
+          <Button className="bg-white-300 border rounded-lg hover:bg-transparent text-black"
+            onClick={handleOpenModal}
+          >
             Ver Disponibilidad
           </Button>
         </div>
       </div>
+      <RoomAvailability open={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };
