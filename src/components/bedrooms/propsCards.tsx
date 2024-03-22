@@ -60,14 +60,14 @@ const PropsCards: React.FC<PropsCardsProps> = ({
         <div className="flex flex-row mx-3 space-x-4 ">
           <DialogModal />
 
-          <Button className="bg-white-300 border rounded-lg hover:bg-transparent text-black"
-          onClick={handleOpenModal}
+          <Button className="bg-white-300 border rounded-lg text-black transition-transform duration-300 transform hover:scale-105 hover:text-white"
+            onClick={handleOpenModal}
           >
             Ver Disponibilidad
           </Button>
         </div>
       </div>
-      <RoomAvailability open={isModalOpen} onClose={handleCloseModal} isAvailable={true}/>
+      <RoomAvailability open={isModalOpen} onClose={handleCloseModal} isAvailable={true} />
     </div>
   );
 };
