@@ -4,7 +4,7 @@ import React from 'react';
 const Footer = () => {
   const email = 'alfredorequenez57libra@gmail.com';
   return (
-    <div className="bg-blue-950 grid grid-cols-3 gap-4">
+    <div className="bg-orange-500 grid grid-cols-3 gap-4">
       <div className="col-span-1 text-white container mx-auto px-6 pt-10 pb-6">
         <h1
           className="text-white font-extrabold text-2xl md:text-3xl"
