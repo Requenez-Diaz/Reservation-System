@@ -1,5 +1,7 @@
+
 import React from "react";
 import Reservations from "../../../components/reservations/reservations";
+
 
 const Bookings = () => {
   return (
