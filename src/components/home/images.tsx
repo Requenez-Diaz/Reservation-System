@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Button } from '../ui/button';
-
+import { DialogModal } from '../ofertsComponents/modal';
 interface CollageProps {
   images: { src: string; alt: string; tipo: string; precio: number; descripcion: string }[];
 }
@@ -28,9 +28,10 @@ const Images: React.FC<CollageProps> = ({ images }) => {
                 <p className="text-justify">{image.descripcion}</p>
               </div>
               <div>
-                <Button className="px-4 py-2 bg-blue-500 text-white">
+                {/* <Button className="px-4 py-2 bg-blue-500 text-white">
                   Reservar
-                </Button>
+                </Button> */}
+                <DialogModal />
               </div>
             </div>
           </div>

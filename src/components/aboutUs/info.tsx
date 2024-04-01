@@ -22,18 +22,23 @@ const Info = () => {
           <div className="mr-4">
             <h1 className="font-bold mt-4">Mision</h1>
             <p className="text-justify">
-              Nuestra misión es brindar soluciones tecnológicas innovadoras y de
-              calidad, que permitan a nuestros clientes mejorar sus procesos y
-              aumentar su productividad.
+            En SIRM, nuestra misión es proporcionar a nuestros clientes una experiencia
+            de reservación de alojamiento en línea excepcional, ofreciendo una amplia
+            selección de habitaciones y apartamentos en la ciudad de Nueva Guinea. Nos
+            comprometemos a brindar comodidad, conveniencia y calidad en cada etapa del
+            proceso de reserva, asegurando que nuestros clientes encuentren el alojamiento
+            perfecto para sus necesidades y disfruten de una estancia inolvidable.
             </p>
           </div>
           <div>
             <h1 className="font-bold mt-4">Vision</h1>
             <p className="text-justify">
-              Nuestra visión es ser una empresa líder en el desarrollo de
-              software, diseño gráfico y marketing digital en Nicaragua, con el
-              fin de brindar soluciones tecnológicas innovadoras y de calidad a
-              nuestros clientes.
+            Nuestra visión en SIRM es convertirnos en el principal destino en línea para
+            la reserva de alojamiento en la ciudad de Nueva Guinea, reconocidos por nuestra
+            dedicación a la excelencia en el servicio al cliente, la innovación tecnológica
+            y la oferta de una experiencia de hospedaje incomparable. Nos esforzamos por ser
+            líderes en la industria hotelera en línea, superando las expectativas de nuestros
+            clientes y estableciendo nuevos estándares de calidad y conveniencia en el sector.
             </p>
           </div>
         </div>

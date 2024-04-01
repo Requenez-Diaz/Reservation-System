@@ -5,7 +5,7 @@ const Reservas: React.FC = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-blue-600 mb-2">Reservasciones</h2>
+                <h2 className="text-3xl font-bold text-blue-600 mb-2">Reservaciones</h2>
                 <p className="text-lg text-gray-700">¡Gracias por elegir nuestro hotel para tu próxima estancia! Estamos emocionados de recibirte. A continuación, encontrarás información sobre cómo realizar una reserva y nuestras políticas de cancelación.</p>
             </div>
 

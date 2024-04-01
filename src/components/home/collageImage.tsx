@@ -20,16 +20,16 @@ const CollageImage: React.FC = () => {
     {
       src: 'https://www.ceupe.com/images/easyblog_articles/2539/b2ap3_amp_Caractersticas-de-las-instalaciones-hoteleras.jpg',
       alt: 'Hotel',
-      tipo: 'INDIVIDUAL',
-      precio: 60,
-      descripcion: 'Perfecta para viajeros solitarios y cuenta con una cama individual, escritorio y baño privado.'
+      tipo: 'DOBLE',
+      precio: 40,
+      descripcion: 'Las habitaciones dobles disponen de dos camas, baño privado y televisión por cable.'
     },
     {
       src: 'https://www.ceupe.com/images/easyblog_articles/2539/b2ap3_amp_Caractersticas-de-las-instalaciones-hoteleras.jpg',
       alt: 'Hotel',
-      tipo: 'DOBLE',
-      precio: 60,
-      descripcion: 'Las habitaciones dobles disponen de dos camas, baño privado y televisión por cable.'
+      tipo: 'INDIVIDUAL',
+      precio: 20,
+      descripcion: 'Perfecta para viajeros solitarios y cuenta con una cama individual, escritorio y baño privado.'
     },
   ];
 
