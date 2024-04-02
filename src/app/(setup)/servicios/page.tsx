@@ -1,4 +1,4 @@
-import Services from '@/components/servicios/services';
+import Services from '@/components/servicios/services'; 
 import React from 'react';
 
 const ServiciosPage = () => {

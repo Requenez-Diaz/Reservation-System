@@ -11,7 +11,7 @@ const CollageImage: React.FC = () => {
       descripcion: 'Consta de tres habitaciones, tres baños, centro de entretenimiento, televisión por cable y una amplia sala de estar.'
     },
     {
-      src: 'https://53b20a41c2.cbaul-cdnwnd.com/bc429e9705d589d7e52e3dc4234143aa/200000007-6b2af6c247/hab%20tirple.jpg',
+      src: 'https://www.ceupe.com/images/easyblog_articles/2539/b2ap3_amp_Caractersticas-de-las-instalaciones-hoteleras.jpg',
       alt: 'Hotel',
       tipo: 'TRIPLES',
       precio: 60,
