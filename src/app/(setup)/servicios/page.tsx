@@ -1,12 +1,12 @@
-import Services from '@/components/services/services';
+import Services from '@/components/servicios/services';
 import React from 'react';
 
-const Servicios = () => {
+const ServiciosPage = () => {
     return (
         <div>
-            <Services />
+          <Services/>
         </div>
     );
 };
 
-export default Servicios;
+export default ServiciosPage;

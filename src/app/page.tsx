@@ -1,11 +1,10 @@
 import BannerHome from '@/components/home/bannerHome';
 import BedroomsPopulars from '@/components/home/bedroomsPopulars';
 import CardDescriptions from '@/components/home/cards/cardsDescription';
-import ServicesCards from '@/components/home/cards/servicesCards';
-
 import Collage from '@/components/home/collage';
 import CollageImage from '@/components/home/collageImage';
 import FormBook from '@/components/home/formBook';
+import { CarouselDemo } from '@/components/home/cards/carrucelServicios';
 
 export default function Home() {
   return (
@@ -15,7 +14,7 @@ export default function Home() {
       <Collage />
       <CardDescriptions />
       <CollageImage />
-      <ServicesCards/>
+      <CarouselDemo />
       <BedroomsPopulars name="hola" image="" />
     </main>
   );
