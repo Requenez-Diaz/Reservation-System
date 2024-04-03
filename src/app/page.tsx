@@ -1,5 +1,5 @@
+import { ContainerAboutHotels } from '@/components/home/adventagesHotels/containerAboutServices';
 import BannerHome from '@/components/home/bannerHome';
-import BedroomsPopulars from '@/components/home/bedroomsPopulars';
 import CardDescriptions from '@/components/home/cards/cardsDescription';
 import Collage from '@/components/home/collage';
 import CollageImage from '@/components/home/collageImage';
@@ -11,11 +11,12 @@ export default function Home() {
     <main className="">
       <BannerHome />
       <FormBook />
+      <ContainerAboutHotels />
       <Collage />
       <CardDescriptions />
       <CollageImage />
       <CarouselDemo />
-      <BedroomsPopulars name="hola" image="" />
+      {/* <BedroomsPopulars name="hola" image="" /> */}
     </main>
   );
 }
