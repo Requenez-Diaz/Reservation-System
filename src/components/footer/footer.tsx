@@ -41,7 +41,7 @@ const Footer = () => {
         >
           <span className="mr-2">
             <svg
-              enable-background="new 0 0 1024 1024"
+              enableBackground="new 0 0 1024 1024"
               viewBox="0 0 1024 1024"
               xmlns="http://www.w3.org/2000/svg"
               className="fill-current"
@@ -77,12 +77,12 @@ const Footer = () => {
                 y1="91.5618"
                 y2="-.000002"
               >
-                <stop offset="0" stop-color="#fbe18a" />
-                <stop offset=".21" stop-color="#fcbb45" />
-                <stop offset=".38" stop-color="#f75274" />
-                <stop offset=".52" stop-color="#d53692" />
-                <stop offset=".74" stop-color="#8f39ce" />
-                <stop offset="1" stop-color="#5b4fe9" />
+                <stop offset="0" stopColor="#fbe18a" />
+                <stop offset=".21" stopColor="#fcbb45" />
+                <stop offset=".38" stopColor="#f75274" />
+                <stop offset=".52" stopColor="#d53692" />
+                <stop offset=".74" stopColor="#8f39ce" />
+                <stop offset="1" stopColor="#5b4fe9" />
               </linearGradient>
               <rect
                 fill="url(#a)"
@@ -105,7 +105,7 @@ const Footer = () => {
         >
           <span className="mr-2">
             <svg
-              enable-background="new 0 0 1024 1024"
+              enableBackground="new 0 0 1024 1024"
               viewBox="0 0 1024 1024"
               xmlns="http://www.w3.org/2000/svg"
               className="fill-current"
