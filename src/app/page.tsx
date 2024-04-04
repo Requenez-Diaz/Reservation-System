@@ -11,11 +11,12 @@ export default function Home() {
     <main className="">
       <BannerHome />
       <FormBook />
+      <CarouselDemo />
       <ContainerAboutHotels />
       <Collage />
       <CardDescriptions />
       <CollageImage />
-      <CarouselDemo />
+
       {/* <BedroomsPopulars name="hola" image="" /> */}
     </main>
   );

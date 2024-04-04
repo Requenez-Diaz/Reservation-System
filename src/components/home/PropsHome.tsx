@@ -7,7 +7,8 @@ import { PopoverForms } from './cards/popover';
 import SearchBar from './cards/searchBar';
 
 const PropsHome: React.FC = () => {
-  const [mostrarBarraBusqueda, setMostrarBarraBusqueda] = useState<boolean>(false);
+  const [mostrarBarraBusqueda, setMostrarBarraBusqueda] =
+    useState<boolean>(false);
 
   const toggleMostrarBarraBusqueda = () => {
     setMostrarBarraBusqueda(!mostrarBarraBusqueda);
@@ -15,8 +16,8 @@ const PropsHome: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center p-4">
-      <div className="bg-gray-400 w-2/3 p-4 flex flex-col items-center rounded-xl shadow-2xl">
-        <div className="text-white text-center">
+      <div className="bg-white w-2/3 p-4 flex flex-col items-center rounded-xl border border-t-1 shadow-2xl">
+        <div className="text-black text-center">
           <h1 className="font-bold text-2xl">Selecciona una habitación</h1>
           <p>Descubre el mejor lugar para ti!!</p>
         </div>
@@ -41,12 +42,20 @@ const PropsHome: React.FC = () => {
           </div>
         </div>
         <div className="w-full md:w-1/3 flex justify-center mt-4 md:mt-0 mx-auto">
-          <Button className="bg-blue-700 hover:bg-black" onClick={toggleMostrarBarraBusqueda}>
+          <Button
+            className="bg-blue-700 hover:bg-black"
+            onClick={toggleMostrarBarraBusqueda}
+          >
             Buscar Habitación
           </Button>
         </div>
 
-        {mostrarBarraBusqueda && <SearchBar mostrar={mostrarBarraBusqueda} onClose={() => setMostrarBarraBusqueda(false)} />}
+        {mostrarBarraBusqueda && (
+          <SearchBar
+            mostrar={mostrarBarraBusqueda}
+            onClose={() => setMostrarBarraBusqueda(false)}
+          />
+        )}
       </div>
     </div>
   );

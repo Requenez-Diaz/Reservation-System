@@ -20,14 +20,14 @@ const cardData: CardData[] = [
     title: 'Horarios Flexibles',
     subtitle: 'Horarios de 8:00 am a 8:00 pm',
     description: 'La estadia depende de ti y las ganas de triunfar',
-    bgColor: 'bg-blue-400',
+    bgColor: 'bg-yellow-200 bg-opacity-45',
     icon: <Calendar size={48} />
   },
   {
     title: 'Comodidad',
     subtitle: 'La comodiad es lo primero',
     description: 'La comodidad es lo primero',
-    bgColor: 'bg-blue-400',
+    bgColor: 'bg-yellow-200 bg-opacity-45',
     icon: <Sofa size={48} />
   },
   {
@@ -35,7 +35,7 @@ const cardData: CardData[] = [
     subtitle: 'Wifi de alta velocidad',
     description:
       'Wifi de alta velocidad para que puedas trabajar sin problemas',
-    bgColor: 'bg-blue-400',
+    bgColor: 'bg-yellow-200 bg-opacity-45',
     icon: <Wifi size={48} />
   },
   {
@@ -43,7 +43,7 @@ const cardData: CardData[] = [
     subtitle: 'La atencion es lo primero',
     description:
       'Atencion 24-7 para que puedas resolver tus dudas en cualquier momento',
-    bgColor: 'bg-blue-400',
+    bgColor: 'bg-yellow-200 bg-opacity-45',
     icon: <MessageCircle size={48} />
   }
 ];
@@ -51,7 +51,7 @@ const cardData: CardData[] = [
 const Cards: React.FC = () => {
   return (
     <>
-      <div className=" flex flex-row items-center md:justify-between md:space-x-4 shadow-md mt-4 m-4">
+      <div className=" flex flex-row items-center md:justify-between md:space-x-4 shadow-md mt-4 m-4 mb-4">
         {cardData.map((data, index) => (
           <Card key={index} className={`bg-blue-400 ${data.bgColor}`}>
             <CardHeader>
