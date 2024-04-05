@@ -1,5 +1,13 @@
-import Link from 'next/link';
+import Link from "next/link"
 import { Button } from '../ui/button';
+import { ActiveLink } from "../active-link/ActiveLink";
+
+const navItems = [
+  { path: '/', text: 'Inicio' },
+  { path: '/ofertas', text: 'Ofertas' },
+  { path: '/habitaciones', text: 'Habitaciones' },
+  { path: '/reservaciones', text: 'Reservaciones' },
+]
 
 const Navbar = () => {
   const stylesActive = {
@@ -13,7 +21,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white opacity-60 p-4">
+    <nav className="bg-white  p-4">
       <div className="container mx-auto flex justify-between items-center ">
         <div>
           <Link href="https://www.facebook.com/hotelito.madrono">
@@ -30,38 +38,11 @@ const Navbar = () => {
         </div>
         <div className="hidden md:flex items-center gap-x-6 ">
           <ul className="flex gap-x-6 text-black">
-            <li>
-              <Link
-                href="/"
-                className="text-black font-bold hover:text-gray-600"
-              >
-                Inicio
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/ofertas"
-                className="text-black font-bold hover:text-gray-600"
-              >
-                Ofertas
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/habitaciones"
-                className="text-black  font-bold hover:text-gray-600"
-              >
-                Habitaciones
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/reservaciones"
-                className="text-black  font-bold hover:text-gray-600"
-              >
-                Reservaciones{' '}
-              </Link>
-            </li>
+            {navItems.map(navItem => (
+              <li key={navItem.path}>
+                <ActiveLink {...navItem} />
+              </li>
+            ))}
           </ul>
           <div className="flex gap-x-6">
             <Button
