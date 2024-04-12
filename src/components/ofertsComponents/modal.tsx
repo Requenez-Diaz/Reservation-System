@@ -17,7 +17,10 @@ export function DialogModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Reservar</Button>
+        <Button variant="outline" className="bg-blue-600 text-white font-bold py-2 px-4 rounded">
+          Reservar
+        </Button>
+
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -136,8 +136,8 @@ const DescriptionAboutHotels = () => {
           >
             <div className="flex flex-col items-center">
               {data.icon && <div className="mb-2">{data.icon}</div>}
-              <p className="text-white font-light text-lg">
-                {data.description}
+              <p className="text-black text-lg">
+                 {data.description}
               </p>
             </div>
           </div>
