@@ -1,6 +1,4 @@
-import React from 'react';
-import OfertsHeader from './ofertsHeader';
-import OfertsProps from './OfferProperty';
+import OfertsHeader from './OfferHeader';
 import SpecialOferts from './SpecialOffer';
 
 const CardsComponents = () => {
