@@ -6,10 +6,9 @@ import {
   CardDescription
 } from '@/components/ui/card';
 import Image from 'next/image';
-import { Button } from '../ui/button';
 import { DialogModal } from './modal';
 
-interface OfertsProps {
+interface OfferPropertyProps {
   subtitle: string;
   description: string;
   name: string;
@@ -18,13 +17,13 @@ interface OfertsProps {
   images: { src: string; alt: string }[];
 }
 
-const OfertsProps: React.FC<OfertsProps> = ({
+export const OfferProperty: React.FC<OfferPropertyProps> = ({
   subtitle,
   images,
   description2,
   name,
   price
-}: OfertsProps) => {
+}: OfferPropertyProps) => {
   return (
     <div className="bg-white mx-4">
       <div className="flex flex-col items-center md:flex-row md:items-stretch md:space-x-4 mt-4 p-4 shadow-md rounded-xl transform transition-transform hover:scale-105">
@@ -61,4 +60,4 @@ const OfertsProps: React.FC<OfertsProps> = ({
   );
 };
 
-export default OfertsProps;
+export default OfferProperty;

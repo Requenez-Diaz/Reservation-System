@@ -1,5 +1,5 @@
 import React from 'react';
-import OfertsProps from './ofertsProps';
+import OfertsProps from './OfferProperty';
 
 interface OfferCard {
   title: string;

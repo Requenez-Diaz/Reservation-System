@@ -1,7 +1,7 @@
 import React from 'react';
 import OfertsHeader from './ofertsHeader';
-import OfertsProps from './ofertsProps';
-import SpecialOferts from './specialOferts';
+import OfertsProps from './OfferProperty';
+import SpecialOferts from './SpecialOffer';
 
 const CardsComponents = () => {
   return (
