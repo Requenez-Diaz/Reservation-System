@@ -1,11 +1,11 @@
 import CardsComponents from '@/components/offers/cardsComponents';
-import OfertsBook from '@/components/offers/oferts';
+import OfferBook from '@/components/offers/OfferBook';
 import React from 'react';
 
 const Ofertas = () => {
   return (
     <div>
-      <OfertsBook />
+      <OfferBook />
       <CardsComponents />
     </div>
   );

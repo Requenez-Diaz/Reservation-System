@@ -1,7 +1,7 @@
 import React from 'react';
 import Banner from './Banner';
 
-const OfertsBook = () => {
+export const OfferBook = () => {
   return (
     <div>
       <Banner
@@ -11,4 +11,4 @@ const OfertsBook = () => {
     </div>
   );
 };
-export default OfertsBook;
+export default OfferBook;
