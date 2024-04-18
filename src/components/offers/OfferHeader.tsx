@@ -1,12 +1,14 @@
-import React from 'react';
-
-interface OfertsBannerProps {
+interface OfferHeaderProps {
   title: string;
   slogan: string;
   description: string;
 }
 
-const OfertsHeader = ({ title, slogan, description }: OfertsBannerProps) => {
+export const OfferHeader = ({
+  title,
+  slogan,
+  description
+}: OfferHeaderProps) => {
   return (
     <div className="flex flex-col items-center justify-center text-center py-8">
       <h2 className="text-2xl font-bold text-blue-600 mb-4">{title}</h2>
@@ -18,4 +20,4 @@ const OfertsHeader = ({ title, slogan, description }: OfertsBannerProps) => {
   );
 };
 
-export default OfertsHeader;
+export default OfferHeader;
