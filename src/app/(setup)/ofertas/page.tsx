@@ -1,4 +1,4 @@
-import CardsComponents from '@/components/offers/cardsComponents';
+import CardsComponents from '@/components/offers/CardsComponent';
 import OfferBook from '@/components/offers/OfferBook';
 import React from 'react';
 
