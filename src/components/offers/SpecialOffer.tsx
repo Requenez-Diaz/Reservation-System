@@ -1,7 +1,7 @@
 import React from 'react';
 import OfertsProps from './ofertsProps';
 
-interface OfertsCards {
+interface OfferCard {
   title: string;
   slogan: string;
   subtitle: string;
@@ -12,8 +12,8 @@ interface OfertsCards {
   images: string;
 }
 
-const SpecialOferts = () => {
-  const containerImage: OfertsCards[] = [
+export const SpecialOffer = () => {
+  const containerImage: OfferCard[] = [
     {
       title: 'Ofertas Especiales',
       slogan: '¡Aprovecha nuestras ofertas especiales!',
@@ -100,4 +100,4 @@ const SpecialOferts = () => {
   );
 };
 
-export default SpecialOferts;
+export default SpecialOffer;
