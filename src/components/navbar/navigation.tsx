@@ -1,6 +1,10 @@
 import Link from "next/link"
-import { Button } from '../ui/button';
+import { buttonVariants } from '../ui/button';
 import { ActiveLink } from "../active-link/ActiveLink";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import UserAccountnav from "../UserAccountnav";
+
 
 const navItems = [
   { path: '/', text: 'Inicio' },
@@ -9,7 +13,9 @@ const navItems = [
   { path: '/reservaciones', text: 'Reservaciones' },
 ]
 
-const Navbar = () => {
+const Navbar = async () => {
+  const session = await getServerSession(authOptions);
+
   const stylesActive = {
     borderBottom: '2px solid #fff',
     paddingBottom: '5px'
@@ -45,18 +51,13 @@ const Navbar = () => {
             ))}
           </ul>
           <div className="flex gap-x-6">
-            <Button
-              variant="ghost"
-              className="bg-white-600 text-black border border-black hover:bg-slate-400"
-            >
-              <Link href="/sign-in">Iniciar sesión</Link>
-            </Button>
-            <Button
-              variant={'ghost'}
-              className="bg-white-600 text-black border border-black hover:bg-slate-400 "
-            >
-              <Link href="/sign-up">Registrarse</Link>
-            </Button>
+            {session?.user ? (
+             <UserAccountnav />
+            ) : (
+              <Link className={buttonVariants()} href="/sign-in" >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </div>
