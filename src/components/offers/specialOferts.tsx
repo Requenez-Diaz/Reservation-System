@@ -87,13 +87,13 @@ const SpecialOferts = () => {
     <div className="p-8 grid grid-cols-4 gap-4">
       {containerImage.map((ofert, index) => (
         <OfertsProps
-          key={index}
-          subtitle={ofert.subtitle}
           description={ofert.description}
-          name={ofert.name}
           description2={ofert.description2}
-          price={ofert.price}
           images={[{ src: ofert.images, alt: ofert.name }]}
+          key={index}
+          name={ofert.name}
+          price={ofert.price}
+          subtitle={ofert.subtitle}
         />
       ))}
     </div>

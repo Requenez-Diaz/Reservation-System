@@ -17,10 +17,12 @@ export function DialogModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        <Button
+          className="bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          variant="outline"
+        >
           Reservar
         </Button>
-
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -31,32 +33,32 @@ export function DialogModal() {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+            <Label className="text-right" htmlFor="name">
               Personas
             </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+            <Input className="col-span-3" id="name" value="Pedro Duarte" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
+            <Label className="text-right" htmlFor="username">
               Cantidad
             </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
+            <Input className="col-span-3" id="username" value="@peduarte" />
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">
+            <Label className="text-right" htmlFor="email">
               Fecha de llegada
             </Label>
             <Input
+              className="col-span-3"
               id="email"
               value="
             2022-10-10"
-              className="col-span-3"
             />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" className="bg-blue-600">
+          <Button className="bg-blue-600" type="submit">
             Confirmar
           </Button>
           <Button variant="destructive">Cancelar</Button>

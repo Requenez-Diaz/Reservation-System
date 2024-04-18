@@ -32,11 +32,11 @@ const OfertsProps: React.FC<OfertsProps> = ({
           <CardHeader>
             <div className="mb-4 h-40 md:h-48 relative">
               <Image
-                src={images[0].src}
                 alt={images[0].alt}
+                className="rounded-t-xl"
                 layout="fill"
                 objectFit="cover"
-                className="rounded-t-xl"
+                src={images[0].src}
               />
             </div>
             <CardTitle>

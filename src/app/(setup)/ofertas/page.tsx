@@ -1,5 +1,5 @@
-import CardsComponents from '@/components/ofertsComponents/cardsComponents';
-import OfertsBook from '@/components/ofertsComponents/oferts';
+import CardsComponents from '@/components/offers/cardsComponents';
+import OfertsBook from '@/components/offers/oferts';
 import React from 'react';
 
 const Ofertas = () => {

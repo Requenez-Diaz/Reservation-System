@@ -7,12 +7,12 @@ const CardsComponents = () => {
   return (
     <div>
       <OfertsHeader
-        title="Ofertas"
-        slogan="Las mejores ofertas"
         description="Aqui encontraras las mejores ofertas de la semana"
+        slogan="Las mejores ofertas"
+        title="Ofertas"
       />
 
-      <SpecialOferts/>
+      <SpecialOferts />
     </div>
   );
 };
