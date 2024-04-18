@@ -1,4 +1,4 @@
-import React from 'react';
+import Image from 'next/image';
 
 interface PopularsInterface {
   name: string;
@@ -34,13 +34,15 @@ const BedroomsPopulars = ({ name, image }: PopularsInterface) => {
         <div className="grid grid-cols-2 gap-4">
           {data.map((item, index) => (
             <div
-              key={index}
               className="flex flex-col items-center justify-center"
+              key={index}
             >
-              <img
+              <Image
                 alt="vercel logo"
                 className="object-cover w-96 h-96 rounded-2xl"
+                height={400}
                 src={item.image}
+                width={400}
               />
               <h1 className="text-2xl font-bold">{item.name}</h1>
             </div>

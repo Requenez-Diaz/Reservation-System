@@ -8,6 +8,7 @@ import {
   CarouselPrevious,
   CarouselItem
 } from '@/components/ui/carousel';
+import Image from 'next/image';
 
 interface ImagesCarrouselInterface {
   image: string[];
@@ -16,21 +17,26 @@ interface ImagesCarrouselInterface {
 export function CarouselComponents({ image }: ImagesCarrouselInterface) {
   return (
     <Carousel
+      className="w-full max-w-5xl mx-auto"
       opts={{
         align: 'center'
       }}
-      className="w-full max-w-5xl mx-auto"
     >
       <CarouselContent className="h-120">
         {image.map((image, index) => (
           <CarouselItem
-            key={index}
             className="md:basis-1/2 lg:basis-1/3 h-full"
+            key={index}
           >
             <div className="p-1 h-full">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <img src={image} alt={`Image ${index + 1}`} />
+                  <Image
+                    alt={`Image ${index + 1}`}
+                    height={400}
+                    src={image}
+                    width={400}
+                  />
                 </CardContent>
               </Card>
             </div>
