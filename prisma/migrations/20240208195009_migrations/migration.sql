@@ -4,10 +4,12 @@ CREATE TYPE "BookingsStatus" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELLED');
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL UNIQUE,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL,
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
