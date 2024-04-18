@@ -1,10 +1,10 @@
-import OfertsHeader from './OfferHeader';
+import { OfferHeader } from './OfferHeader';
 import SpecialOferts from './SpecialOffer';
 
-const CardsComponents = () => {
+export const CardComponent = () => {
   return (
     <div>
-      <OfertsHeader
+      <OfferHeader
         description="Aqui encontraras las mejores ofertas de la semana"
         slogan="Las mejores ofertas"
         title="Ofertas"
@@ -15,4 +15,4 @@ const CardsComponents = () => {
   );
 };
 
-export default CardsComponents;
+export default CardComponent;
