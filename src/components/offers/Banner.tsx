@@ -1,9 +1,5 @@
 import Image from 'next/image';
-
-interface BannerProps {
-  image: string;
-  text: string;
-}
+import { BannerProps } from './types';
 
 const Banner: React.FC<BannerProps> = ({ image, text }) => {
   return (

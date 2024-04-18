@@ -1,8 +1,4 @@
-interface OfferHeaderProps {
-  title: string;
-  slogan: string;
-  description: string;
-}
+import { OfferHeaderProps } from './types';
 
 export const OfferHeader = ({
   title,

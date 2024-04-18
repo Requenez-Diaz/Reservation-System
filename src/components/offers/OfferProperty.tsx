@@ -7,15 +7,7 @@ import {
 } from '@/components/ui/card';
 import Image from 'next/image';
 import { Modal } from './Modal';
-
-interface OfferPropertyProps {
-  subtitle: string;
-  description: string;
-  name: string;
-  description2: string;
-  price: number;
-  images: { src: string; alt: string }[];
-}
+import { OfferPropertyProps } from './types';
 
 export const OfferProperty: React.FC<OfferPropertyProps> = ({
   subtitle,

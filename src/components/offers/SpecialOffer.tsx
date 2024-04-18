@@ -1,16 +1,6 @@
 import React from 'react';
-import OfertsProps from './OfferProperty';
-
-interface OfferCard {
-  title: string;
-  slogan: string;
-  subtitle: string;
-  description: string;
-  name: string;
-  description2: string;
-  price: number;
-  images: string;
-}
+import { OfferProperty } from './OfferProperty';
+import { OfferCard } from './types';
 
 export const SpecialOffer = () => {
   const containerImage: OfferCard[] = [
@@ -86,7 +76,7 @@ export const SpecialOffer = () => {
   return (
     <div className="p-8 grid grid-cols-4 gap-4">
       {containerImage.map((ofert, index) => (
-        <OfertsProps
+        <OfferProperty
           description={ofert.description}
           description2={ofert.description2}
           images={[{ src: ofert.images, alt: ofert.name }]}
