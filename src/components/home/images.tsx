@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Modal } from '../offers/modal';
+import { SelectRoomModal } from '../offers/SelectRoomModal';
 // Import the type declarations for CollageProps
 
 interface CollageProps {
@@ -37,7 +37,7 @@ const Images: React.FC<CollageProps> = ({ images }) => {
                 <p className="text-justify">{image.descripcion}</p>
               </div>
               <div>
-                <Modal />
+                <SelectRoomModal />
               </div>
             </div>
           </div>

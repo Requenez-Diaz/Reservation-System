@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/card';
 import Image from 'next/image';
 import { OfferPropertyProps } from './types';
-import { Modal } from './modal';
+import { SelectRoomModal } from './SelectRoomModal';
 
 export const OfferProperty: React.FC<OfferPropertyProps> = ({
   subtitle,
@@ -42,7 +42,7 @@ export const OfferProperty: React.FC<OfferPropertyProps> = ({
                 <p className="text-yellow-600 text-lg md:text-xl font-semibold">
                   ${price} / noche
                 </p>
-                <Modal />
+                <SelectRoomModal />
               </div>
             </CardDescription>
           </CardHeader>

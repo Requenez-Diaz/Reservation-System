@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
-import { Modal } from '../offers/Modal';
+import { SelectRoomModal } from '../offers/SelectRoomModal';
 import { RoomAvailability } from './roomAvailability';
 
 interface PropsCardsProps {
@@ -57,7 +57,7 @@ const PropsCards: React.FC<PropsCardsProps> = ({
           <p className="text-lg font-bold">{price}</p>
         </div>
         <div className="flex flex-row mx-3 space-x-4 ">
-          <Modal />
+          <SelectRoomModal />
 
           <Button
             className="bg-white-300 border rounded-lg text-black transition-transform duration-300 transform hover:scale-105 hover:text-white"

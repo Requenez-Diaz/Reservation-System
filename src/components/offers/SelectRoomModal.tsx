@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function Modal() {
+export function SelectRoomModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
