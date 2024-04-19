@@ -244,7 +244,7 @@ const SignUpForm = () => {
           />
 
           <div className="mb-5 mt-4">
-            <Button type="submit" className="w-full  ">
+            <Button type="submit" className="w-full " variant={'blue'}>
               Registrarse
             </Button>
           </div>
