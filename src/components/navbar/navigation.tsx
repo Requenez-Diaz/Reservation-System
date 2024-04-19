@@ -1,17 +1,16 @@
-import Link from "next/link"
+import Link from 'next/link';
 import { buttonVariants } from '../ui/button';
-import { ActiveLink } from "../active-link/ActiveLink";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import UserAccountnav from "../UserAccountnav";
-
+import { ActiveLink } from '../active-link/ActiveLink';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import UserAccountnav from '../UserAccountnav';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
   { path: '/ofertas', text: 'Ofertas' },
   { path: '/habitaciones', text: 'Habitaciones' },
-  { path: '/reservaciones', text: 'Reservaciones' },
-]
+  { path: '/reservaciones', text: 'Reservaciones' }
+];
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions);
@@ -44,7 +43,7 @@ const Navbar = async () => {
         </div>
         <div className="hidden md:flex items-center gap-x-6 ">
           <ul className="flex gap-x-6 text-black">
-            {navItems.map(navItem => (
+            {navItems.map((navItem) => (
               <li key={navItem.path}>
                 <ActiveLink {...navItem} />
               </li>
@@ -52,10 +51,13 @@ const Navbar = async () => {
           </ul>
           <div className="flex gap-x-6">
             {session?.user ? (
-             <UserAccountnav />
+              <UserAccountnav />
             ) : (
-              <Link className={buttonVariants()} href="/sign-in" >
-                Sign In
+              <Link
+                className={buttonVariants({ variant: 'blue' })}
+                href="/sign-in"
+              >
+                Iniciar sesión
               </Link>
             )}
           </div>
