@@ -15,25 +15,23 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
   return (
     <main className="">
-
       <BannerHome />
-      <div className='flex justify-center items-center'>
-      <Link className={buttonVariants()} href={'/admin'}>Open My Admin</Link>
+      <div className="flex justify-center items-center">
+        <Link className={buttonVariants()} href={'/admin'}>
+          Open My Admin
+        </Link>
 
-      <h2>Client Session</h2>
-      <User/>
-      <h2>Server session</h2>
-      {JSON.stringify(session)}
-
-    </div>
+        <h2>Client Session</h2>
+        <User />
+        <h2>Server session</h2>
+        {JSON.stringify(session)}
+      </div>
       <FormBook />
       <CarouselDemo />
       <ContainerAboutHotels />
       <Collage />
       <CardDescriptions />
       <CollageImage />
-
-      {/* <BedroomsPopulars name="hola" image="" /> */}
     </main>
   );
 }

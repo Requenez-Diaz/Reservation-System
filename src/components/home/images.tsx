@@ -1,6 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
-import { Modal } from '../offers/Modal';
+import { Modal } from '../offers/modal';
+// Import the type declarations for CollageProps
+
 interface CollageProps {
   images: {
     src: string;

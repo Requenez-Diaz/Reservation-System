@@ -6,8 +6,8 @@ import {
   CardDescription
 } from '@/components/ui/card';
 import Image from 'next/image';
-import { Modal } from './Modal';
 import { OfferPropertyProps } from './types';
+import { Modal } from './modal';
 
 export const OfferProperty: React.FC<OfferPropertyProps> = ({
   subtitle,
