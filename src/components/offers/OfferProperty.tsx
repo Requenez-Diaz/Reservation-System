@@ -52,4 +52,6 @@ export const OfferProperty: React.FC<OfferPropertyProps> = ({
   );
 };
 
+OfferProperty.displayName = 'OfferProperty';
+
 export default OfferProperty;

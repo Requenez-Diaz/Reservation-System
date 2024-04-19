@@ -2,7 +2,7 @@ import CardsComponents from '@/components/offers/CardsComponent';
 import OfferBook from '@/components/offers/OfferBook';
 import React from 'react';
 
-const Ofertas = () => {
+export const OffersPage = () => {
   return (
     <div>
       <OfferBook />
@@ -11,4 +11,4 @@ const Ofertas = () => {
   );
 };
 
-export default Ofertas;
+export default OffersPage;

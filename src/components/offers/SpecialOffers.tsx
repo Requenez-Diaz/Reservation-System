@@ -2,7 +2,7 @@ import React from 'react';
 import { OfferProperty } from './OfferProperty';
 import { OfferCard } from './types';
 
-export const SpecialOffer = () => {
+export const SpecialOffers = () => {
   const containerImage: OfferCard[] = [
     {
       title: 'Ofertas Especiales',
@@ -90,4 +90,6 @@ export const SpecialOffer = () => {
   );
 };
 
-export default SpecialOffer;
+SpecialOffers.displayName = 'SpecialOffer';
+
+export default SpecialOffers;
