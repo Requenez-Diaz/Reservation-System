@@ -9,8 +9,8 @@ const userShema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email'),
   password: z
     .string()
-    .min(1, 'Password is required')
-    .min(8, 'Password must have than 8 characters')
+    .min(1, 'La contraseña es requerida')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
 });
 
 export async function POST(req: Request) {
