@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     });
     if (existingUserByEmail) {
       return NextResponse.json(
-        { user: null, message: 'Email already exists' },
+        { user: null, message: 'el email ya existe' },
         { status: 400 }
       );
     }
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     });
     if (existingUserByUsername) {
       return NextResponse.json(
-        { user: null, message: 'Username already exists' },
+        { user: null, message: 'Nombre de usuario ya existe' },
         { status: 400 }
       );
     }
@@ -54,12 +54,12 @@ export async function POST(req: Request) {
     const { password: newUserPassword, ...rest } = newUser;
 
     return NextResponse.json(
-      { user: rest, message: 'User created successfully' },
+      { user: rest, message: 'Usuario creado con éxito' },
       { status: 201 }
     );
   } catch (error) {
     return NextResponse.json(
-      { message: 'Something went wrong!' },
+      { message: '¡Algo salió mal!' },
       { status: 500 }
     );
   }
