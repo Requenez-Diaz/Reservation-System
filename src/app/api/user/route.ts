@@ -58,9 +58,12 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
-    return NextResponse.json(
-      { message: '¡Algo salió mal!' },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: '¡Algo salió mal!' }, { status: 500 });
   }
+}
+
+export async function GET(req: Request) {
+  const data = await db.users.findMany();
+  NextResponse.json({ message: 'GET request' });
+  return NextResponse.json(data, { status: 200 });
 }
