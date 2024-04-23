@@ -9,6 +9,8 @@ const Dashboard = async () => {
     return (
       <h2 className="text-2xl">
         Admin Page - welcome back {session?.user.username}
+        {/* {session?.user.username} */}
+        <ContainerHome />
       </h2>
     );
   }
