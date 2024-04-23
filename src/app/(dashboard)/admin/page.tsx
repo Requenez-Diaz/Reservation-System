@@ -8,15 +8,11 @@ const Dashboard = async () => {
   if (session?.user) {
     return (
       <h2 className="text-2xl">
-        Admin Page - welcome back {session?.user.username}
-        {/* {session?.user.username} */}
         {session?.user.username}
-        <ContainerHome />
+        <ContainerHome />;
       </h2>
     );
   }
-
-  // return <ContainerHome />;
 };
 
 export default Dashboard;
