@@ -10,9 +10,5 @@ export default async function Home() {
     return <h2 className="text-2xl">{session?.user.username}</h2>;
   }
 
-  return (
-    <main className="">
-      <ContainerHome />
-    </main>
-  );
+  return <main className=""></main>;
 }

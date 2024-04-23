@@ -13,8 +13,6 @@ const Dashboard = async () => {
       </h2>
     );
   }
-
-  // return <ContainerHome />;
 };
 
 export default Dashboard;

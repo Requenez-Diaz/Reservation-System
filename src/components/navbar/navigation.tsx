@@ -4,6 +4,7 @@ import { ActiveLink } from '../active-link/ActiveLink';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import UserAccountnav from '../UserAccountnav';
+import AvatarNav from './avatarNav';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
@@ -49,6 +50,7 @@ const Navbar = async () => {
               </li>
             ))}
           </ul>
+
           <div className="flex gap-x-6">
             {session?.user ? (
               <UserAccountnav />
