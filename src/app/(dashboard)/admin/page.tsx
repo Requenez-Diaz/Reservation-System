@@ -8,7 +8,7 @@ const Dashboard = async () => {
   if (session?.user) {
     return (
       <h2 className="text-2xl">
-        {session?.user.username}
+        {/* {session?.user.username} */}
         <ContainerHome />
       </h2>
     );
