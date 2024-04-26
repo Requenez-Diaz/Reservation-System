@@ -116,3 +116,16 @@ export const updateBedrooms = async (
     redirect("/bedrooms");
 
 };
+
+export const deleteBedrooms = async (id: Number) => {
+    try {
+        await db.bedrooms.delete({
+            where: { id: Number(id) }
+        });
+        revalidatePath("/bedrooms");
+        redirect("/bedrooms");
+    } catch (error) {
+        return { message: "Error al eliminar la habitacion"}
+    }
+
+};
