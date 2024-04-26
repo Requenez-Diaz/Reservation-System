@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import TableData from '@/components/tabledata';
 import { useEffect, useState } from 'react';
-import { obtenerHabitaciones } from '@/lib/action';
+import { getBedrooms } from '@/lib/action';
 
 const Page = () => {
     const [data, setData] = useState<{ id: number; typeBedroom: string; description: string; lowSeasonPrice: number; highSeasonPrice: number; status: boolean; numberBedroom: number; }[]>([]);
 
     useEffect(() => {
-        obtenerHabitaciones()
+        getBedrooms()
             .then(habitaciones => setData(habitaciones));
 
     }, []);

@@ -1,10 +1,12 @@
 'use client';
 
+import { updateBedrooms } from "@/lib/action";
 import { useFormState } from "react-dom";
-import { saveBedrooms } from "@/lib/action";
+import { bedrooms } from "@prisma/client";
 
-const CreateBedroomsPage = () => {
-    const [state, formAction] = useFormState(saveBedrooms, null);
+const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms } ) => {
+    const UpdateBedroomsWithId = updateBedrooms.bind(null, bedrooms.id);
+    const [state, formAction] = useFormState(UpdateBedroomsWithId, null);
 
     return (
         <div className="max-w-md mx-auto mt-5">
@@ -19,11 +21,9 @@ const CreateBedroomsPage = () => {
                         placeholder="Tipo de Habitacion"
                         className="input"
                         required
+                        defaultValue={bedrooms.typeBedroom}
                     />
-                    <div id="name-error" aria-live="polite" aria-atomic="true">
-                        <p className="mt-2 text-sm text-red-500">{state?.Error?.typeBedroom}</p>
-                    </div>
-
+                    
                     <label htmlFor="description">Descripcion</label>
                     <input
                         type="text"
@@ -32,11 +32,9 @@ const CreateBedroomsPage = () => {
                         placeholder="Descripcion"
                         className="input"
                         required
+                        defaultValue={bedrooms.description}
                     />
-                    <div id="name-error" aria-live="polite" aria-atomic="true">
-                        <p className="mt-2 text-sm text-red-500">{state?.Error?.description}</p>
-                    </div>
-
+                    
                     <label htmlFor="lowSeasonPrice">Precio Temporada Baja</label>
                     <input
                         type="number"
@@ -45,11 +43,9 @@ const CreateBedroomsPage = () => {
                         placeholder="Precio Temporada Baja"
                         className="input"
                         required
+                        defaultValue={bedrooms.lowSeasonPrice}
                     />
-                    <div id="name-error" aria-live="polite" aria-atomic="true">
-                        <p className="mt-2 text-sm text-red-500">{state?.Error?.lowSeasonPrice}</p>
-                    </div>
-
+                    
                     <label htmlFor="highSeasonPrice">Precio Temporada Alta</label>
                     <input
                         type="number"
@@ -58,11 +54,9 @@ const CreateBedroomsPage = () => {
                         placeholder="Precio Temporada Alta"
                         className="input"
                         required
+                        defaultValue={bedrooms.highSeasonPrice}
                     />
-                    <div id="name-error" aria-live="polite" aria-atomic="true">
-                        <p className="mt-2 text-sm text-red-500">{state?.Error?.highSeasonPrice}</p>
-                    </div>
-
+                    
                     <label htmlFor="status">Estado</label>
                     <select id="status" name="status" className="input">
                         <option value="0">Inactivo</option>
@@ -77,16 +71,14 @@ const CreateBedroomsPage = () => {
                         placeholder="Numero de Habitacion"
                         className="input"
                         required
+                        defaultValue={bedrooms.numberBedroom}
                     />
-                    <div id="name-error" aria-live="polite" aria-atomic="true">
-                        <p className="mt-2 text-sm text-red-500">{state?.Error?.numberBedroom}</p>
-                    </div>
-
-                    <button className="btn btn-primary">Guardar</button>
+                    
+                    <button className="btn btn-primary">Actualizar</button>
                 </form>
             </div>
         </div>
     );
 };
 
-export default CreateBedroomsPage;
+export default UpdateForm;

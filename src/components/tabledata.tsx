@@ -1,3 +1,4 @@
+import Link from "next/link"
 
 const Bedrooms = ({ data }: { data: any[] }) => {
 
@@ -16,17 +17,21 @@ const Bedrooms = ({ data }: { data: any[] }) => {
                 </tr>
             </thead>
             <tbody>
-                {data.map((habitacion, index) => (
+                {data.map((bedrooms, index) => (
                     <tr key={index}>
                         <td className="py-3 px-6">{index + 1}</td>
-                        <td className="py-3 px-6">{habitacion.typeBedroom}</td>
-                        <td className="py-3 px-6">{habitacion.description}</td>
-                        <td className="py-3 px-6">{habitacion.lowSeasonPrice}</td>
-                        <td className="py-3 px-6">{habitacion.highSeasonPrice}</td>
-                        <td className="py-3 px-6">{habitacion.status}</td>
-                        <td className="py-3 px-6">{habitacion.numberBedroom}</td>
+                        <td className="py-3 px-6">{bedrooms.typeBedroom}</td>
+                        <td className="py-3 px-6">{bedrooms.description}</td>
+                        <td className="py-3 px-6">{bedrooms.lowSeasonPrice}</td>
+                        <td className="py-3 px-6">{bedrooms.highSeasonPrice}</td>
+                        <td className="py-3 px-6">{bedrooms.status}</td>
+                        <td className="py-3 px-6">{bedrooms.numberBedroom}</td>
                         <td className="py-3 px-6 flex justify-center">
-                            <button className="btn btn-primary">Editar</button>
+                            <Link href={`/bedrooms/edit/${bedrooms.id}`}
+                                className="btn btn-primary"
+                            >
+                                Editar
+                            </Link>
                             <button className="btn btn-danger">Eliminar</button>
                         </td>
                     </tr>
