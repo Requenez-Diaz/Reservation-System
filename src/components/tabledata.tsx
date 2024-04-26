@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { DeleteButton } from "./delete"
 
 const Bedrooms = ({ data }: { data: any[] }) => {
 
@@ -32,7 +33,7 @@ const Bedrooms = ({ data }: { data: any[] }) => {
                             >
                                 Editar
                             </Link>
-                            <button className="btn btn-danger">Eliminar</button>
+                           <DeleteButton id={bedrooms.id} />
                         </td>
                     </tr>
                 ))}
