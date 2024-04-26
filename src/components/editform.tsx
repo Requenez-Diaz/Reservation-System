@@ -4,7 +4,7 @@ import { updateBedrooms } from "@/lib/action";
 import { useFormState } from "react-dom";
 import { bedrooms } from "@prisma/client";
 
-const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms } ) => {
+const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms }) => {
     const UpdateBedroomsWithId = updateBedrooms.bind(null, bedrooms.id);
     const [state, formAction] = useFormState(UpdateBedroomsWithId, null);
 
@@ -23,7 +23,7 @@ const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms } ) => {
                         required
                         defaultValue={bedrooms.typeBedroom}
                     />
-                    
+
                     <label htmlFor="description">Descripcion</label>
                     <input
                         type="text"
@@ -34,7 +34,7 @@ const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms } ) => {
                         required
                         defaultValue={bedrooms.description}
                     />
-                    
+
                     <label htmlFor="lowSeasonPrice">Precio Temporada Baja</label>
                     <input
                         type="number"
@@ -45,7 +45,7 @@ const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms } ) => {
                         required
                         defaultValue={bedrooms.lowSeasonPrice}
                     />
-                    
+
                     <label htmlFor="highSeasonPrice">Precio Temporada Alta</label>
                     <input
                         type="number"
@@ -56,7 +56,7 @@ const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms } ) => {
                         required
                         defaultValue={bedrooms.highSeasonPrice}
                     />
-                    
+
                     <label htmlFor="status">Estado</label>
                     <select id="status" name="status" className="input">
                         <option value="0">Inactivo</option>
@@ -73,8 +73,9 @@ const UpdateForm = ({ bedrooms }: { bedrooms: bedrooms } ) => {
                         required
                         defaultValue={bedrooms.numberBedroom}
                     />
-                    
-                    <button className="btn btn-primary">Actualizar</button>
+                    <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        Actualizar
+                    </button>
                 </form>
             </div>
         </div>
