@@ -31,6 +31,7 @@ const Page = () => {
                 </div>
                 <TableData data={data} />
             </div>
+
         </div>
     );
 };
