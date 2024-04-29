@@ -1,5 +1,5 @@
-import UpdateForm from "@/components/editform";
-import { getBedroomsById } from "@/lib/action";
+import { getBedroomsById } from "@/app/actions/bedroomsAction";
+import FormEditBedrooms from "@/components/habitaciones/formEditBedrooms";
 import { notFound } from "next/navigation";
 
 const UpdateBedroomsPage = async ({ params }: { params: { id: number } }) => {
@@ -14,7 +14,7 @@ const UpdateBedroomsPage = async ({ params }: { params: { id: number } }) => {
     return (
         <div className="max-w-md mx-auto mt-5">
             <h1 className="text text-center mb-2">Actualizar Habitaciones</h1>
-            <UpdateForm bedrooms={bedrooms} />
+            <FormEditBedrooms bedrooms={bedrooms} />
         </div>
     );
 };

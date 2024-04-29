@@ -1,6 +1,6 @@
-import { deleteBedrooms } from "@/lib/action";
+import { deleteBedrooms } from "@/app/actions/bedroomsAction";
 
-export const DeleteButton = ({ id }: { id: number }) => {
+export const DeleteBedrooms = ({ id }: { id: number }) => {
     const DeleteBedroomsWithId = deleteBedrooms.bind(null, id);
     return (
         <form action={DeleteBedroomsWithId} className="btn btn-error">
