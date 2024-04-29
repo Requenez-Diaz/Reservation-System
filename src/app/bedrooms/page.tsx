@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import TableData from '@/components/tabledata';
 import { useEffect, useState } from 'react';
-import { getBedrooms } from '@/lib/action';
+import { getBedrooms } from '@/app/actions/bedroomsAction';
+import TableBedrooms from '@/components/tables/tableBedrooms';
 
 const Page = () => {
     const [data, setData] = useState<{ id: number; typeBedroom: string; description: string; lowSeasonPrice: number; highSeasonPrice: number; status: boolean; numberBedroom: number; }[]>([]);
@@ -21,7 +21,7 @@ const Page = () => {
             </div>
             <div className='overflow-x-auto'>
                 <div className='mb-2 w-full text-right'>
-                    <Link href="/bedrooms/create"
+                    <Link href="/bedrooms/register"
                         className='btn btn-primary'
                     >
                         <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
@@ -29,7 +29,7 @@ const Page = () => {
                         </button>
                     </Link>
                 </div>
-                <TableData data={data} />
+                <TableBedrooms data={data} />
             </div>
 
         </div>

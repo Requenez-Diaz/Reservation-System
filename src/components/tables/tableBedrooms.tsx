@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { DeleteButton } from "./delete"
+import { DeleteBedrooms } from "../form/bedrooms/buttonDeleteBedrooms"
 
-const Bedrooms = ({ data }: { data: any[] }) => {
+const TableBedrooms = ({ data }: { data: any[] }) => {
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -37,7 +37,7 @@ const Bedrooms = ({ data }: { data: any[] }) => {
                                         Editar
                                     </button>
                                 </Link>
-                                <DeleteButton id={bedrooms.id} />
+                                <DeleteBedrooms id={bedrooms.id} />
                             </td>
                         </tr>
                     ))}
@@ -48,4 +48,4 @@ const Bedrooms = ({ data }: { data: any[] }) => {
     )
 }
 
-export default Bedrooms
+export default TableBedrooms

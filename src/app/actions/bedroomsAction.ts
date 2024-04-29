@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { db } from "./db";
+import { db } from "../../lib/db";
 
 
 const BedroomsSchema = z.object({
