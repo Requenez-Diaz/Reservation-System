@@ -33,7 +33,6 @@ model bedrooms {
   typeBedroom String
   description String
   lowSeasonPrice Int 
-  highSeasonPrice Int
   status Boolean
   numberBedroom Int
 

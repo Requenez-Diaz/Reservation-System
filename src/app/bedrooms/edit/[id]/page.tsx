@@ -13,7 +13,7 @@ const UpdateBedroomsPage = async ({ params }: { params: { id: number } }) => {
 
     return (
         <div className="max-w-md mx-auto mt-5">
-            <h1 className="text text-center mb-2">Actualizar Habitaciones</h1>
+            <h1 className="text-2xl text-center mb-2">Actualizar Habitaciones</h1>
             <FormEditBedrooms bedrooms={bedrooms} />
         </div>
     );
