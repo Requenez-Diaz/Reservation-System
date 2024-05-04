@@ -1,5 +1,5 @@
 import React from 'react';
-import FormBook from './formBook';
+import FormBook from './formBook/formBook';
 import { CarouselDemo } from './cards/carrucelServicios';
 import { ContainerAboutHotels } from './adventagesHotels/containerAboutServices';
 import Collage from './collage';

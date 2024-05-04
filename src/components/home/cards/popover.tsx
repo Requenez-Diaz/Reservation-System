@@ -17,10 +17,8 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from '@/components/ui/form';
 import {
@@ -28,48 +26,42 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-import { toast } from '@/components/ui/use-toast';
 
-const languages = [
-  { label: 'English', value: 'en' },
-  { label: 'French', value: 'fr' },
-  { label: 'German', value: 'de' },
-  { label: 'Spanish', value: 'es' },
-  { label: 'Portuguese', value: 'pt' },
-  { label: 'Russian', value: 'ru' },
-  { label: 'Japanese', value: 'ja' },
-  { label: 'Korean', value: 'ko' },
-  { label: 'Chinese', value: 'zh' }
-] as const;
+const peoples = [
+  { label: '1 adult', value: '1' },
+  { label: '2 adults', value: '2' },
+  { label: '3 adults', value: '3' },
+  { label: '4 adults', value: '4' }
+];
 
 const FormSchema = z.object({
-  language: z.string({
-    required_error: 'Please select a language.'
-  })
+  peopless: z.union([
+    z.literal('1'),
+    z.literal('2'),
+    z.literal('3'),
+    z.literal('4')
+  ])
 });
 
 export function PopoverForms() {
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm({
     resolver: zodResolver(FormSchema)
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      )
-    });
+  async function createForm(formaData: FormData) {
+    'use server ';
+    const bedrooms = {
+      beds: formaData.get('beds')
+    };
+    console.log('bedrooms', bedrooms);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form action={createForm}>
         <FormField
           control={form.control}
-          name="language"
+          name="peopless"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <Popover>
@@ -84,9 +76,8 @@ export function PopoverForms() {
                       )}
                     >
                       {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value
-                          )?.label
+                        ? peoples.find((people) => people.value === field.value)
+                            ?.label
                         : 'Seleccionar adultos'}
                       <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -98,21 +89,28 @@ export function PopoverForms() {
                       placeholder="Search framework..."
                       className="h-9"
                     />
-                    <CommandEmpty>No framework found.</CommandEmpty>
+                    <CommandEmpty> Select the number people </CommandEmpty>
                     <CommandGroup>
-                      {languages.map((language) => (
+                      {peoples.map((people) => (
                         <CommandItem
-                          value={language.label}
-                          key={language.value}
+                          value={people.label}
+                          key={people.value}
                           onSelect={() => {
-                            form.setValue('language', language.value);
+                            form.setValue('peopless', people.value);
                           }}
                         >
-                          {language.label}
+                          <div
+                            onClick={() =>
+                              console.log('select value', people.value)
+                            }
+                          >
+                            {people.label}
+                          </div>
+                          {people.label}
                           <CheckIcon
                             className={cn(
                               'ml-auto h-4 w-4',
-                              language.value === field.value
+                              field && people.value === field.value
                                 ? 'opacity-100'
                                 : 'opacity-0'
                             )}

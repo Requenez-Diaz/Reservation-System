@@ -2,14 +2,13 @@
 import React from 'react';
 import { User } from 'lucide-react';
 
-import { CalendarForm } from './cards/calendar';
-import { PopoverForms } from './cards/popover';
+import { CalendarForm } from '../cards/calendar';
+import { PopoverForms } from '../cards/popover';
 
-const PropsHome: React.FC = () => {
-
+const BookingsForms: React.FC = () => {
   return (
     <div className="flex justify-center items-center p-4">
-      <div className="bg-white w-2/3 p-4 flex flex-col items-center rounded-xl border border-t-1 shadow-2xl">
+      <div className="bg-white w-3/3 p-4 flex flex-col items-center rounded-xl border border-t-1 shadow-2xl">
         <div className="text-black text-center">
           <h1 className="font-bold text-2xl">Selecciona una habitación</h1>
           <p>Descubre el mejor lugar para ti!!</p>
@@ -34,10 +33,9 @@ const PropsHome: React.FC = () => {
             </div>
           </div>
         </div>
-             
       </div>
     </div>
   );
 };
 
-export default PropsHome;
+export default BookingsForms;

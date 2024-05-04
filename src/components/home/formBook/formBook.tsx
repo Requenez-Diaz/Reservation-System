@@ -1,10 +1,10 @@
 import React from 'react';
-import PropsHome from './PropsHome';
+import BookingsForms from './ComponentsBooking';
 
 const FormBook = () => {
   return (
     <div>
-      <PropsHome />
+      <BookingsForms />
     </div>
   );
 };
