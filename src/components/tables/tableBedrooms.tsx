@@ -1,7 +1,29 @@
 import Link from "next/link"
 import { DeleteBedrooms } from "../form/bedrooms/buttonDeleteBedrooms"
+import { useEffect, useState } from "react";
+import DeleteModal from "../form/bedrooms/modalDelete";
+import { useDisclosure } from "@nextui-org/react";
 
-const TableBedrooms = ({ data }: { data: any[] }) => {
+const TableBedrooms = ({ data: initialData }: { data: any[] }) => {
+    const [data, setData] = useState(initialData || []);
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    useEffect(() => {
+        setData(initialData || []);
+    }, [initialData]);
+
+    const handleDelete = () => {
+        if (selectedId !== null) {
+            setData(data.filter(bedroom => bedroom.id !== selectedId));
+        }
+        onClose();
+    };
+
+    const handleOpenModal = (id: number) => {
+        setSelectedId(id);
+        onOpen();
+    };
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -13,7 +35,6 @@ const TableBedrooms = ({ data }: { data: any[] }) => {
                         <th className="py-3 px-6">typeBedroom</th>
                         <th className="py-3 px-6">description</th>
                         <th className="py-3 px-6">lowSeasonPrice</th>
-                        <th className="py-3 px-6">highSeasonPrice</th>
                         <th className="py-3 px-6">status</th>
                         <th className="py-3 px-6">numberBedroom</th>
                         <th className="py-3 px-6 text-center">Actions</th>
@@ -26,7 +47,6 @@ const TableBedrooms = ({ data }: { data: any[] }) => {
                             <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{bedrooms.typeBedroom}</td>
                             <td className="py-3 px-6">{bedrooms.description}</td>
                             <td className="py-3 px-6">{bedrooms.lowSeasonPrice}</td>
-                            <td className="py-3 px-6">{bedrooms.highSeasonPrice}</td>
                             <td className="py-3 px-6">{bedrooms.status}</td>
                             <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{bedrooms.numberBedroom}</td>
                             <td className="py-3 px-6 flex justify-center">
@@ -37,13 +57,13 @@ const TableBedrooms = ({ data }: { data: any[] }) => {
                                         Editar
                                     </button>
                                 </Link>
-                                <DeleteBedrooms id={bedrooms.id} />
+                                <DeleteBedrooms id={bedrooms.id} onDelete={() => handleOpenModal(bedrooms.id)} />
                             </td>
                         </tr>
                     ))}
                 </tbody>
-
             </table>
+            <DeleteModal isOpen={isOpen} onClose={onClose} onDelete={handleDelete} />
         </div>
     )
 }

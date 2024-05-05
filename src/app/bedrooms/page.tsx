@@ -6,7 +6,7 @@ import { getBedrooms } from '@/app/actions/bedroomsAction';
 import TableBedrooms from '@/components/tables/tableBedrooms';
 
 const Page = () => {
-    const [data, setData] = useState<{ id: number; typeBedroom: string; description: string; lowSeasonPrice: number; highSeasonPrice: number; status: boolean; numberBedroom: number; }[]>([]);
+    const [data, setData] = useState<{ id: number; typeBedroom: string; description: string; lowSeasonPrice: number;  status: boolean; numberBedroom: number; }[]>([]);
 
     useEffect(() => {
         getBedrooms()
