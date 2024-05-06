@@ -7,12 +7,11 @@ import { db } from "../../lib/db";
 
 
 const BedroomsSchema = z.object({
-    typeBedroom: z.string().min(5,),
-    description: z.string().min(10,),
-    lowSeasonPrice: z.number().min(3,),
-    highSeasonPrice: z.number().min(3,),
+    typeBedroom: z.string(),
+    description: z.string(),
+    lowSeasonPrice: z.number().min(400).max(1200),
     status: z.enum(["0", "1"],),
-    numberBedroom: z.number().min(2,),
+    numberBedroom: z.number().min(1).max(100),
 });
 
 export const saveBedrooms = async (prevSave: any, formData: FormData) => {
@@ -20,7 +19,6 @@ export const saveBedrooms = async (prevSave: any, formData: FormData) => {
         typeBedroom: formData.get('typeBedroom') as string,
         description: formData.get('description') as string,
         lowSeasonPrice: Number(formData.get('lowSeasonPrice')),
-        highSeasonPrice: Number(formData.get('highSeasonPrice')),
         numberBedroom: Number(formData.get('numberBedroom')),
         status: formData.get('status') as "0" | "1",
     };
@@ -78,7 +76,6 @@ export const updateBedrooms = async (
         typeBedroom: formData.get('typeBedroom') as string,
         description: formData.get('description') as string,
         lowSeasonPrice: Number(formData.get('lowSeasonPrice')),
-        highSeasonPrice: Number(formData.get('highSeasonPrice')),
         numberBedroom: Number(formData.get('numberBedroom')),
         status: formData.get('status') as "0" | "1",
     };
@@ -99,7 +96,6 @@ export const updateBedrooms = async (
                 typeBedroom: validateFields.data.typeBedroom,
                 description: validateFields.data.description,
                 lowSeasonPrice: validateFields.data.lowSeasonPrice,
-                highSeasonPrice: validateFields.data.highSeasonPrice,
                 numberBedroom: validateFields.data.numberBedroom,
                 status: validateFields.data.status === "1",
             },
