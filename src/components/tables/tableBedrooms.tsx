@@ -1,33 +1,20 @@
 import Link from "next/link"
 import { DeleteBedrooms } from "../form/bedrooms/buttonDeleteBedrooms"
 import { useEffect, useState } from "react";
-import DeleteModal from "../form/bedrooms/modalDelete";
-import { useDisclosure } from "@nextui-org/react";
 
 const TableBedrooms = ({ data: initialData }: { data: any[] }) => {
     const [data, setData] = useState(initialData || []);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
     useEffect(() => {
         setData(initialData || []);
     }, [initialData]);
 
-    const handleDelete = () => {
-        if (selectedId !== null) {
-            setData(data.filter(bedroom => bedroom.id !== selectedId));
-        }
-        onClose();
-    };
-
-    const handleOpenModal = (id: number) => {
-        setSelectedId(id);
-        onOpen();
+    const handleDeleteSuccess = (id: number) => {
+        setData(data.filter(bedroom => bedroom.id !== id));
     };
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-
             <table className="table table-zebra">
                 <thead className="tex-sm text-gray-700 uppercase bg-gray-50">
                     <tr>
@@ -57,13 +44,12 @@ const TableBedrooms = ({ data: initialData }: { data: any[] }) => {
                                         Editar
                                     </button>
                                 </Link>
-                                <DeleteBedrooms id={bedrooms.id} onDelete={() => handleOpenModal(bedrooms.id)} />
+                                <DeleteBedrooms id={bedrooms.id} onDelete={() => handleDeleteSuccess(bedrooms.id)} />
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <DeleteModal isOpen={isOpen} onClose={onClose} onDelete={handleDelete} />
         </div>
     )
 }
