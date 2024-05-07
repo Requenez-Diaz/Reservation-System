@@ -2,7 +2,6 @@
 
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
-import exp from 'constants';
 
 export const saveUser = async (formData: FormData) => {
   console.log('saveUser:', formData);
