@@ -14,7 +14,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import GoogleSignInButton from '../GoogleSignInButton';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import Image from 'next/image';
@@ -37,7 +36,7 @@ const FormSchema = z
 
 const SignUpForm = () => {
   const router = useRouter();
-  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -47,30 +46,6 @@ const SignUpForm = () => {
       confirmPassword: ''
     }
   });
-
-  const onSubmit = async (values: z.infer<typeof FormSchema>) => {
-    const response = await fetch('/api/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: values.username,
-        email: values.email,
-        password: values.password
-      })
-    });
-
-    if (response.ok) {
-      router.push('/admin');
-    } else {
-      toast({
-        title: 'Error',
-        description: 'Oops! Intente de nuevo más tarde.',
-        variant: 'destructive'
-      });
-    }
-  };
 
   return (
     <div className="flex justify-center items-center h-screen">
