@@ -48,29 +48,28 @@ const cardData: CardData[] = [
   }
 ];
 
-const Cards: React.FC = () => {
+const CardService = () => {
   return (
-    <>
-      <div className=" flex flex-row items-center md:justify-between md:space-x-4 shadow-md mt-4 m-4 mb-4">
-        {cardData.map((data, index) => (
-          <Card key={index} className={`bg-blue-400 ${data.bgColor}`}>
-            <CardHeader>
-              <div>
-                {data.icon}
-                <h1>{data.title}</h1>
-              </div>
-              <CardTitle>
-                <p className="text-black font-light">{data.subtitle}</p>
-              </CardTitle>
-              <CardDescription className="text-black hover:text-cyan-900">
-                <h1>{data.description}</h1>
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
+    <div>
+      <div className="flex justify-center items-center p-4">
+        <div className="bg-white w-3/3 p-4 flex flex-col items-center rounded-xl border border-t-1 shadow-2xl">
+          <div className="mt-4 w-full flex flex-col md:flex-row md:justify-between">
+            {cardData.map((card, index) => (
+              <Card
+                key={index}
+                className={`w-full md:w-1/3 mb-4 md:mb-0 flex flex-col items-center p-4 rounded-lg ${card.bgColor}`}
+              >
+                <CardHeader>{card.icon}</CardHeader>
+                <CardTitle>{card.title}</CardTitle>
+                <CardDescription>{card.description}</CardDescription>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
-    </>
+      s
+    </div>
   );
 };
 
-export default Cards;
+export default CardService;

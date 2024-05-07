@@ -18,6 +18,7 @@ import GoogleSignInButton from '../GoogleSignInButton';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import Image from 'next/image';
+import { saveUser } from '../../../actions/users/save';
 
 const FormSchema = z
   .object({
@@ -75,7 +76,7 @@ const SignUpForm = () => {
     <div className="flex justify-center items-center h-screen">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          action={saveUser}
           className="max-w-md w-full p-4 border border-gray-300 rounded-md"
         >
           <div className="flex items-center justify-center content-center top-2 ">
@@ -244,7 +245,12 @@ const SignUpForm = () => {
           />
 
           <div className="mb-5 mt-4">
-            <Button type="submit" className="w-full " variant={'blue'}>
+            <Button
+              type="submit"
+              className="w-full "
+              variant={'blue'}
+              onClick={() => router.push('/admin')}
+            >
               Registrarse
             </Button>
           </div>
