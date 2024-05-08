@@ -1,5 +1,5 @@
 import React from 'react';
-import { saveRoom } from '../../../../actions/rooms/save';
+import { saveRoom } from '../../actions/rooms/save';
 import { bookingsForms } from '@/app/actions/bookings/booking';
 
 export default async function addRooms() {

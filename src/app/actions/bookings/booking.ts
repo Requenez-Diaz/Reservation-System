@@ -8,6 +8,6 @@ export const bookingsForms = async (request: FormData) => {
   //aqui va el codigo relacionado con la base de datos
 
   db.bookings('bookings').add({
-    cob
+    
   });
 };

@@ -15,9 +15,8 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
 import Image from 'next/image';
-import { saveUser } from '../../../actions/users/save';
+import { saveUser } from '../../app/actions/users/save';
 
 const FormSchema = z
   .object({
@@ -33,6 +32,8 @@ const FormSchema = z
     path: ['confirmPassword'],
     message: 'Password do not match'
   });
+
+  
 
 const SignUpForm = () => {
   const router = useRouter();
@@ -224,7 +225,7 @@ const SignUpForm = () => {
               type="submit"
               className="w-full "
               variant={'blue'}
-              onClick={() => router.push('/admin')}
+              onClick={() => router.push('/')}
             >
               Registrarse
             </Button>

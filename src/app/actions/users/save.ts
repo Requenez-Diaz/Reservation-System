@@ -2,7 +2,7 @@
 
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
-import exp from 'constants';
+import { redirect } from 'next/navigation';
 
 export const saveUser = async (formData: FormData) => {
   console.log('saveUser:', formData);
@@ -70,6 +70,7 @@ export const saveUser = async (formData: FormData) => {
     if (existingUser) {
       throw new Error('El email o el nombre de usuario ya está en uso.');
     }
+    console.log('existingUser:', existingUser);
 
     const newUser = await prisma.user.create({
       data: {
@@ -83,6 +84,8 @@ export const saveUser = async (formData: FormData) => {
     });
 
     console.log('newUser:', newUser);
+    // // Redirect the user if no error occurs
+    // redirect('/');
 
     return newUser;
   } catch (error) {
