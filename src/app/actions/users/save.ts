@@ -2,7 +2,6 @@
 
 import prisma from '@/lib/db';
 import bcrypt from 'bcrypt';
-import { redirect } from 'next/navigation';
 
 export const saveUser = async (formData: FormData) => {
   console.log('saveUser:', formData);
@@ -17,7 +16,9 @@ export const saveUser = async (formData: FormData) => {
   console.log({ email, username, password, role, createdAt, updatedAt });
 
   if (!email || !username || !password) {
-    throw new Error('Todos los campos son requeridos.');
+    //mejor metodo para validar y no el throw new Error que sea error del usuario
+
+    window.alert('Todos los campos son obligatorios.');
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,8 +85,6 @@ export const saveUser = async (formData: FormData) => {
     });
 
     console.log('newUser:', newUser);
-    // // Redirect the user if no error occurs
-    // redirect('/');
 
     return newUser;
   } catch (error) {

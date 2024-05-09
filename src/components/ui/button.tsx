@@ -21,6 +21,7 @@ const buttonVariants = cva(
         success: 'text-success-foreground bg-success hover:bg-success/90',
 
         blue: 'text-white bg-blue-500 hover:bg-blue-600'
+        
       },
       size: {
         default: 'h-10 px-4 py-2',

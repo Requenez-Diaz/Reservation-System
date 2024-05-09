@@ -1,7 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import ContainerHome from '@/components/home/containerHome';
-import Dashboard from './(dashboard)/admin/page';
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -10,7 +9,9 @@ export default async function Home() {
     return <h2 className="text-2xl">{session?.user.username}</h2>;
   }
 
-  return <main className="">
-    <ContainerHome />
-  </main>;
+  return (
+    <main className="">
+      <ContainerHome />
+    </main>
+  );
 }

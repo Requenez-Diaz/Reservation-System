@@ -17,6 +17,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { saveUser } from '../../app/actions/users/save';
+import { useToast } from '../ui/use-toast';
+
 
 const FormSchema = z
   .object({
@@ -33,10 +35,10 @@ const FormSchema = z
     message: 'Password do not match'
   });
 
-  
-
 const SignUpForm = () => {
   const router = useRouter();
+  const { toast } = useToast();
+  
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -47,6 +49,49 @@ const SignUpForm = () => {
       confirmPassword: ''
     }
   });
+
+  const onSubmit = async () => {
+    try {
+      const data = form.getValues();
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      const isFormEmpty = Object.values(data).some(value => value === '');
+      if (isFormEmpty) {
+        toast({
+          title: 'Error',
+          description: 'Por favor completa todos los campos del formulario',
+          variant: 'destructive'
+        });
+        return;
+
+      }
+  
+      const user = await saveUser(formData); 
+      if (user) {
+        toast({
+          title: 'users save',
+          description: 'User Loged',
+          variant: 'default'
+        });
+
+        router.push('/');
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Error creating user',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleCloseSession = () => {
+    localStorage.removeItem('token');
+    router.push('/sign-in');
+  }
+  
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -225,10 +270,17 @@ const SignUpForm = () => {
               type="submit"
               className="w-full "
               variant={'blue'}
-              onClick={() => router.push('/')}
+              onClick={onSubmit}
             >
               Registrarse
             </Button>
+
+            <Button
+              type="button"
+              className="w-full mt-4"
+              variant={'destructive'}
+              onClick={handleCloseSession}
+            > Cerrar Sesión</Button>
           </div>
 
           <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
