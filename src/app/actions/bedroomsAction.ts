@@ -75,36 +75,7 @@ export const updateBedrooms = async (formData: FormData) => {
     status: formData.get('status') as '0' | '1'
   };
 
-  //   const validateFields = BedroomsSchema.safeParse(data);
-
-  //   if (!validateFields.success) {
-  //     console.log(
-  //       'Validation failed',
-  //       validateFields.error.flatten().fieldErrors
-  //     );
-  //     return {
-  //       Error: validateFields.error.flatten().fieldErrors
-  //     };
-  //   }
-
   try {
-    // console.log(
-    //   'Updating bedroom with id',
-    //   id,
-    //   'and data',
-    //   validateFields.data
-    // );
-    // await prisma.bedrooms.update({
-    //   data: {
-    //     typeBedroom: validateFields.data.typeBedroom,
-    //     description: validateFields.data.description,
-    //     lowSeasonPrice: validateFields.data.lowSeasonPrice,
-    //     numberBedroom: validateFields.data.numberBedroom,
-    //     status: validateFields.data.status === '1'
-    //   },
-    //   where: { id: Number(id) }
-    // });
-    // console.log('Update successful');
   } catch (error) {
     return {
       message: 'Error al actualizar la habitacion'
