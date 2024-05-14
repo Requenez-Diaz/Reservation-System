@@ -1,18 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { getBedrooms } from '@/app/actions/bedroomsAction';
 import TableBedrooms from '@/components/tables/tableBedrooms';
 
-const Page = () => {
-    const [data, setData] = useState<{ id: number; typeBedroom: string; description: string; lowSeasonPrice: number;  status: boolean; numberBedroom: number; }[]>([]);
-
-    useEffect(() => {
-        getBedrooms()
-            .then(habitaciones => setData(habitaciones));
-
-    }, []);
+const Page = () => {   
 
     return (
         <div className='w-screen py-2 flex justify-center flex-col items-center'>
@@ -29,7 +20,7 @@ const Page = () => {
                         </button>
                     </Link>
                 </div>
-                <TableBedrooms data={data} />
+                <TableBedrooms />
             </div>
 
         </div>

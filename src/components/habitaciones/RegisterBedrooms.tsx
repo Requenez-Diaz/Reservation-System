@@ -1,17 +1,20 @@
 'use client';
 
-import { useFormState } from "react-dom";
-import { saveBedrooms } from "@/app/actions/bedroomsAction";
-import { bedroomsTypes } from "../bedroomstype/bedroomsType";
+import { createBedrooms, updateBedrooms } from "@/app/actions/bedroomsAction";
+import { bedroomsTypes } from '../bedroomstype/bedroomsType';
+import { Button } from '../ui/button';
+import React from "react";
 
-const RegisterBedrooms = () => {
-    const [state, formAction] = useFormState(saveBedrooms, null);
+export function RegisterBedrooms() {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        createBedrooms(new FormData(event.currentTarget));
+    };
 
     return (
-        <div className="max-w-md mx-auto mt-5">
-            <h1 className="text-2xl text-center mb-2">Registrar Habitacion</h1>
-
-            <form action={formAction} className="max-w-sm mx-auto">
+        <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
+            <div className="max-w-md mx-auto mt-5">
+                <h1 className="text-2xl text-center mb-2">Registrar Habitacion</h1>
 
                 <div className="mb-5">
                     <label form="typeBedroom" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -93,14 +96,13 @@ const RegisterBedrooms = () => {
                 </div>
 
                 <div className="flex justify-center">
-                    <button className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                        Registrar Habitacion
-                    </button>
+                    <Button type='submit'>
+                      Registrar Habitacion
+                    </Button>
                 </div>
-
-            </form>
-        </div>
-    );
-};
+            </div>
+        </form>
+    )
+}
 
 export default RegisterBedrooms;
