@@ -1,18 +1,16 @@
 'use client';
 
-import { updateBedrooms } from "@/app/actions/bedroomsAction";
-import { useFormState } from "react-dom";
+import { createBedrooms, updateBedrooms } from "@/app/actions/bedroomsAction";
 import { bedrooms } from "@prisma/client";
 import { bedroomsTypes } from "../bedroomstype/bedroomsType";
 
 const FormEditBedrooms = ({ bedrooms }: { bedrooms: bedrooms }) => {
-    const UpdateBedroomsWithId = updateBedrooms.bind(null, bedrooms.id);
-    const [state, formAction] = useFormState(UpdateBedroomsWithId, null);
+    const functionAction = bedrooms? updateBedrooms : createBedrooms;
 
     return (
         <div className="max-w-md mx-auto mt-5">
 
-            <form action={formAction} className="max-w-sm mx-auto">
+            <form action={functionAction} className="max-w-sm mx-auto">
                 <div className="mb-5">
                     <label form="typeBedroom" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Tipo de Habitacion

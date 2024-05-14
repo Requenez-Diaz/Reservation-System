@@ -1,9 +1,10 @@
-import RegisterBedrooms from "@/components/habitaciones/RegisterBedrooms";
+import { RegisterBedrooms } from "@/components/habitaciones/RegisterBedrooms";
 
-const CreateBdroomsPage = () => {
+
+const CreateBedroomsPage = () => {
   return (
    <RegisterBedrooms />
   )
 }
 
-export default CreateBdroomsPage;
+export default CreateBedroomsPage;
