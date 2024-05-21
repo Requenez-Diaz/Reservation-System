@@ -16,9 +16,9 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { saveUser } from '../../app/actions/users/save';
+// import { saveUser } from '../../app/actions/users/save';
 import { useToast } from '../ui/use-toast';
-
+import { saveUsers } from '@/app/actions/users/saveUsers';
 
 const FormSchema = z
   .object({
@@ -38,7 +38,6 @@ const FormSchema = z
 const SignUpForm = () => {
   const router = useRouter();
   const { toast } = useToast();
-  
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -54,10 +53,12 @@ const SignUpForm = () => {
     try {
       const data = form.getValues();
       const formData = new FormData();
+
+      //this code is to convert the object to a form data
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value);
       });
-      const isFormEmpty = Object.values(data).some(value => value === '');
+      const isFormEmpty = Object.values(data).some((value) => value === '');
       if (isFormEmpty) {
         toast({
           title: 'Error',
@@ -65,10 +66,9 @@ const SignUpForm = () => {
           variant: 'destructive'
         });
         return;
-
       }
-  
-      const user = await saveUser(formData); 
+
+      const user = await saveUsers(formData);
       if (user) {
         toast({
           title: 'users save',
@@ -90,14 +90,13 @@ const SignUpForm = () => {
   const handleCloseSession = () => {
     localStorage.removeItem('token');
     router.push('/sign-in');
-  }
-  
+  };
 
   return (
     <div className="flex justify-center items-center h-screen">
       <Form {...form}>
         <form
-          action={saveUser}
+          action={saveUsers}
           className="max-w-md w-full p-4 border border-gray-300 rounded-md"
         >
           <div className="flex items-center justify-center content-center top-2 ">
@@ -274,13 +273,6 @@ const SignUpForm = () => {
             >
               Registrarse
             </Button>
-
-            <Button
-              type="button"
-              className="w-full mt-4"
-              variant={'destructive'}
-              onClick={handleCloseSession}
-            > Cerrar Sesión</Button>
           </div>
 
           <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">

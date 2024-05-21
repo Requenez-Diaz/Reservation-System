@@ -18,9 +18,10 @@
                     "variable.parameter"
                 ],
                 "settings": {
-                    "fontStyle": "italic bold underline"
+                    "fontStyle": "italic bold "
                 }
             }
         ]
-    }
+    },
+    "editor.fontWeight": "normal"
 }
