@@ -1,12 +1,11 @@
-
-import React from "react";
-import Reservations from "../../../components/reservations/reservations";
-
+import React from 'react';
+import Reservations from '../../../components/reservations/reservations';
+import ReservationsPage from '@/components/reservations/reservationsPage';
 
 const Bookings = () => {
   return (
     <div>
-      <Reservations />
+      <ReservationsPage />
     </div>
   );
 };

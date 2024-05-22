@@ -9,8 +9,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+
 import { CarouselDescriptions } from './CarrouselDescriptions';
 
 export async function ModalDescriptions() {
@@ -29,6 +28,7 @@ export async function ModalDescriptions() {
           <DialogHeader>
             <DialogTitle>Podes ver los detalles de la habitacion</DialogTitle>
             <DialogDescription>
+            
               La habitacion cuenta con una cama matrimonial, baño privado,
               television por cable y aire acondicionado.
             </DialogDescription>
