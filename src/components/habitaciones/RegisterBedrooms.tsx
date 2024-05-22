@@ -1,14 +1,24 @@
 'use client';
 
-import { createBedrooms, updateBedrooms } from "@/app/actions/bedroomsAction";
+import { createBedrooms } from "@/app/actions/bedroomsAction";
 import { bedroomsTypes } from '../bedroomstype/bedroomsType';
-import { Button } from '../ui/button';
-import React from "react";
+import { Button, buttonVariants } from '../ui/button';
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { toast } from 'sonner';
+
+
 
 export function RegisterBedrooms() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        // const router = useRouter();
         event.preventDefault();
-        createBedrooms(new FormData(event.currentTarget));
+        await createBedrooms(new FormData(event.currentTarget));
+        toast.success('Habitación registrada con éxito');
+
+        // router.push('/bedrooms');
+
     };
 
     return (
@@ -82,7 +92,7 @@ export function RegisterBedrooms() {
                     </select>
                 </div>
 
-                <div className="bm-5">
+                <div className="mb-5">
                     <label form="numberBedroom" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Numero de Habitacion
                     </label>
@@ -96,8 +106,11 @@ export function RegisterBedrooms() {
                 </div>
 
                 <div className="flex justify-center">
+                    {/* <Link href="/bedrooms" className={buttonVariants({ variant: "secondary" })}>
+                        Cancel
+                    </Link> */}
                     <Button type='submit'>
-                      Registrar Habitacion
+                        Registrar Habitacion
                     </Button>
                 </div>
             </div>

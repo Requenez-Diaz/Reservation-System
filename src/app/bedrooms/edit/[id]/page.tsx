@@ -1,22 +1,30 @@
-// import { getBedroomsById } from "@/app/actions/bedroomsAction";
-import FormEditBedrooms from "@/components/habitaciones/formEditBedrooms";
-import { notFound } from "next/navigation";
+import { FormEditBedrooms } from '@/components/habitaciones/formEditBedrooms';
+import prisma from '@/lib/db';
+import { redirect } from 'next/navigation';
 
-const UpdateBedroomsPage = async ({ params }: { params: { id: number } }) => {
-    const id = params.id;
-    // const bedrooms = await getBedroomsById(id);
-    console.log(id);
 
-    // if (!bedrooms) {
-    //     notFound();
-    // }
+export default async function BedroomsPageEdit({ params }: {
+    params: {
+        id: string;
+    }
+}) {
+    const bedrooms = await prisma.bedrooms.findFirst({
+        where: {
+            id: Number(params.id)
+        }
+    })
+
+    if (!bedrooms) {
+        redirect('/bedrooms');
+    }
 
     return (
         <div className="max-w-md mx-auto mt-5">
             <h1 className="text-2xl text-center mb-2">Actualizar Habitaciones</h1>
-            {/* <FormEditBedrooms bedrooms={bedrooms} /> */}
+            <FormEditBedrooms bedrooms={bedrooms} />
         </div>
     );
-};
 
-export default UpdateBedroomsPage
+}
+
+

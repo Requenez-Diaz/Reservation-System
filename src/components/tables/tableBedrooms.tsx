@@ -36,7 +36,7 @@ async function TableBedrooms() {
                                         Editar
                                     </button>
                                 </Link>
-                                <DeleteBedrooms id={bedrooms.id} onDelete={() => {}} />
+                                <DeleteBedrooms bedroomsId={bedrooms.id} />
                             </td>
                         </tr>
                     ))}
