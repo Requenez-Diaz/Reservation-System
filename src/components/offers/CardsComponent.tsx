@@ -9,7 +9,6 @@ export const CardComponent = () => {
         slogan="Las mejores ofertas"
         title="Ofertas"
       />
-
       <SpecialOffers />
     </div>
   );

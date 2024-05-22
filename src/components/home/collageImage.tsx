@@ -1,5 +1,5 @@
 import React from 'react';
-import Images from './images';
+import Images from './imagesRooms';
 
 const CollageImage: React.FC = () => {
   const images = [

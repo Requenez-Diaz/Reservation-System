@@ -1,6 +1,9 @@
 import React from 'react';
 import Image from 'next/image';
 import { SelectRoomModal } from '../offers/SelectRoomModal';
+import { Link, MessageCircle } from 'lucide-react';
+import { CarouselDescriptions } from './carrouselDescriptions/CarrouselDescriptions';
+import { ModalDescriptions } from './carrouselDescriptions/modalDescriptions';
 // Import the type declarations for CollageProps
 
 interface CollageProps {
@@ -36,8 +39,13 @@ const Images: React.FC<CollageProps> = ({ images }) => {
                 </p>
                 <p className="text-justify">{image.descripcion}</p>
               </div>
-              <div>
-                <SelectRoomModal />
+              <div className="flex flex-row">
+                <div>
+                  <SelectRoomModal />
+                </div>
+                <div>
+                  <ModalDescriptions />
+                </div>
               </div>
             </div>
           </div>
