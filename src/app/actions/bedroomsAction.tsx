@@ -4,6 +4,7 @@ import prisma from '@/lib/db';
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+
 export async function createBedrooms(formData: FormData) {
   const typeBedroom = formData.get('typeBedroom')?.toString();
   const description = formData.get('description')?.toString();
@@ -34,14 +35,16 @@ export async function createBedrooms(formData: FormData) {
           }
         }
       }
-    });    
-
+    });
+    console.log(newBedroom);
     redirect('/bedrooms');
-    
+    // return newBedroom;
+
+
   } catch (error) {
     console.log("Error creating bedroom:", error);
   }
-  
+
 }
 
 
@@ -59,39 +62,51 @@ export async function updateBedrooms(formData: FormData) {
     return;
   }
 
-  await prisma.bedrooms.update({
-    where: {
-      id: parseInt(id)
-    },
-    data: {
-      typeBedroom: typeBedroom,
-      description: description,
-      lowSeasonPrice: lowSeasonPrice,
-      highSeasonPrice: highSeasonPrice,
-      numberBedroom: numberBedroom,
-      status: active,
-      seasons: {
-        update: {
-          nameSeason: seasons,
-          dateStart: new Date(),
-          dateEnd: new Date()
+  try {
+    await prisma.bedrooms.update({
+      where: {
+       id: parseInt(id)
+      },
+      data: {
+        typeBedroom: typeBedroom,
+        description: description,
+        lowSeasonPrice: lowSeasonPrice,
+        highSeasonPrice: highSeasonPrice,
+        numberBedroom: numberBedroom,
+        status: active,
+        seasons: {
+          update: {
+            nameSeason: seasons ?? '',
+            dateStart: new Date(),
+            dateEnd: new Date()
+          }
         }
       }
-    }
-  });
-  revalidatePath('/bedrooms');
-  redirect('/bedrooms');
+    });
+    revalidatePath('/bedrooms');
+    redirect('/bedrooms');
+
+  } catch (error) {
+    console.log("Error al actualizar la habitacion:", error);
+  }
+
 }
 
+
 export async function deleteBedrooms(formData: FormData) {
-  const bedroomsId = formData.get('id')?.toString();
+  const bedroomsId = formData.get('bedroomsId')?.toString();
   if (!bedroomsId) {
+    console.error('No se proporcionó bedroomsId');
     return;
   }
-  await prisma.bedrooms.delete({
-    where: {
-      id: parseInt(bedroomsId)
-    },
-  });
-  revalidatePath('/bedrooms');
+  try {
+    await prisma.bedrooms.delete({
+      where: {
+        id: parseInt(bedroomsId)
+      },
+    });
+    revalidatePath('/bedrooms');
+  } catch (error) {
+    console.error('Error al eliminar la habitación: ', error);
+  }
 }
