@@ -14,8 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import GoogleSignInButton from '../GoogleSignInButton';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -56,6 +55,9 @@ const SignInForm = () => {
       router.push('/admin');
     }
   };
+
+  const { data: session } = useSession();
+  console.log(session);
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -155,6 +157,7 @@ const SignInForm = () => {
           </div>
 
           <button
+            onClick={() => signIn()}
             type="submit"
             className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50"
           >
