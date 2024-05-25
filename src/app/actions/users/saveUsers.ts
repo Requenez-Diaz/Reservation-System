@@ -2,44 +2,41 @@
 
 import prisma from '@/lib/db';
 import { hash } from 'bcrypt';
+import { z, ZodObject } from 'zod';
+
+const FormSchema = z
+  .object({
+    username: z.string().min(1, 'Username is required').max(100),
+    email: z
+      .string()
+      .min(1, 'Email is required')
+      .email('Invalid email')
+      .refine((email) => email === email.toLowerCase(), {
+        message: 'El email no debe contener mayúsculas',
+        path: ['email']
+      }),
+    password: z
+      .string()
+      .min(1, 'Password is required')
+      .min(8, 'Password must have than 8 characters'),
+    confirmPassword: z.string().min(1, 'Password confirmation is required')
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'Password do not match'
+  });
 
 export const saveUsers = async (formData: FormData) => {
-  const rawFormUser = {
-    email: formData.get('email') as string,
-    username: formData.get('username') as string,
-    password: formData.get('password') as string,
-    role: 'user',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  };
-
-  if (!rawFormUser.email || !rawFormUser.username || !rawFormUser.password) {
-    return { error: 'Todos los campos son obligatorios.' };
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(rawFormUser.email)) {
-    return { error: 'El email no es válido.' };
-  }
-
-  if (rawFormUser.password.length < 6) {
-    return {
-      error: 'La contraseña debe tener al menos 6 caracteres.'
-    };
-  }
-
-  const hashedPassword = await hash(rawFormUser.password, 10);
-  rawFormUser.password = hashedPassword;
-
   try {
+    const rawFormUser = FormSchema.parse(Object.fromEntries(formData));
+    const hashedPassword = await hash(rawFormUser.password, 10);
+
     const user = await prisma.user.create({
       data: {
         email: rawFormUser.email,
         username: rawFormUser.username,
-        password: rawFormUser.password,
-        role: rawFormUser.role,
-        createdAt: rawFormUser.createdAt,
-        updatedAt: rawFormUser.updatedAt
+        password: hashedPassword,
+        role: 'user'
       }
     });
 

@@ -22,17 +22,22 @@ import { saveUsers } from '@/app/actions/users/saveUsers';
 
 const FormSchema = z
   .object({
-    username: z.string().min(1, 'Username is required').max(100),
-    email: z.string().min(1, 'Email is required').email('Invalid email'),
+    username: z.string().min(1, 'El usuario es requerido').max(100),
+    email: z
+      .string()
+      .min(1, 'El email es requerido')
+      .email('Email es invalido'),
     password: z
       .string()
-      .min(1, 'Password is required')
-      .min(8, 'Password must have than 8 characters'),
-    confirmPassword: z.string().min(1, 'Password confirmation is required')
+      .min(1, 'La contraseña es requerida')
+      .min(8, 'La contraseña debe tener al menos 8 caracteres'),
+    confirmPassword: z
+      .string()
+      .min(1, 'La confirmación de la contraseña es requerida')
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
-    message: 'Password do not match'
+    message: 'Las contraseñas no coinciden'
   });
 
 const SignUpForm = () => {
@@ -49,47 +54,43 @@ const SignUpForm = () => {
     }
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const data = form.getValues();
-      const formData = new FormData();
+      await form.handleSubmit(async (data) => {
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
 
-      //this code is to convert the object to a form data
-      Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-      const isFormEmpty = Object.values(data).some((value) => value === '');
-      if (isFormEmpty) {
+        const user = await saveUsers(formData);
+        if (user) {
+          toast({
+            title: 'users save',
+            description: 'User Loged',
+            variant: 'default'
+          });
+          router.push('/');
+        }
+      })();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        form.setError('root', {
+          message: 'Por favor, completa el formulario correctamente'
+        });
+        error.errors.forEach((err) => {
+          form.setError(err.path[0], {
+            message: err.message
+          });
+        });
+      } else {
         toast({
           title: 'Error',
-          description: 'Por favor completa todos los campos del formulario',
+          description: 'Error creating user',
           variant: 'destructive'
         });
-        return;
       }
-
-      const user = await saveUsers(formData);
-      if (user) {
-        toast({
-          title: 'users save',
-          description: 'User Loged',
-          variant: 'default'
-        });
-
-        router.push('/');
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Error creating user',
-        variant: 'destructive'
-      });
     }
-  };
-
-  const handleCloseSession = () => {
-    localStorage.removeItem('token');
-    router.push('/sign-in');
   };
 
   return (
