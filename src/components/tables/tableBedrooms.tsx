@@ -14,6 +14,7 @@ async function TableBedrooms() {
                         <th className="py-3 px-6">typeBedroom</th>
                         <th className="py-3 px-6">description</th>
                         <th className="py-3 px-6">lowSeasonPrice</th>
+                        <th className="py-3 px-6">highSeasonPrice</th>
                         <th className="py-3 px-6">status</th>
                         <th className="py-3 px-6">numberBedroom</th>
                         <th className="py-3 px-6 text-center">Actions</th>
@@ -26,6 +27,7 @@ async function TableBedrooms() {
                             <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{bedrooms.typeBedroom}</td>
                             <td className="py-3 px-6">{bedrooms.description}</td>
                             <td className="py-3 px-6">{bedrooms.lowSeasonPrice}</td>
+                            <td className="py-3 px-6">{bedrooms.highSeasonPrice}</td>
                             <td className="py-3 px-6">{bedrooms.status}</td>
                             <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{bedrooms.numberBedroom}</td>
                             <td className="py-3 px-6 flex justify-center">

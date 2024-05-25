@@ -10,7 +10,7 @@ export default async function BedroomsPageEdit({ params }: {
 }) {
     const bedrooms = await prisma.bedrooms.findFirst({
         where: {
-            id: Number(params.id)
+            id: parseInt(params.id)
         }
     })
 
@@ -26,5 +26,3 @@ export default async function BedroomsPageEdit({ params }: {
     );
 
 }
-
-
