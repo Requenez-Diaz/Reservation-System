@@ -16,9 +16,9 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-// import { saveUser } from '../../app/actions/users/save';
 import { useToast } from '../ui/use-toast';
 import { saveUsers } from '@/app/actions/users/saveUsers';
+import { signIn } from 'next-auth/react';
 
 const FormSchema = z
   .object({
@@ -70,6 +70,7 @@ const SignUpForm = () => {
             description: 'User Loged',
             variant: 'default'
           });
+          router.refresh();
           router.push('/');
         }
       })();
@@ -276,7 +277,10 @@ const SignUpForm = () => {
             </Button>
           </div>
 
-          <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+          <button
+            className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50"
+            onClick={() => signIn('google')}
+          >
             <span>
               <svg
                 width="20"

@@ -12,7 +12,6 @@ const UserAccountnav = () => {
           callbackUrl: `${window.location.origin}/sign-in`
         })
       }
-      variant="destructive"
     >
       Sign Out
     </Button>

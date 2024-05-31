@@ -2,7 +2,8 @@ import React from 'react';
 import { User } from 'lucide-react';
 
 import { CalendarForm } from '../cards/calendar';
-import { PopoverForms } from '../cards/popover';
+import { SelectAdulst } from '../cards/selectAdusts';
+import { SelectChildren } from '../cards/selectChildren';
 
 const BookingsForms: React.FC = () => {
   return (
@@ -21,14 +22,20 @@ const BookingsForms: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center mb-2 md:mb-0 ml-8">
-              <User className="mr-1 " />
+              <User className="mr-1" />
               <p className="mb-0 mr-7 md:ml-4">Adultos</p>
-              <PopoverForms />
+              <SelectAdulst />
             </div>
             <div className="flex items-center ml-8">
               <User className="mr-1" />
               <p className="mb-0 mr-7 md:ml-4">Niños</p>
-              <PopoverForms />
+              <SelectChildren />
+            </div>
+
+            <div className="ml-4">
+              <button className="bg-primary-foreground hover:bg-gray-400 border text-black rounded-lg p-2 mt-4 md:mt-0">
+                Buscar
+              </button>
             </div>
           </div>
         </div>
