@@ -1,5 +1,6 @@
 // PropsCards.tsx
 'use client';
+
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
@@ -36,7 +37,7 @@ const PropsCards: React.FC<PropsCardsProps> = ({
   };
 
   return (
-    <div className="bg-gray-300 mb-4 p-4 ">
+    <div className="bg-gray-300 mb-4 p-4">
       <Image
         alt="Picture of the author"
         className="mr-4"
@@ -56,9 +57,8 @@ const PropsCards: React.FC<PropsCardsProps> = ({
           <p className="text-sm mb-2">{description}</p>
           <p className="text-lg font-bold">{price}</p>
         </div>
-        <div className="flex flex-row mx-3 space-x-4 ">
+        <div className="flex flex-row mx-3 space-x-4">
           <SelectRoomModal />
-
           <Button
             className="bg-white-300 border rounded-lg text-black transition-transform duration-300 transform hover:scale-105 hover:text-white"
             onClick={handleOpenModal}
@@ -67,11 +67,13 @@ const PropsCards: React.FC<PropsCardsProps> = ({
           </Button>
         </div>
       </div>
-      <RoomAvailability
-        isAvailable={true}
-        onClose={handleCloseModal}
-        open={isModalOpen}
-      />
+      {isModalOpen && (
+        <RoomAvailability
+          isAvailable={true}
+          onClose={handleCloseModal}
+          open={isModalOpen}
+        />
+      )}
     </div>
   );
 };
