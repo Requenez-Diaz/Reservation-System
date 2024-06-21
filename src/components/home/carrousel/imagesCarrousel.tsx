@@ -30,7 +30,7 @@ const ImagesCarrousel = ({ name, images }: ImagesCarrouselInterface) => {
   return (
     <div>
       <div>
-        <CarouselComponents image={images} />
+        <CarouselComponents images={imagesItems} />
       </div>
     </div>
   );

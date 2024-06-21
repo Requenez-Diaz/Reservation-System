@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { SelectsRooms } from './selectsRooms';
 import Link from 'next/link';
 
-const BookingsForms: React.FC = () => {
+const BookingsFormsHome: React.FC = () => {
   return (
-    <div className="flex justify-center items-center p-4">
+    <div className="flex justify-center items-center p-4 md:grid-cols-2">
       <div className="bg-white w-full p-4 flex flex-col items-center rounded-xl border border-t-1 shadow-2xl">
         <div className="text-black text-center">
           <h1 className="font-bold text-2xl">Selecciona una habitación</h1>
@@ -54,4 +54,4 @@ const BookingsForms: React.FC = () => {
   );
 };
 
-export default BookingsForms;
+export default BookingsFormsHome;

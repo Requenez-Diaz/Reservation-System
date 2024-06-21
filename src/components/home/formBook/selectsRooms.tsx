@@ -33,7 +33,7 @@ export function SelectsRooms() {
   //   };
 
   return (
-    <div>
+    <div className="">
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogTrigger asChild>
           <Button
@@ -43,7 +43,7 @@ export function SelectsRooms() {
             Selecciona acompañantes
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
             <DialogTitle>Selecciona tu habitación</DialogTitle>
             <DialogDescription>
