@@ -17,7 +17,7 @@ const ContainerHome = () => {
       <ContainerAboutHotels />
       <GalleryBedrooms />
       <CardDescriptions />
-      {/* <CollageImage /> */}
+      <CollageImage />
     </div>
   );
 };

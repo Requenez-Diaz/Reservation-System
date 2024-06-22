@@ -25,7 +25,7 @@ export async function SelectRoomModal() {
             Reservar
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Selecciona tu habitacion</DialogTitle>
             <DialogDescription>

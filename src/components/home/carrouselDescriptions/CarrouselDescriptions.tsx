@@ -17,6 +17,14 @@ export function CarouselDescriptions() {
     Autoplay({ delay: 2000, stopOnInteraction: true })
   );
 
+  const imagesItems = [
+    'https://cdn.pixabay.com/photo/2016/11/19/13/06/bed-1839183_1280.jpg',
+    'https://cdn.pixabay.com/photo/2016/11/19/13/06/bed-1839183_1280.jpg',
+    'https://cdn.pixabay.com/photo/2016/11/19/13/06/bed-1839183_1280.jpg',
+    'https://cdn.pixabay.com/photo/2016/11/19/13/06/bed-1839183_1280.jpg',
+    'https://cdn.pixabay.com/photo/2016/11/19/13/06/bed-1839183_1280.jpg'
+  ];
+
   return (
     <Carousel
       plugins={[plugin.current]}
@@ -25,12 +33,16 @@ export function CarouselDescriptions() {
       onMouseLeave={plugin.current.reset}
     >
       <CarouselContent>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {imagesItems.map((image, index) => (
           <CarouselItem key={index}>
             <div className="p-1">
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
-                  <span className="text-4xl font-semibold">{index + 1}</span>
+                  <img
+                    src={image}
+                    alt={`Slide ${index + 1}`}
+                    className="object-cover w-full h-full"
+                  />
                 </CardContent>
               </Card>
             </div>
