@@ -5,7 +5,7 @@ import Collage from './collage';
 import CardDescriptions from './cardsSearchRooms/cardsDescription';
 import CollageImage from './collageImage';
 import BannerHome from './bannerHome';
-import BookingsFormsHome from './formBook/formBookHome';
+import BookingsFormsHome from './componentsBooksForms/formBookHome';
 
 const ContainerHome = () => {
   return (
@@ -13,8 +13,8 @@ const ContainerHome = () => {
       <BannerHome />
       <BookingsFormsHome />
       <CarouselDescriptions />
-      {/* <ContainerAboutHotels />
-      <Collage />
+      <ContainerAboutHotels />
+      {/* <Collage />
       <CardDescriptions />
       <CollageImage /> */}
     </div>
