@@ -18,7 +18,11 @@
                     "variable.parameter"
                 ],
                 "settings": {
+<<<<<<< HEAD
                     "fontStyle": "italic bold "
+=======
+                    "fontStyle": "JetBrains Mono"
+>>>>>>> origin/development
                 }
             }
         ]

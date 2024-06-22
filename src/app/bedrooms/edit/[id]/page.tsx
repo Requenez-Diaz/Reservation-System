@@ -1,14 +1,21 @@
-import { getBedroomsById } from "@/app/actions/bedroomsAction";
-import FormEditBedrooms from "@/components/habitaciones/formEditBedrooms";
-import { notFound } from "next/navigation";
+import { FormEditBedrooms } from '@/components/habitaciones/formEditBedrooms';
+import prisma from '@/lib/db';
+import { redirect } from 'next/navigation';
 
-const UpdateBedroomsPage = async ({ params }: { params: { id: number } }) => {
-    const id = params.id;
-    const bedrooms = await getBedroomsById(id);
-    console.log(id);
+
+export default async function BedroomsPageEdit({ params }: {
+    params: {
+        id: string;
+    }
+}) {
+    const bedrooms = await prisma.bedrooms.findFirst({
+        where: {
+            id: parseInt(params.id)
+        }
+    })
 
     if (!bedrooms) {
-        notFound();
+        redirect('/bedrooms');
     }
 
     return (
@@ -17,6 +24,5 @@ const UpdateBedroomsPage = async ({ params }: { params: { id: number } }) => {
             <FormEditBedrooms bedrooms={bedrooms} />
         </div>
     );
-};
 
-export default UpdateBedroomsPage
+}
