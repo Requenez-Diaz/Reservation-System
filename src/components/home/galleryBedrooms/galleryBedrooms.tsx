@@ -1,7 +1,7 @@
 import React from 'react';
-import BannerProps from './bannerProps';
+import BannerGalleryProps from './bannerGalleryProps';
 
-const Collage = () => {
+const GalleryBedrooms = () => {
   const imagenes = [
     {
       src: 'https://images.pexels.com/photos/210265/pexels-photo-210265.jpeg?auto=compress&cs=tinysrgb&w=600',
@@ -22,8 +22,8 @@ const Collage = () => {
   ];
   return (
     <div>
-      <div className="p-8">
-        <BannerProps
+      <div className="p-8 ">
+        <BannerGalleryProps
           title="Explora tu futuro"
           description="Creamos un mundo donde podes reservar a un solo click"
           images={imagenes}
@@ -33,4 +33,4 @@ const Collage = () => {
   );
 };
 
-export default Collage;
+export default GalleryBedrooms;

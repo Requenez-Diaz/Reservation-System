@@ -7,7 +7,7 @@ interface ImagesProps {
   images: { src: string; alt: string }[];
 }
 
-const BannerProps = ({ title, description, images }: ImagesProps) => {
+const BannerGalleryProps = ({ title, description, images }: ImagesProps) => {
   return (
     <div className="p-4 rounded bg-gray-100">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -24,14 +24,14 @@ const BannerProps = ({ title, description, images }: ImagesProps) => {
           ))}
         </div>
         <div className="md:pr-4 flex flex-col justify-center items-center bg-yellow-50 bg-opacity-75 rounded-r-full">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-black mb-2 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-black mb-2 leading-tight ml-2">
             {title}
           </h1>
-          <p className="text-black text-sm font-light">{description}</p>
+          <p className="text-black text-sm font-light ml-2">{description}</p>
         </div>
       </div>
     </div>
   );
 };
 
-export default BannerProps;
+export default BannerGalleryProps;
