@@ -2,7 +2,7 @@ import React from 'react';
 import { CarouselDescriptions } from './cardsSearchRooms/carrucelServicios';
 import { ContainerAboutHotels } from './adventagesHotels/containerAboutServices';
 import Collage from './galleryBedrooms/galleryBedrooms';
-import CardDescriptions from './cardsSearchRooms/cardsDescription';
+import CardDescriptions from './cardsSearchRooms/cardsServicesHotels';
 import CollageImage from './collageImage';
 import BannerHome from './bannerHome';
 import BookingsFormsHome from './componentsBooksForms/formBookHome';
@@ -16,8 +16,8 @@ const ContainerHome = () => {
       <CarouselDescriptions />
       <ContainerAboutHotels />
       <GalleryBedrooms />
-      {/* <CardDescriptions />
-      <CollageImage /> */}
+      <CardDescriptions />
+      {/* <CollageImage /> */}
     </div>
   );
 };
