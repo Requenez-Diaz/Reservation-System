@@ -16,7 +16,7 @@ export const saveBedrooms = async (formData: FormData) => {
   const active = formData.get('status') === '1';
 
   try {
-    const newBedroom = await prisma.bedrooms.create({
+    const newBedroom = await prisma.bedroom.create({
       data: {
         typeBedroom,
         description,
