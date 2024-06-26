@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useToast } from '../ui/use-toast';
 import { saveUsers } from '@/app/actions/users/saveUsers';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 
 const FormSchema = z
   .object({
@@ -54,26 +54,66 @@ const SignUpForm = () => {
     }
   });
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await form.handleSubmit(async (data) => {
-        const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => {
-          formData.append(key, value);
-        });
+  // const onSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     await form.handleSubmit(async (data) => {
+  //       const formData = new FormData();
+  //       Object.entries(data).forEach(([key, value]) => {
+  //         formData.append(key, value);
+  //       });
 
-        const user = await saveUsers(formData);
-        if (user) {
-          toast({
-            title: 'users save',
-            description: 'User Loged',
-            variant: 'default'
-          });
-          router.refresh();
-          router.push('/');
-        }
-      })();
+  //       const user = await saveUsers(formData);
+  //       if (user) {
+  //         toast({
+  //           title: 'users save',
+  //           description: 'User Loged',
+  //           variant: 'default'
+  //         });
+  //         router.refresh();
+  //         router.push('/sign-in');
+  //       }
+  //     })();
+  //   } catch (error) {
+  //     if (error instanceof z.ZodError) {
+  //       form.setError('root', {
+  //         message: 'Por favor, completa el formulario correctamente'
+  //       });
+  //       error.errors.forEach((err) => {
+  //         form.setError(err.path[0], {
+  //           message: err.message
+  //         });
+  //       });
+  //     } else {
+  //       toast({
+  //         title: 'Error',
+  //         description: 'Error creating user',
+  //         variant: 'destructive'
+  //       });
+  //     }
+  //   }
+  // };
+  const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    try {
+      const formDataObj = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataObj.append(key, value);
+      });
+
+      const user = await saveUsers(formDataObj);
+      if (user) {
+        toast({
+          title: 'Usuario guardado',
+          description: 'Usuario registrado con éxito',
+          variant: 'default'
+        });
+        await signIn('credentials', {
+          redirect: false,
+          email: formData.email,
+          password: formData.password
+        });
+        router.push('/');
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         form.setError('root', {
@@ -87,7 +127,7 @@ const SignUpForm = () => {
       } else {
         toast({
           title: 'Error',
-          description: 'Error creating user',
+          description: 'Error al crear el usuario',
           variant: 'destructive'
         });
       }
@@ -271,7 +311,7 @@ const SignUpForm = () => {
               type="submit"
               className="w-full "
               variant={'blue'}
-              onClick={onSubmit}
+              onClick={form.handleSubmit(onSubmit)}
             >
               Registrarse
             </Button>

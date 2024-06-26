@@ -4,7 +4,8 @@ import { ActiveLink } from '../active-link/ActiveLink';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import UserAccountnav from '../UserAccountnav';
-import AvatarNav from './avatarNav';
+import AvatarNavigations from './avatarNav';
+import { MenuDrop } from './menu';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
@@ -42,7 +43,7 @@ const Navbar = async () => {
             </p>
           </Link>
         </div>
-        <div className="hidden md:flex items-center gap-x-6 ">
+        <div className="hidden md:flex items-center gap-x-7 ">
           <ul className="flex gap-x-6 text-black">
             {navItems.map((navItem) => (
               <li key={navItem.path}>
@@ -55,6 +56,7 @@ const Navbar = async () => {
             {session?.user ? (
               <UserAccountnav />
             ) : (
+              // <MenuDrop />
               <Link
                 className={buttonVariants({ variant: 'blue' })}
                 href="/sign-in"

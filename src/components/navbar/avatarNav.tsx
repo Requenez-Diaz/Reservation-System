@@ -1,20 +1,13 @@
-import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { authOptions } from '@/lib/auth';
-import { getServerSession } from 'next-auth';
-const AvatarNav = async () => {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return (
+import { redirect } from 'next/navigation';
+
+export default function AvatarNavigations() {
+  return (
+    <div className="h-[500px] flex justify-center items-center">
       <Avatar>
         <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>
-          <span>Guest</span>
-          {session?.user?.username}
-        </AvatarFallback>
+        <AvatarFallback>CN</AvatarFallback>
       </Avatar>
-    );
-  }
-};
-
-export default AvatarNav;
+    </div>
+  );
+}
