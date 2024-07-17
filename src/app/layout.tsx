@@ -31,7 +31,7 @@ export default function RootLayout({
         )}
       >
         <Provider>
-          <main className=''>
+          <main className="">
             <Navbar />
             {children}
           </main>
