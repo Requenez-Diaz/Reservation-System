@@ -1,4 +1,5 @@
-import { bookingsForms } from '@/app/actions/bookings/booking';
+'use client';
+import { saveBookings } from '@/app/actions/bookings/booking';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,46 +12,95 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User } from '@nextui-org/react';
+import { useState } from 'react';
 
-export async function SelectRoomModal() {
+export function SelectRoomModal() {
+  const [formData, setFormData] = useState({
+    guests: '',
+    rooms: '',
+    arrivalDate: '',
+    departureDate: ''
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await saveBookings(new FormData(e.currentTarget));
+  };
+
   return (
-    <form action={bookingsForms}>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            className="bg-blue-600 text-white font-bold py-2 px-4 rounded"
-            variant="outline"
-          >
-            Reservar
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Selecciona tu habitacion</DialogTitle>
-            <DialogDescription>
-              Por favor, selecciona la habitacion que deseas reservar.
-            </DialogDescription>
-          </DialogHeader>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          className="bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          variant="outline"
+        >
+          Reservar
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Selecciona tu habitación</DialogTitle>
+          <DialogDescription>
+            Por favor, selecciona la habitación que deseas reservar.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="name">
+              <Label className="text-right" htmlFor="guests">
                 Personas
               </Label>
-              <Input className="col-span-3" id="name" type="text" />
+              <Input
+                className="col-span-3"
+                id="guests"
+                type="number"
+                value={formData.guests}
+                onChange={handleInputChange}
+                required
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="username">
-                Cantidad
+              <Label className="text-right" htmlFor="rooms">
+                Cantidad de habitaciones
               </Label>
-              <Input className="col-span-3" id="username" type="number" />
+              <Input
+                className="col-span-3"
+                id="rooms"
+                type="number"
+                value={formData.rooms}
+                onChange={handleInputChange}
+                required
+              />
             </div>
-
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right" htmlFor="email">
+              <Label className="text-right" htmlFor="arrivalDate">
                 Fecha de llegada
               </Label>
-              <Input className="col-span-3" id="email" type="date" />
+              <Input
+                className="col-span-3"
+                id="arrivalDate"
+                type="date"
+                value={formData.arrivalDate}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right" htmlFor="departureDate">
+                Fecha de salida
+              </Label>
+              <Input
+                className="col-span-3"
+                id="departureDate"
+                type="date"
+                value={formData.departureDate}
+                onChange={handleInputChange}
+                required
+              />
             </div>
           </div>
           <DialogFooter>
@@ -59,8 +109,8 @@ export async function SelectRoomModal() {
             </Button>
             <Button variant="destructive">Cancelar</Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </form>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
