@@ -11,31 +11,31 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  username  String     @unique
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  username  String      @unique
   password  String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   bookings  Bookings[]
-  roles     UserRole[]
+  roles     UsersRole[]
+  roleId    Int
+  Role      Role        @relation(fields: [roleId], references: [id])
+}
+
+model UsersRole {
+  id   Int    @id @default(autoincrement())
+  name String
+  user User[]
 }
 
 model Role {
-  id    Int        @id @default(autoincrement())
-  name  String
-  users UserRole[]
+  id       Int    @id @default(autoincrement())
+  roleName String
+  user     User[]
 }
 
-model UserRole {
-  id     Int  @id @default(autoincrement())
-  userId Int
-  roleId Int
-  user   User @relation(fields: [userId], references: [id])
-  role   Role @relation(fields: [roleId], references: [id])
-}
-
-model bedrooms {
+model Bedrooms {
   id              Int               @id @default(autoincrement())
   typeBedroom     String
   description     String
@@ -63,14 +63,14 @@ enum BookingsStatus {
   CANCELLED
 }
 
-model comments {
+model Comments {
   id         Int    @id @default(autoincrement())
   comment    String
   boookingId Int
   comments   String
 }
 
-model events {
+model Events {
   id         Int      @id @default(autoincrement())
   nameEvents String
   date       DateTime
@@ -121,7 +121,7 @@ model Seasons {
   nameSeason String
   dateStart  DateTime
   dateEnd    DateTime
-  bedrooms   bedrooms[]
+  bedrooms   Bedrooms[]
 }
 
 model bookingsServices {
@@ -146,7 +146,7 @@ model BookingsDetails {
   created_at   DateTime   @default(now())
   Bookings     Bookings   @relation(fields: [bookingsId], references: [id])
   bookingsId   Int
-  bedrooms     bedrooms   @relation(fields: [bedroomsId], references: [id])
+  bedrooms     Bedrooms   @relation(fields: [bedroomsId], references: [id])
   bedroomsId   Int
   promotions   promotions @relation(fields: [promotionsId], references: [id])
   promotionsId Int

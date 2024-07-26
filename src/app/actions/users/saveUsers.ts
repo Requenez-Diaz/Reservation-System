@@ -2,8 +2,10 @@
 
 import prisma from '@/lib/db';
 import { hash } from 'bcrypt';
+
 import { NextResponse } from 'next/server';
-import { z, ZodObject } from 'zod';
+
+import { z } from 'zod';
 
 const FormSchema = z
   .object({
@@ -16,39 +18,41 @@ const FormSchema = z
         message: 'El email no debe contener mayúsculas',
         path: ['email']
       }),
-    password: z
-      .string()
-      .min(1, 'Password is required')
-      .min(8, 'Password must have than 8 characters'),
-    confirmPassword: z.string().min(1, 'Password confirmation is required')
+    password: z.string().min(8, 'Password must have at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Password confirmation is required'),
+    roleId: z.number().int()
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
-    message: 'Password do not match'
+
+    message: 'Passwords do not match'
   });
 
 export const saveUsers = async (formData: FormData) => {
-  try {
-    const rawFormUser = FormSchema.parse(Object.fromEntries(formData));
-    const hashedPassword = await hash(rawFormUser.password, 10);
+  const users = FormSchema.parse({
+    username: formData.get('username'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+    roleId: formData.get('roleId')
+  });
 
-    const user = await prisma.user.create({
+  try {
+    const createdUser = await prisma.user.create({
       data: {
-        email: rawFormUser.email,
-        username: rawFormUser.username,
-        password: hashedPassword,
-        role: 'user'
+        username: users.username,
+        email: users.email,
+        password: await hash(users.password, 10),
+        roleId: users.roleId
       }
     });
 
-    return user;
+    console;
   } catch (error) {
-    console.error('Error saving user:', error);
+    console.error('Error creating user:', error);
+    return NextResponse.json(
+      { error: 'User registration failed' },
+      { status: 500 }
+    );
   }
 };
-
-export async function GET(req: Request) {
-  const data = await prisma.user.findMany();
-  NextResponse.json({ message: 'GET request' });
-  return NextResponse.json(data, { status: 200 });
-}
