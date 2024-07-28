@@ -14,7 +14,7 @@ function HeaderBedrooms() {
       />
 
       <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-        <h1 className="text-white text-4xl text-border font-bold mb-8 transition-transform transform hover:scale-105">
+        <h1 className="text-white text-4xl text-center font-bold mb-8 transition-transform transform hover:scale-105">
           Nuestras Habitaciones
         </h1>
       </div>

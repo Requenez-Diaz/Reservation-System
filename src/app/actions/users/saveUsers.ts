@@ -19,7 +19,8 @@ const FormSchema = z
       .string()
       .min(1, 'Password is required')
       .min(8, 'Password must have than 8 characters'),
-    confirmPassword: z.string().min(1, 'Password confirmation is required')
+    confirmPassword: z.string().min(1, 'Password confirmation is required'),
+    role: z.enum(['USER', 'ADMIN'])
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
@@ -28,7 +29,13 @@ const FormSchema = z
 
 export const saveUsers = async (formData: FormData) => {
   try {
-    const rawFormUser = FormSchema.parse(Object.fromEntries(formData));
+    const rawFormUser = FormSchema.parse({
+      username: formData.get('username'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+      confirmPassword: formData.get('confirmPassword'),
+      role: formData.get('role')
+    });
     const hashedPassword = await hash(rawFormUser.password, 10);
 
     const user = await prisma.user.create({
