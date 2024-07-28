@@ -2,9 +2,6 @@
 
 import prisma from '@/lib/db';
 import { hash } from 'bcrypt';
-
-import { NextResponse } from 'next/server';
-
 import { z } from 'zod';
 
 const FormSchema = z
@@ -18,41 +15,33 @@ const FormSchema = z
         message: 'El email no debe contener mayúsculas',
         path: ['email']
       }),
-    password: z.string().min(8, 'Password must have at least 8 characters'),
-    confirmPassword: z.string().min(1, 'Password confirmation is required'),
-    roleId: z.number().int()
+    password: z
+      .string()
+      .min(1, 'Password is required')
+      .min(8, 'Password must have than 8 characters'),
+    confirmPassword: z.string().min(1, 'Password confirmation is required')
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
-
-    message: 'Passwords do not match'
+    message: 'Password do not match'
   });
 
 export const saveUsers = async (formData: FormData) => {
-  const users = FormSchema.parse({
-    username: formData.get('username'),
-    email: formData.get('email'),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
-    roleId: formData.get('roleId')
-  });
-
   try {
-    const createdUser = await prisma.user.create({
+    const rawFormUser = FormSchema.parse(Object.fromEntries(formData));
+    const hashedPassword = await hash(rawFormUser.password, 10);
+
+    const user = await prisma.user.create({
       data: {
-        username: users.username,
-        email: users.email,
-        password: await hash(users.password, 10),
-        roleId: users.roleId
+        email: rawFormUser.email,
+        username: rawFormUser.username,
+        password: hashedPassword,
+        roleId: 1
       }
     });
 
-    console;
+    return user;
   } catch (error) {
-    console.error('Error creating user:', error);
-    return NextResponse.json(
-      { error: 'User registration failed' },
-      { status: 500 }
-    );
+    console.error('Error saving user:', error);
   }
 };

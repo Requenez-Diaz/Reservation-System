@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,28 +8,25 @@ datasource db {
 }
 
 model User {
-  id        Int         @id @default(autoincrement())
-  email     String      @unique
-  username  String      @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  username  String     @unique
   password  String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  bookings  Bookings[]
-  roles     UsersRole[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   roleId    Int
-  Role      Role        @relation(fields: [roleId], references: [id])
-}
-
-model UsersRole {
-  id   Int    @id @default(autoincrement())
-  name String
-  user User[]
+  bookings  Bookings[] @relation("BookingsToUser")
 }
 
 model Role {
   id       Int    @id @default(autoincrement())
   roleName String
-  user     User[]
+  descript String
+}
+
+model UsersRole {
+  Id_user Int @unique
+  Id_role Int
 }
 
 model Bedrooms {
@@ -43,9 +37,9 @@ model Bedrooms {
   highSeasonPrice Int
   status          Boolean
   numberBedroom   Int
-  bookingsDetails BookingsDetails[]
-  seasons         Seasons           @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
   seasonsId       Int
+  seasons         Seasons           @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
+  bookingsDetails BookingsDetails[]
 }
 
 model Bookings {
@@ -54,13 +48,7 @@ model Bookings {
   created_at       DateTime           @default(now())
   bookingsDetails  BookingsDetails[]
   bookingsServices bookingsServices[]
-  user             User[]
-}
-
-enum BookingsStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
+  user             User[]             @relation("BookingsToUser")
 }
 
 model Comments {
@@ -93,12 +81,6 @@ model historicReservations {
   date        DateTime
 }
 
-enum EventStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
-
 model promotions {
   id                 Int               @id @default(autoincrement())
   codePromotions     String
@@ -129,9 +111,9 @@ model bookingsServices {
   bookingId  Int
   serviceId  Int
   price      Int
+  servicesId String?
   booking    Bookings  @relation(fields: [bookingId], references: [id])
   services   Services? @relation(fields: [servicesId], references: [id])
-  servicesId String?
 }
 
 model BookingsDetails {
@@ -144,18 +126,12 @@ model BookingsDetails {
   promotionId  Int
   status       Status
   created_at   DateTime   @default(now())
-  Bookings     Bookings   @relation(fields: [bookingsId], references: [id])
   bookingsId   Int
-  bedrooms     Bedrooms   @relation(fields: [bedroomsId], references: [id])
   bedroomsId   Int
-  promotions   promotions @relation(fields: [promotionsId], references: [id])
   promotionsId Int
-}
-
-enum Status {
-  PENDING
-  CONFIRMED
-  CANCELLED
+  bedrooms     Bedrooms   @relation(fields: [bedroomsId], references: [id])
+  Bookings     Bookings   @relation(fields: [bookingsId], references: [id])
+  promotions   promotions @relation(fields: [promotionsId], references: [id])
 }
 
 model Invoce {
@@ -172,4 +148,22 @@ model invoceDetails {
   price    Int
   amount   Int
   invoce   Invoce @relation(fields: [invoceId], references: [id])
+}
+
+enum BookingsStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum EventStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  CANCELLED
 }
