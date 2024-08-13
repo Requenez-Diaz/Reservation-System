@@ -11,8 +11,8 @@ import GalleryBedrooms from './galleryBedrooms/galleryBedrooms';
 const ContainerHome = () => {
   return (
     <div>
-      <BannerHome />
       <BookingsFormsHome />
+      <BannerHome />
       <CarouselDescriptions />
       <ContainerAboutHotels />
       <GalleryBedrooms />

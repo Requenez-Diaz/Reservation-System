@@ -22,16 +22,6 @@ export function SelectsRooms() {
   const [childAge, setChildAge] = useState('');
   const [error, setError] = useState('');
 
-  //   const handleSubmit = (e) => {
-  //     e.preventDefault();
-  //     if (!childAge) {
-  //       setError('La edad del niño es requerida antes del checkout.');
-  //     } else {
-  //       setModalOpen(false);
-  //       setError('');
-  //     }
-  //   };
-
   return (
     <div className="">
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>

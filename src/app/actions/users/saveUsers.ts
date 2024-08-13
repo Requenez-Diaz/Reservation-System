@@ -2,8 +2,7 @@
 
 import prisma from '@/lib/db';
 import { hash } from 'bcrypt';
-import { NextResponse } from 'next/server';
-import { z, ZodObject } from 'zod';
+import { z } from 'zod';
 
 const FormSchema = z
   .object({
@@ -44,7 +43,7 @@ export const saveUsers = async (formData: FormData) => {
         email: rawFormUser.email,
         username: rawFormUser.username,
         password: hashedPassword,
-    
+        roleId: 1
       }
     });
 
@@ -53,9 +52,3 @@ export const saveUsers = async (formData: FormData) => {
     console.error('Error saving user:', error);
   }
 };
-
-export async function GET(req: Request) {
-  const data = await prisma.user.findMany();
-  NextResponse.json({ message: 'GET request' });
-  return NextResponse.json(data, { status: 200 });
-}

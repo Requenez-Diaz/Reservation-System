@@ -54,75 +54,36 @@ const SignUpForm = () => {
     }
   });
 
-  // const onSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     await form.handleSubmit(async (data) => {
-  //       const formData = new FormData();
-  //       Object.entries(data).forEach(([key, value]) => {
-  //         formData.append(key, value);
-  //       });
-
-  //       const user = await saveUsers(formData);
-  //       if (user) {
-  //         toast({
-  //           title: 'users save',
-  //           description: 'User Loged',
-  //           variant: 'default'
-  //         });
-  //         router.refresh();
-  //         router.push('/sign-in');
-  //       }
-  //     })();
-  //   } catch (error) {
-  //     if (error instanceof z.ZodError) {
-  //       form.setError('root', {
-  //         message: 'Por favor, completa el formulario correctamente'
-  //       });
-  //       error.errors.forEach((err) => {
-  //         form.setError(err.path[0], {
-  //           message: err.message
-  //         });
-  //       });
-  //     } else {
-  //       toast({
-  //         title: 'Error',
-  //         description: 'Error creating user',
-  //         variant: 'destructive'
-  //       });
-  //     }
-  //   }
-  // };
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    console.log('formData', formData);
     try {
       const formDataObj = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataObj.append(key, value);
-      });
+      formDataObj.append('username', formData.username);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('password', formData.password);
+      formDataObj.append('confirmPassword', formData.confirmPassword);
 
       const user = await saveUsers(formDataObj);
+
       if (user) {
         toast({
           title: 'Usuario guardado',
           description: 'Usuario registrado con éxito',
           variant: 'default'
         });
+
         await signIn('credentials', {
           redirect: false,
           email: formData.email,
           password: formData.password
         });
+
         router.push('/');
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
         form.setError('root', {
           message: 'Por favor, completa el formulario correctamente'
-        });
-        error.errors.forEach((err) => {
-          form.setError(err.path[0], {
-            message: err.message
-          });
         });
       } else {
         toast({

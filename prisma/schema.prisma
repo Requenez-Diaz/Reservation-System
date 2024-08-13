@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,27 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Client {
-  id       Int        @id @default(autoincrement())
-  name     String
-  lastname String
-  email    String
-  phone    Int
-  bookings Bookings[]
-  invoce   Invoce[]
-}
-
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  username  String     @unique
   password  String
-  role      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  roleId    Int
+  bookings  Bookings[] @relation("BookingsToUser")
 }
 
-model bedrooms {
+model Role {
+  id       Int    @id @default(autoincrement())
+  roleName String
+  descript String
+}
+
+model UsersRole {
+  Id_user Int @unique
+  Id_role Int
+}
+
+model Bedrooms {
   id              Int               @id @default(autoincrement())
   typeBedroom     String
   description     String
@@ -38,35 +37,28 @@ model bedrooms {
   highSeasonPrice Int
   status          Boolean
   numberBedroom   Int
-  bookingsDetails BookingsDetails[]
-  seasons         Seasons           @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
   seasonsId       Int
+  seasons         Seasons           @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
+  bookingsDetails BookingsDetails[]
 }
 
 model Bookings {
   id               Int                @id @default(autoincrement())
-  clientId         Int
   status           BookingsStatus
   created_at       DateTime           @default(now())
-  client           Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
   bookingsDetails  BookingsDetails[]
   bookingsServices bookingsServices[]
+  user             User[]             @relation("BookingsToUser")
 }
 
-enum BookingsStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
-
-model comments {
+model Comments {
   id         Int    @id @default(autoincrement())
   comment    String
   boookingId Int
   comments   String
 }
 
-model events {
+model Events {
   id         Int      @id @default(autoincrement())
   nameEvents String
   date       DateTime
@@ -87,12 +79,6 @@ model historicReservations {
   events      EventStatus
   description String
   date        DateTime
-}
-
-enum EventStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
 }
 
 model promotions {
@@ -117,7 +103,7 @@ model Seasons {
   nameSeason String
   dateStart  DateTime
   dateEnd    DateTime
-  bedrooms   bedrooms[]
+  bedrooms   Bedrooms[]
 }
 
 model bookingsServices {
@@ -125,9 +111,9 @@ model bookingsServices {
   bookingId  Int
   serviceId  Int
   price      Int
+  servicesId String?
   booking    Bookings  @relation(fields: [bookingId], references: [id])
   services   Services? @relation(fields: [servicesId], references: [id])
-  servicesId String?
 }
 
 model BookingsDetails {
@@ -140,25 +126,18 @@ model BookingsDetails {
   promotionId  Int
   status       Status
   created_at   DateTime   @default(now())
-  Bookings     Bookings   @relation(fields: [bookingsId], references: [id])
   bookingsId   Int
-  bedrooms     bedrooms   @relation(fields: [bedroomsId], references: [id])
   bedroomsId   Int
-  promotions   promotions @relation(fields: [promotionsId], references: [id])
   promotionsId Int
-}
-
-enum Status {
-  PENDING
-  CONFIRMED
-  CANCELLED
+  bedrooms     Bedrooms   @relation(fields: [bedroomsId], references: [id])
+  Bookings     Bookings   @relation(fields: [bookingsId], references: [id])
+  promotions   promotions @relation(fields: [promotionsId], references: [id])
 }
 
 model Invoce {
   id            Int             @id @default(autoincrement())
   clientId      Int
   date          DateTime
-  client        Client          @relation(fields: [clientId], references: [id])
   invoceDetails invoceDetails[]
 }
 
@@ -169,4 +148,22 @@ model invoceDetails {
   price    Int
   amount   Int
   invoce   Invoce @relation(fields: [invoceId], references: [id])
+}
+
+enum BookingsStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum EventStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  CANCELLED
 }
