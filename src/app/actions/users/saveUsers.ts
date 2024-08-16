@@ -43,7 +43,7 @@ export const saveUsers = async (formData: FormData) => {
         email: rawFormUser.email,
         username: rawFormUser.username,
         password: hashedPassword,
-        roleId: 1
+        roleId: rawFormUser.role === 'ADMIN' ? 1 : 2
       }
     });
 
