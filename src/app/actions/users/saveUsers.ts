@@ -36,6 +36,8 @@ export const saveUsers = async (formData: FormData) => {
       confirmPassword: formData.get('confirmPassword'),
       role: formData.get('role')
     });
+
+    console.log('rawFormUser:', rawFormUser);
     const hashedPassword = await hash(rawFormUser.password, 10);
 
     const user = await prisma.user.create({
@@ -43,7 +45,7 @@ export const saveUsers = async (formData: FormData) => {
         email: rawFormUser.email,
         username: rawFormUser.username,
         password: hashedPassword,
-        roleId: 1
+        roleId: rawFormUser.role === 'USER' ? 1 : 2
       }
     });
 

@@ -1,5 +1,5 @@
+import Component from './cardOfertComponent';
 import { OfferHeader } from './OfferHeader';
-import { SpecialOffers } from './SpecialOffers';
 
 export const CardComponent = () => {
   return (
@@ -9,7 +9,10 @@ export const CardComponent = () => {
         slogan="Las mejores ofertas"
         title="Ofertas"
       />
-      <SpecialOffers />
+
+      <div>
+        <Component />
+      </div>
     </div>
   );
 };
