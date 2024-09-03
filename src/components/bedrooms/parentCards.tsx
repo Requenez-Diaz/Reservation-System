@@ -1,15 +1,13 @@
-// ParentCards.tsx
 import React from 'react';
 import PropsCards from './propsCards';
 
 interface Item {
-  name: string;
-  type: string;
-  bathroom: string;
-  beds: string;
-  people: string;
+  typeBedroom: string;
   description: string;
-  price: number;
+  lowSeasonPrice: number;
+  // highSeasonPrice: number;
+  status: boolean;
+  numberBedroom: number;
 }
 
 interface ParentComponents {
@@ -19,8 +17,8 @@ interface ParentComponents {
 const ParentCards = ({ items }: ParentComponents) => {
   return (
     <div className="flex flex-wrap content-center justify-center">
-      {items.map((item, index) => (
-        <PropsCards key={index} {...item} />
+      {items.map((item) => (
+        <PropsCards key={item.numberBedroom} {...item} />
       ))}
     </div>
   );
