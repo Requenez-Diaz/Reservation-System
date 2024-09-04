@@ -1,4 +1,3 @@
-// PropsCards.tsx
 'use client';
 
 import Image from 'next/image';
@@ -8,24 +7,22 @@ import { SelectRoomModal } from '../offers/SelectRoomModal';
 import { RoomAvailability } from './roomAvailability';
 
 interface PropsCardsProps {
-  name: string;
-  type: string;
-  bathroom: string;
-  beds: string;
-  people: string;
+  typeBedroom: string;
   description: string;
-  price: number;
+  lowSeasonPrice: number;
+  // highSeasonPrice: number;
+  status: boolean;
+  numberBedroom: number;
 }
 
-const PropsCards: React.FC<PropsCardsProps> = ({
-  name,
-  type,
-  bathroom,
-  beds,
-  people,
+export default function PropsCards({
+  typeBedroom,
   description,
-  price
-}: PropsCardsProps) => {
+  lowSeasonPrice,
+  // highSeasonPrice,
+  status,
+  numberBedroom,
+}: PropsCardsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
@@ -37,45 +34,32 @@ const PropsCards: React.FC<PropsCardsProps> = ({
   };
 
   return (
-    <div className="bg-gray-300 mb-4 p-4">
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6 p-4 transition-transform duration-300 hover:scale-105">
       <Image
-        alt="Picture of the author"
-        className="mr-4"
+        alt="Imagen de la habitación"
+        className="w-full h-48 object-cover mb-4"
         height={500}
-        src={
-          'https://media.istockphoto.com/id/1390233984/es/foto/habitaci%C3%B3n-de-lujo-moderna.webp?b=1&s=170667a&w=0&k=20&c=sLPzMweWiHutEfXwpxoo4Ew8Wu_kZxzT5dRUohKbP40='
-        }
+        src={'https://media.istockphoto.com/id/1390233984/es/foto/habitaci%C3%B3n-de-lujo-moderna.webp?b=1&s=170667a&w=0&k=20&c=sLPzMweWiHutEfXwpxoo4Ew8Wu_kZxzT5dRUohKbP40='}
         width={500}
       />
-      <div className="bg-gray-400 p-4">
-        <h1 className="text-xl font-bold mb-2">{name}</h1>
-        <p className="text-sm mb-2">{type}</p>
-        <p className="text-sm mb-2">{bathroom}</p>
-        <p className="text-sm mb-2">{beds}</p>
-        <p className="text-sm mb-2">{people}</p>
-        <div>
-          <p className="text-sm mb-2">{description}</p>
-          <p className="text-lg font-bold">{price}</p>
-        </div>
-        <div className="flex flex-row mx-3 space-x-4">
-          <SelectRoomModal />
-          <Button
-            className="bg-white-300 border rounded-lg text-black transition-transform duration-300 transform hover:scale-105 hover:text-white"
-            onClick={handleOpenModal}
-          >
-            Ver Disponibilidad
-          </Button>
-        </div>
+      <h1 className="text-xl font-bold text-gray-800 mb-2">{typeBedroom}</h1>
+      <p className="text-gray-600 mb-2"><strong>Descripción:</strong> {description}</p>
+      <p className="text-gray-600 mb-2"><strong>Precio temporada baja:</strong> <span className="text-green-600 font-semibold">${lowSeasonPrice}</span></p>
+      {/* <p className="text-gray-600 mb-2"><strong>Precio temporada alta:</strong> <span className="text-red-600 font-semibold">${highSeasonPrice}</span></p> */}
+      <p className="text-gray-600 mb-2"><strong>Número de habitación:</strong> {numberBedroom}</p>
+      <p className={`text-gray-600 mb-4 ${status ? 'text-green-600' : 'text-red-600'}`}><strong>Estado:</strong> {status ? 'Activa' : 'Inactiva'}</p>
+      <div className="flex flex-col sm:flex-row justify-between">
+        <SelectRoomModal />
+        <Button
+          className="bg-blue-500 text-white rounded-lg px-4 py-2 transition-transform duration-300 transform hover:scale-105"
+          onClick={handleOpenModal}
+        >
+          Ver Disponibilidad
+        </Button>
       </div>
       {isModalOpen && (
-        <RoomAvailability
-          isAvailable={true}
-          onClose={handleCloseModal}
-          open={isModalOpen}
-        />
+        <RoomAvailability isAvailable={true} onClose={handleCloseModal} open={isModalOpen} />
       )}
     </div>
   );
-};
-
-export default PropsCards;
+}

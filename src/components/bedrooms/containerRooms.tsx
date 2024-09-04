@@ -1,70 +1,45 @@
-import React from 'react';
-import OrdersRooms from './ordersRooms';
+'use client';
 
-import ParrentCards from './parentCards';
+import React, { useEffect, useState } from 'react';
+import OrdersRooms from './ordersRooms';
+import ParentCards from './parentCards';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 
 const ContainerRooms = () => {
-  const items = [
-    {
-      name: 'Habitacion 1',
-      type: 'Privada',
-      bathroom: '1 baño',
-      beds: '1 cama',
-      people: '2 personas',
-      description: 'Habitacion privada con baño',
-      price: 100
-    },
-    {
-      name: 'Habitacion 2',
-      type: 'Privada',
-      bathroom: '1 baño',
-      beds: '1 cama',
-      people: '2 personas',
-      description: 'Habitacion privada con baño',
-      price: 100
-    },
-    {
-      name: 'Habitacion 3',
-      type: 'Privada',
-      bathroom: '1 baño',
-      beds: '1 cama',
-      people: '2 personas',
-      description: 'Habitacion privada con baño',
-      price: 100
-    },
-    {
-      name: 'Habitacion 4',
-      type: 'Privada',
-      bathroom: '1 baño',
-      beds: '1 cama',
-      people: '2 personas',
-      description: 'Habitacion privada con baño',
-      price: 100
-    },
-    {
-      name: 'Habitacion 5',
-      type: 'Privada',
-      bathroom: '1 baño',
-      beds: '1 cama',
-      people: '2 personas',
-      description: 'Habitacion privada con baño',
-      price: 100
-    },
-    {
-      name: 'Habitacion 6',
-      type: 'Privada',
-      bathroom: '1 baño',
-      beds: '1 cama',
-      people: '2 personas',
-      description: 'Habitacion privada con baño',
-      price: 100
-    }
-  ];
+  const [items, setItems] = useState<{
+    typeBedroom: string;
+    description: string;
+    lowSeasonPrice: number;
+    // highSeasonPrice: number;
+    status: boolean;
+    numberBedroom: number;
+  }[]>([]);
+
+  useEffect(() => {
+    const fetchBedrooms = async () => {
+      try {
+        const bedroomData = await getAllBedrooms();
+        const mappedItems = bedroomData.map((bedroom) => ({
+          typeBedroom: bedroom.typeBedroom,
+          description: bedroom.description,
+          lowSeasonPrice: bedroom.lowSeasonPrice,
+          // highSeasonPrice: bedroom.highSeasonPrice,
+          status: bedroom.status,
+          numberBedroom: bedroom.numberBedroom,
+        }));
+        setItems(mappedItems);
+      } catch (error) {
+        console.error('Error fetching bedrooms:', error);
+      }
+    };
+
+    fetchBedrooms();
+  }, []);
 
   return (
     <div>
       <OrdersRooms />
-      <ParrentCards items={items} />
+      <ParentCards items={items} />
     </div>
   );
 };
