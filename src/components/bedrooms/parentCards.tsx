@@ -5,7 +5,6 @@ interface Item {
   typeBedroom: string;
   description: string;
   lowSeasonPrice: number;
-  // highSeasonPrice: number;
   status: boolean;
   numberBedroom: number;
 }
