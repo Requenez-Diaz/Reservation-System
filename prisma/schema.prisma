@@ -51,6 +51,21 @@ model Bookings {
   user             User[]             @relation("BookingsToUser")
 }
 
+model Reservation {
+  id            Int      @id @default(autoincrement())
+  name          String
+  lastName      String
+  email         String
+  bedroomsType  String
+  guests        Int
+  rooms         Int
+  arrivalDate   DateTime
+  departureDate DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  status        Status
+}
+
 model Comments {
   id         Int    @id @default(autoincrement())
   comment    String
