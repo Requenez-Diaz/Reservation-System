@@ -1,30 +1,25 @@
 'use client';
 
-import { saveReservation } from '@/app/actions/saveReservation/saveReservation';
+import { updateReservation } from '@/app/actions/saveReservation/updateReservation';
 import { bedroomsTypes } from '@/components/bedroomstype/bedroomsType';
 import { Button } from '@/components/ui/button';
 import { DialogClose, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/components/ui/use-toast";
+import { Reservation } from '@prisma/client';
 
-export function FormReservation() {
+export function FormEditReservation({ reservation, }: { reservation: Reservation | null }) {
     const { toast } = useToast();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = await saveReservation(new FormData(event.currentTarget));
+        const formData = new FormData(event.currentTarget);
+        formData.append("reservationId", reservation?.id.toString() ?? "");
+        await updateReservation(formData);
 
-        if (response.success) {
-            toast({
-                title: "Reserva realizada.",
-                description: "La reservación se registró correctamente.",
-            });
-        } else {
-            toast({
-                title: "Reserva no realizada.",
-                description: "Ha ocurrido un error al realizar la reservación.",
-            });
+        if (!reservation) {
+            return <p>Error: No se encontró la reservación</p>
         }
     };
 
@@ -34,33 +29,33 @@ export function FormReservation() {
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <Label className="text-right" htmlFor="name">Nombre</Label>
-                    <Input id="name" name="name" type="text" placeholder='Nombre' required />
+                    <Input id="name" name="name" type="text" placeholder='Nombre' defaultValue={reservation?.name} required />
                 </div>
                 <div>
                     <Label className="text-right" htmlFor="lastName">Apellido</Label>
-                    <Input id="lastName" name="lastName" type="text" placeholder='Apellido' required />
+                    <Input id="lastName" name="lastName" type="text" placeholder='Apellido' defaultValue={reservation?.lastName} required />
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <Label className="text-right" htmlFor="email">Correo</Label>
-                    <Input id="email" name="email" type="email" placeholder='Correo electronico' required />
+                    <Input id="email" name="email" type="email" placeholder='Correo electronico' defaultValue={reservation?.email} required />
                 </div>
                 <div>
                     <Label className="text-right" htmlFor="guests">Huéspedes</Label>
-                    <Input id="guests" name="guests" type="number" min="1" placeholder="Número de personas" required />
+                    <Input id="guests" name="guests" type="number" min="1" placeholder="Número de personas" defaultValue={reservation?.guests} required />
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <Label className="text-right" htmlFor="rooms">Habitaciones</Label>
-                    <Input id="rooms" name="rooms" type="number" min="1" placeholder="Cantidad de habitaciones" required />
+                    <Input id="rooms" name="rooms" type="number" min="1" placeholder="Cantidad de habitaciones" defaultValue={reservation?.rooms} required />
                 </div>
                 <div>
                     <Label className="text-right" htmlFor="bedroomsType">Tipo de habitación</Label>
-                    <select className="border border-gray-300 rounded-lg p-2" id="bedroomsType" name="bedroomsType" required>
+                    <select className="border border-gray-300 rounded-lg p-2" id="bedroomsType" name="bedroomsType" required defaultValue={reservation?.bedroomsType} >
                         <option value="" disabled>Selecciona el tipo de habitación</option>
                         {bedroomsTypes.map((type, index) => (
                             <option key={index} value={type}>{type}</option>
@@ -72,34 +67,40 @@ export function FormReservation() {
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <Label className="text-right" htmlFor="arrivalDate">Fecha de llegada</Label>
-                    <Input id="arrivalDate" name="arrivalDate" type="date" required />
+                    <Input id="arrivalDate" name="arrivalDate" type="date" required defaultValue={reservation?.arrivalDate.toISOString().split('T')[0]} />
                 </div>
                 <div>
                     <Label className="text-right" htmlFor="departureDate">Fecha de salida</Label>
-                    <Input id="departureDate" name="departureDate" type="date" required />
+                    <Input id="departureDate" name="departureDate" type="date" required defaultValue={reservation?.departureDate.toISOString().split('T')[0]} />
                 </div>
             </div>
 
             <DialogFooter className="flex flex-wrap justify-between pt-4 gap-4">
-            <DialogClose asChild>
-                <Button
-                    type="button"
-                    variant="destructive">
-                    Cancelar
-                </Button>
-            </DialogClose>
+                <DialogClose asChild>
+                    <Button
+                        type="button"
+                        variant="destructive">
+                        Cancelar
+                    </Button>
+                </DialogClose>
 
-            {/* <DialogClose asChild> */}
+                <DialogClose asChild>
                 <Button
                     type="submit"
                     variant="success"
+                    onClick={() => {
+                        toast({
+                            title: "Reservación actualizada.",
+                            description: "La reservación se actualizo correctamente.",
+                        });
+                    }}
                 >
-                    Reservaré
+                    Actualizar Reservación
                 </Button>
-            {/* </DialogClose> */}
+                </DialogClose>
             </DialogFooter>
         </form>
     );
 }
 
-export default FormReservation;
+export default FormEditReservation;

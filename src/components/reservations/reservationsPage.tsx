@@ -1,5 +1,7 @@
 import { getReservations } from '@/app/actions/saveReservation/getReservation';
 import React from 'react';
+import { EditReservation } from '../bedrooms/editReservation';
+import { DeleteReservation } from '../bedrooms/deleteReservation';
 
 async function ReservationsPage() {
   const reservations = await getReservations();
@@ -16,6 +18,13 @@ async function ReservationsPage() {
         <div key={reservation.id} className="bg-white rounded-lg shadow-md p-6 mb-6 w-full max-w-md">
           <div className="flex justify-between mb-4">
             <div>
+              <h2 className="text-xl font-semibold">Nombre</h2>
+              <p className="text-gray-700">{reservation.name} {reservation.lastName}</p>
+            </div>
+
+            <div className="border-l border-gray-300 h-16 mx-4"></div>
+
+            <div>
               <h2 className="text-xl font-semibold">Entrada</h2>
               <p className="text-gray-700">{new Date(reservation.arrivalDate).toLocaleDateString()}</p>
             </div>
@@ -28,27 +37,29 @@ async function ReservationsPage() {
             </div>
           </div>
 
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">Duración total de la estancia:</h2>
-            <p className="text-gray-700">{calculateDuration(reservation.arrivalDate.toString(), reservation.departureDate.toString())} noche{calculateDuration(reservation.arrivalDate.toString(), reservation.departureDate.toString()) > 1 ? 's' : ''}</p>
+          <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-300">
+            <h2 className="text-xl font-semibold mb-2">Duración total de la estancia:</h2>
+            <p className="text-gray-700 text-lg">
+              <span
+                className="font-bold">{calculateDuration(reservation.arrivalDate.toString(), reservation.departureDate.toString())}
+              </span>
+              noche{calculateDuration(reservation.arrivalDate.toString(), reservation.departureDate.toString()) > 1 ? 's' : ''}
+            </p>
           </div>
 
           <hr className="my-4 border-gray-300" />
 
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">Has seleccionado</h2>
-            <p className="text-gray-700">{reservation.rooms}: Habitación</p>
-            <p className="text-gray-700">Tipo de Habitación: {reservation.bedroomsType}</p>
-            <p className="text-gray-700">Número de huéspedes: {reservation.guests}</p>
-            <p className='text-gray-700'>Tu habitacion esta: {reservation.status}</p>
+          <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-300">
+            <h2 className="text-xl font-semibold mb-2">Has seleccionado</h2>
+            <p className="text-gray-700"><span className="font-medium">Habitaciones:</span> {reservation.rooms}</p>
+            <p className="text-gray-700"><span className="font-medium">Tipo de Habitación:</span> {reservation.bedroomsType}</p>
+            <p className="text-gray-700"><span className="font-medium">Número de huéspedes:</span> {reservation.guests}</p>
+            <p className="text-gray-700"><span className="font-medium">Estado:</span> {reservation.status}</p>
           </div>
 
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">
-              <a href="./habitaciones" className="text-blue-500 hover:underline">
-                Cambiar tu elección
-              </a>
-            </h2>
+          <div className="flex justify-between pt-4 gap-4">
+            <DeleteReservation reservationId={reservation.id} />
+            <EditReservation reservationId={reservation.id} />
           </div>
         </div>
       ))}
@@ -60,7 +71,7 @@ async function ReservationsPage() {
 const calculateDuration = (arrivalDate: string, departureDate: string): number => {
   const arrival = new Date(arrivalDate);
   const departure = new Date(departureDate);
-  const duration = (departure.getTime() - arrival.getTime()) / (1000 * 60 * 60 * 24); // aqui convierto de milisegundos a días
+  const duration = (departure.getTime() - arrival.getTime()) / (1000 * 60 * 60 * 24); // Convert milliseconds to days
   return duration;
 };
 
