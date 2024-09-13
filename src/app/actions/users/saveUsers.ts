@@ -20,7 +20,7 @@ const FormSchema = z
       .min(1, 'Password is required')
       .min(8, 'Password must have than 8 characters'),
     confirmPassword: z.string().min(1, 'Password confirmation is required'),
-    role: z.enum(['USER', 'ADMIN'])
+    role: z.enum(['User', 'Admin'])
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
@@ -34,23 +34,35 @@ export const saveUsers = async (formData: FormData) => {
       email: formData.get('email'),
       password: formData.get('password'),
       confirmPassword: formData.get('confirmPassword'),
-      role: formData.get('role')
+      role: 'User' // Asigna el rol "User" por defecto
     });
 
     console.log('rawFormUser:', rawFormUser);
     const hashedPassword = await hash(rawFormUser.password, 10);
+
+    //Validate if the email exists
+    const userExists = await prisma.user.findFirst({
+      where: {
+        email: rawFormUser.email
+      }
+    });
+
+    if (userExists) {
+      throw new Error('Email already exists');
+    }
 
     const user = await prisma.user.create({
       data: {
         email: rawFormUser.email,
         username: rawFormUser.username,
         password: hashedPassword,
-        roleId: rawFormUser.role === 'USER' ? 1 : 2
+        roleName: 'User' // Asigna el roleName directamente como "User"
       }
     });
 
     return user;
   } catch (error) {
     console.error('Error saving user:', error);
+    throw error;
   }
 };

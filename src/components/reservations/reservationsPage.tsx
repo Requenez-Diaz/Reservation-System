@@ -12,38 +12,60 @@ async function ReservationsPage() {
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6 text-center">Los datos de tus reservas</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Los datos de tus reservas
+      </h1>
 
       {reservations.map((reservation) => (
-        <div key={reservation.id} className="bg-white rounded-lg shadow-md p-6 mb-6 w-full max-w-md">
+        <div
+          key={reservation.id}
+          className="bg-white rounded-lg shadow-md p-6 mb-6 w-full max-w-md"
+        >
           <div className="flex justify-between mb-4">
             <div>
               <h2 className="text-xl font-semibold">Nombre</h2>
-              <p className="text-gray-700">{reservation.name} {reservation.lastName}</p>
+              <p className="text-gray-700">
+                {reservation.name} {reservation.lastName}
+              </p>
             </div>
 
             <div className="border-l border-gray-300 h-16 mx-4"></div>
 
             <div>
               <h2 className="text-xl font-semibold">Entrada</h2>
-              <p className="text-gray-700">{new Date(reservation.arrivalDate).toLocaleDateString()}</p>
+              <p className="text-gray-700">
+                {new Date(reservation.arrivalDate).toLocaleDateString()}
+              </p>
             </div>
 
             <div className="border-l border-gray-300 h-16 mx-4"></div>
 
             <div>
               <h2 className="text-xl font-semibold">Salida</h2>
-              <p className="text-gray-700">{new Date(reservation.departureDate).toLocaleDateString()}</p>
+              <p className="text-gray-700">
+                {new Date(reservation.departureDate).toLocaleDateString()}
+              </p>
             </div>
           </div>
 
           <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-300">
-            <h2 className="text-xl font-semibold mb-2">Duración total de la estancia:</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              Duración total de la estancia:
+            </h2>
             <p className="text-gray-700 text-lg">
-              <span
-                className="font-bold">{calculateDuration(reservation.arrivalDate.toString(), reservation.departureDate.toString())}
+              <span className="font-bold">
+                {calculateDuration(
+                  reservation.arrivalDate.toString(),
+                  reservation.departureDate.toString()
+                )}
               </span>
-              noche{calculateDuration(reservation.arrivalDate.toString(), reservation.departureDate.toString()) > 1 ? 's' : ''}
+              noche
+              {calculateDuration(
+                reservation.arrivalDate.toString(),
+                reservation.departureDate.toString()
+              ) > 1
+                ? 's'
+                : ''}
             </p>
           </div>
 
@@ -51,10 +73,21 @@ async function ReservationsPage() {
 
           <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-300">
             <h2 className="text-xl font-semibold mb-2">Has seleccionado</h2>
-            <p className="text-gray-700"><span className="font-medium">Habitaciones:</span> {reservation.rooms}</p>
-            <p className="text-gray-700"><span className="font-medium">Tipo de Habitación:</span> {reservation.bedroomsType}</p>
-            <p className="text-gray-700"><span className="font-medium">Número de huéspedes:</span> {reservation.guests}</p>
-            <p className="text-gray-700"><span className="font-medium">Estado:</span> {reservation.status}</p>
+            <p className="text-gray-700">
+              <span className="font-medium">Habitaciones:</span>{' '}
+              {reservation.rooms}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-medium">Tipo de Habitación:</span>{' '}
+              {reservation.bedroomsType}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-medium">Número de huéspedes:</span>{' '}
+              {reservation.guests}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-medium">Estado:</span> {reservation.status}
+            </p>
           </div>
 
           <div className="flex justify-between pt-4 gap-4">
@@ -68,10 +101,14 @@ async function ReservationsPage() {
 }
 
 // Función para calcular la duración de la estancia
-const calculateDuration = (arrivalDate: string, departureDate: string): number => {
+const calculateDuration = (
+  arrivalDate: string,
+  departureDate: string
+): number => {
   const arrival = new Date(arrivalDate);
   const departure = new Date(departureDate);
-  const duration = (departure.getTime() - arrival.getTime()) / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+  const duration =
+    (departure.getTime() - arrival.getTime()) / (1000 * 60 * 60 * 24); // Convert milliseconds to days
   return duration;
 };
 
