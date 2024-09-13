@@ -33,21 +33,22 @@ export const saveUsers = async (formData: FormData) => {
       username: formData.get('username'),
       email: formData.get('email'),
       password: formData.get('password'),
-      confirmPassword: formData.get('confirmPassword')
+      confirmPassword: formData.get('confirmPassword'),
+      role: 'User' // Asigna el rol "User" por defecto
     });
 
     console.log('rawFormUser:', rawFormUser);
     const hashedPassword = await hash(rawFormUser.password, 10);
 
-    // Verificar si el rol "User" existe
-    const userRole = await prisma.role.findUnique({
+    //Validate if the email exists
+    const userExists = await prisma.user.findFirst({
       where: {
-        roleName: 'User' // Asegúrate de que este nombre coincida con el que tienes en la base de datos
+        email: rawFormUser.email
       }
     });
 
-    if (!userRole) {
-      throw new Error('Role "User" does not exist in the database.');
+    if (userExists) {
+      throw new Error('Email already exists');
     }
 
     const user = await prisma.user.create({
@@ -55,13 +56,13 @@ export const saveUsers = async (formData: FormData) => {
         email: rawFormUser.email,
         username: rawFormUser.username,
         password: hashedPassword,
-        roleName: userRole.roleName // Asigna el roleName correspondiente al rol "User"
+        roleName: 'User' // Asigna el roleName directamente como "User"
       }
     });
 
     return user;
   } catch (error) {
     console.error('Error saving user:', error);
-    throw error; // Vuelve a lanzar el error para manejarlo más arriba si es necesario
+    throw error;
   }
 };
