@@ -2,6 +2,9 @@ import { getReservations } from '@/app/actions/saveReservation/getReservation';
 import React from 'react';
 import { EditReservation } from '../bedrooms/editReservation';
 import { DeleteReservation } from '../bedrooms/deleteReservation';
+import { Badge, BadgeProps } from "@/components/ui/badge";
+import { Status } from '@prisma/client';
+import { calculateDuration } from '@/app/actions/saveReservation/calculateDuration';
 
 async function ReservationsPage() {
   const reservations = await getReservations();
@@ -9,6 +12,18 @@ async function ReservationsPage() {
   if (reservations.length === 0) {
     return <div>No hay reservas disponibles.</div>;
   }
+
+  const statusVariants: Record<string, BadgeProps["variant"]> = {
+    [Status.PENDING]: "info",
+    [Status.CONFIRMED]: "success",
+    [Status.CANCELLED]: "destructive",
+  };
+
+  const statusLabels: Record<string, string> = {
+    [Status.PENDING]: "Pendiente",
+    [Status.CONFIRMED]: "Confirmado",
+    [Status.CANCELLED]: "Cancelado",
+  };
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
@@ -86,7 +101,9 @@ async function ReservationsPage() {
               {reservation.guests}
             </p>
             <p className="text-gray-700">
-              <span className="font-medium">Estado:</span> {reservation.status}
+              <Badge variant={statusVariants[reservation.status]}>
+                {statusLabels[reservation.status]}
+              </Badge>
             </p>
           </div>
 
@@ -99,17 +116,5 @@ async function ReservationsPage() {
     </div>
   );
 }
-
-// Función para calcular la duración de la estancia
-const calculateDuration = (
-  arrivalDate: string,
-  departureDate: string
-): number => {
-  const arrival = new Date(arrivalDate);
-  const departure = new Date(departureDate);
-  const duration =
-    (departure.getTime() - arrival.getTime()) / (1000 * 60 * 60 * 24); // Convert milliseconds to days
-  return duration;
-};
 
 export default ReservationsPage;
