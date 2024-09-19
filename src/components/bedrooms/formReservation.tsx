@@ -1,18 +1,22 @@
 'use client';
 
 import { saveReservation } from '@/app/actions/saveReservation/saveReservation';
-import { bedroomsTypes } from '@/components/bedroomstype/bedroomsType';
+// import { saveReservation } from '@/app/actions/reservation/saveReservation';
+// import { bedroomsTypes } from '@/bedroomstype/bedroomsType';
 import { Button } from '@/components/ui/button';
 import { DialogClose, DialogFooter } from '@/components/ui/dialog';
+// import Icon from '@/components/ui/icons/icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from "@/components/ui/use-toast";
+import { bedroomsTypes } from '../bedroomstype/bedroomsType';
 
 export function FormReservation() {
     const { toast } = useToast();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
         const response = await saveReservation(new FormData(event.currentTarget));
 
         if (response.success) {
@@ -23,7 +27,7 @@ export function FormReservation() {
         } else {
             toast({
                 title: "Reserva no realizada.",
-                description: "Ha ocurrido un error al realizar la reservación.",
+                description: response.message || "Ha ocurrido un error al realizar la reservación.",
             });
         }
     };
@@ -56,7 +60,14 @@ export function FormReservation() {
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <Label className="text-right" htmlFor="rooms">Habitaciones</Label>
-                    <Input id="rooms" name="rooms" type="number" min="1" placeholder="Cantidad de habitaciones" required />
+                    <Input
+                        id="rooms"
+                        name="rooms"
+                        type="number"
+                        min="1"
+                        placeholder="Cantidad de habitaciones"
+                        required
+                    />
                 </div>
                 <div>
                     <Label className="text-right" htmlFor="bedroomsType">Tipo de habitación</Label>
@@ -81,22 +92,23 @@ export function FormReservation() {
             </div>
 
             <DialogFooter className="flex flex-wrap justify-between pt-4 gap-4">
-            <DialogClose asChild>
-                <Button
-                    type="button"
-                    variant="destructive">
-                    Cancelar
-                </Button>
-            </DialogClose>
+                <DialogClose asChild>
+                    <Button
+                        type="button"
+                        variant="destructive">
+                        {/* <Icon action='undo' className="mr-2" /> */}
+                        Cancelar
+                    </Button>
+                </DialogClose>
 
-            {/* <DialogClose asChild> */}
-                <Button
-                    type="submit"
-                    variant="success"
-                >
-                    Reservaré
-                </Button>
-            {/* </DialogClose> */}
+                {/* <DialogClose asChild> */}
+                    <Button
+                        type="submit"
+                        variant="success">
+                        {/* <Icon action='save' className="mr-2" /> */}
+                        Reservar
+                    </Button>
+                {/* </DialogClose> */}
             </DialogFooter>
         </form>
     );
