@@ -1,8 +1,6 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
-import { Button } from './ui/button';
-import { authOptions } from '@/lib/auth';
+
 import { useSession } from 'next-auth/react';
 import AvatarNavigations from './navbar/avatarNav';
 import { MenuDrop } from './navbar/menu';
