@@ -25,7 +25,9 @@ export function SelectRoomModal() {
     roomType: ''
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { id, value } = e.target;
 
     if (['guests', 'rooms'].includes(id) && parseInt(value) < 0) return;
@@ -138,7 +140,10 @@ export function SelectRoomModal() {
             />
           </div>
           <DialogFooter className="flex justify-between pt-4">
-            <Button className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" type="submit">
+            <Button
+              className="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              type="submit"
+            >
               Confirmar
             </Button>
             <Button variant="destructive" type="button">

@@ -1,4 +1,3 @@
-import { bookingsForms } from '@/app/actions/bookings/booking';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -17,12 +16,7 @@ export async function ModalDescriptions() {
     <form>
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-            className="bg-blue-600 text-white font-bold py-2 px-4 rounded"
-            variant="outline"
-          >
-            Ver disponibilidad
-          </Button>
+          <Button variant="link">Ver disponibilidad</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[700px] sm:h-[600px] sm:m-5  m-0 p-4">
           <DialogHeader>
