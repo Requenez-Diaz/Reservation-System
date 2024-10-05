@@ -1,8 +1,5 @@
-
-
 import React from 'react';
 import { saveRoom } from '../../actions/rooms/save';
-
 
 export default async function addRooms() {
   return (

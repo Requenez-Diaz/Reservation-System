@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import './globals.css';
+
 import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 import Footer from '@/components/footer/footer';
@@ -23,18 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable
-        )}
-      >
-        <Provider>
-          <main className="">{children}</main>
-          <Toaster />
-        </Provider>
-      </body>
-    </html>
+    <div>
+      <Navbar />
+      <main className="">{children}</main>
+      <Footer />
+      <Toaster />
+    </div>
   );
 }
