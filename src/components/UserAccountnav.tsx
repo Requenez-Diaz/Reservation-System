@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import AvatarNavigations from './navbar/avatarNav';
-import { MenuDrop } from './navbar/menu';
+import { MenuDrop } from './navbar/menuProfile';
 
 const UserAccountnav = () => {
   const session = useSession({ required: true });

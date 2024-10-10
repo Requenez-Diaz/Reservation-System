@@ -25,11 +25,11 @@ export default function RoomInfoHome() {
           <Card key={room.id} className="overflow-hidden">
             <img
               src={room.image}
-              alt={room.name}
+              alt={room.typeBedroom}
               className="w-full h-48 object-cover"
             />
             <CardHeader>
-              <CardTitle>{room.name}</CardTitle>
+              <CardTitle>{room.typeBedroom}</CardTitle>
               <CardDescription>{room.description}</CardDescription>
             </CardHeader>
             <CardContent>
@@ -49,7 +49,7 @@ export default function RoomInfoHome() {
             </CardContent>
             <CardFooter className="flex justify-between items-center">
               <div className="text-2xl font-bold">
-                ${room.price}
+                ${room.lowSeasonPrice}
                 <span className="text-sm font-normal">/noche</span>
               </div>
               <ModalDescriptions />

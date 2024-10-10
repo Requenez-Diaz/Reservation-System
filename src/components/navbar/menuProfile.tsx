@@ -19,6 +19,9 @@ import {
 import AvatarNavigations from './avatarNav';
 import { signOut } from 'next-auth/react';
 import { ModalEditUsers } from '../form/users/modal-users';
+import UserProfilePage from './editUsers';
+import { User } from 'lucide-react';
+import { DialogTrigger } from '../ui/dialog';
 
 export function MenuDrop() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -36,7 +39,9 @@ export function MenuDrop() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onSelect={() => setModalOpen(true)}>
-              Editar perfil
+              {/* <Button className="bg-transparent hover:bg-transparent">
+                <UserProfilePage />
+              </Button> */}
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem>

@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import UserAccountnav from '../UserAccountnav';
 import AvatarNavigations from './avatarNav';
-import { MenuDrop } from './menu';
+import { MenuDrop } from './menuProfile';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
