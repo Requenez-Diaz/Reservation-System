@@ -3,8 +3,8 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 import Footer from '@/components/footer/footer';
-import Navbar from '@/components/navbar/navigation';
-import Provider from '@/components/Provider';
+import Navbar from '@/app/(site)/navbar/navigation';
+import Provider from '@/app/(site)/navbar/usersComponents/Provider';
 import { Toaster } from '@/components/ui/toaster';
 
 export const fontSans = FontSans({

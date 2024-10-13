@@ -18,10 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import AvatarNavigations from './avatarNav';
 import { signOut } from 'next-auth/react';
-import { ModalEditUsers } from '../form/users/modal-users';
-import UserProfilePage from './editUsers';
-import { User } from 'lucide-react';
-import { DialogTrigger } from '../ui/dialog';
+import { ModalEditUsers } from '../../../components/form/users/modal-users';
 
 export function MenuDrop() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -104,7 +101,7 @@ export function MenuDrop() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ModalEditUsers isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      {/* <ModalEditUsers isOpen={modalOpen} onClose={() => setModalOpen(false)} /> */}
     </>
   );
 }
