@@ -18,11 +18,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import AvatarNavigations from './avatarNav';
 import { signOut } from 'next-auth/react';
-import { ModalEditUsers } from '../../../components/form/users/modal-users';
+import Link from 'next/link';
+import { LogOutIcon } from 'lucide-react';
 
 export function MenuDrop() {
-  const [modalOpen, setModalOpen] = useState(false);
-
   return (
     <>
       <DropdownMenu>
@@ -35,44 +34,30 @@ export function MenuDrop() {
           <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem onSelect={() => setModalOpen(true)}>
-              {/* <Button className="bg-transparent hover:bg-transparent">
-                <UserProfilePage />
-              </Button> */}
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
             <DropdownMenuItem>
-              Configuración
+              <Link href={'/profile'}>Configuraciones</Link>
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Keyboard shortcuts
-              <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>Team</DropdownMenuItem>
+            <DropdownMenuItem>Soporte</DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger>Invitar Usuarios</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem>Email</DropdownMenuItem>
-                  <DropdownMenuItem>Message</DropdownMenuItem>
+                  <DropdownMenuItem>WhatsApp</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>More...</DropdownMenuItem>
+                  <DropdownMenuItem>Mas...</DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-            <DropdownMenuItem>
-              New Team
-              <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
-            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>GitHub</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuItem disabled>API</DropdownMenuItem>
+          <DropdownMenuItem>Soporte</DropdownMenuItem>
+
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onSelect={() =>
@@ -82,26 +67,12 @@ export function MenuDrop() {
               })
             }
           >
-            <svg
-              className="mr-2"
-              fill="none"
-              viewBox="0 0 15 15"
-              height="1em"
-              width="1em"
-            >
-              <path
-                fill="currentColor"
-                fillRule="evenodd"
-                d="M4.5 1a.5.5 0 000 1H12v11H4.5a.5.5 0 000 1H12a1 1 0 001-1V2a1 1 0 00-1-1H4.5zm2.104 3.896a.5.5 0 10-.708.708L7.293 7H.5a.5.5 0 000 1h6.793L5.896 9.396a.5.5 0 00.708.708l2.25-2.25a.5.5 0 000-.708l-2.25-2.25z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Sign out
+            <LogOutIcon className="w-4 h-4 mr-2" />
+            Cerrar Sesion
             <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      {/* <ModalEditUsers isOpen={modalOpen} onClose={() => setModalOpen(false)} /> */}
     </>
   );
 }
