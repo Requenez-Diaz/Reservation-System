@@ -3,10 +3,11 @@ import { CarouselDescriptions } from './cardsSearchRooms/carrucelServicios';
 import { ContainerAboutHotels } from './adventagesHotels/containerAboutServices';
 import Collage from './galleryBedrooms/galleryBedrooms';
 import CardDescriptions from './cardsSearchRooms/cardsServicesHotels';
-import CollageImage from './collageImage';
+import CollageImage from './roomInfoHome';
 import BannerHome from './bannerHome';
 import BookingsFormsHome from './componentsBooksForms/formBookHome';
 import GalleryBedrooms from './galleryBedrooms/galleryBedrooms';
+import RoomInfoHome from './roomInfoHome';
 
 const ContainerHome = () => {
   return (
@@ -17,7 +18,7 @@ const ContainerHome = () => {
       <ContainerAboutHotels />
       <GalleryBedrooms />
       <CardDescriptions />
-      <CollageImage />
+      <RoomInfoHome />
     </div>
   );
 };

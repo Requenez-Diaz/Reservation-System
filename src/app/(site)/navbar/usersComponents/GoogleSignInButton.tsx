@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../../../../components/ui/button';
 
 interface GoogleSignInButtonProps {
   children: ReactNode;
@@ -8,7 +8,7 @@ const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({ children }) => {
   const loginWithGoogle = () => console.log('login with google');
 
   return (
-    <Button onClick={loginWithGoogle} className='w-full'>
+    <Button onClick={loginWithGoogle} className="w-full">
       {children}
     </Button>
   );

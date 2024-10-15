@@ -1,9 +1,7 @@
 'use client';
 
-
 import { useSession } from 'next-auth/react';
-import AvatarNavigations from './navbar/avatarNav';
-import { MenuDrop } from './navbar/menu';
+import { MenuDrop } from '../menuProfile';
 
 const UserAccountnav = () => {
   const session = useSession({ required: true });

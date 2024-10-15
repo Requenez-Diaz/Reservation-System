@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import AvatarNavigations from './avatarNav';
 import { signOut } from 'next-auth/react';
-import { ModalEditUsers } from '../form/users/modal-users';
+import { ModalEditUsers } from '../../../components/form/users/modal-users';
 
 export function MenuDrop() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -36,7 +36,9 @@ export function MenuDrop() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onSelect={() => setModalOpen(true)}>
-              Editar perfil
+              {/* <Button className="bg-transparent hover:bg-transparent">
+                <UserProfilePage />
+              </Button> */}
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem>
@@ -99,7 +101,7 @@ export function MenuDrop() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ModalEditUsers isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      {/* <ModalEditUsers isOpen={modalOpen} onClose={() => setModalOpen(false)} /> */}
     </>
   );
 }
