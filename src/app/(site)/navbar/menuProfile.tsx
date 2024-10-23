@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { LogOutIcon } from 'lucide-react';
 
 export function MenuDrop() {
+  console.log('xxx', window.location.origin);
   return (
     <>
       <DropdownMenu>
@@ -63,7 +64,7 @@ export function MenuDrop() {
             onSelect={() =>
               signOut({
                 redirect: true,
-                callbackUrl: `${window.location.origin}/sign-in`
+                callbackUrl: `/`
               })
             }
           >
