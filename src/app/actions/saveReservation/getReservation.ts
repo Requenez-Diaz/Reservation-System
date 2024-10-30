@@ -1,19 +1,38 @@
 'use server';
 
 import prisma from '@/lib/db';
+import { getServerSession } from 'next-auth/next';
 
 export const getReservations = async () => {
-  try {
-    const reservations = await prisma.reservation.findMany({
-      orderBy: {
-        createdAt: 'desc'
-      }
-    });
+    try {
+        const session = await getServerSession();
+        const userEmail = session?.user?.email;
 
-    console.log('reservations:', reservations);
-    return reservations;
-  } catch (error) {
-    console.error('Error al obtener las reservas', error);
-    return [];
-  }
+        if (!userEmail) {
+            throw new Error('No estás autenticado.');
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { email: userEmail },
+        });
+
+        if (!user) {
+            throw new Error('Usuario no encontrado.');
+        }
+
+        const reservations = await prisma.reservation.findMany({
+            where: {
+                email: userEmail,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        console.log('reservations:', reservations);
+        return { user, reservations };
+    } catch (error) {
+        console.error('Error al obtener las reservas', error);
+        return { user: null, reservations: [] };
+    }
 };

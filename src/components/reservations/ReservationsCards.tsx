@@ -76,7 +76,7 @@ export default function ReservationCards() {
                 </div>
                 <Badge
                   variant={
-                    reservation.status === 'Confirmada' ? 'success' : 'pending'
+                    reservation.status === 'Confirmada' ? 'success' : 'default'
                   }
                 >
                   {reservation.status}
