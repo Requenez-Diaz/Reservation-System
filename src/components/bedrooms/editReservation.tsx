@@ -8,8 +8,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import FormEditReservation from './editReservationForm';
-import { getReservationById } from '@/app/actions/saveReservation/getReservationById';
-
+import { getReservationById } from '@/app/actions/saveReservation';
 
 export async function EditReservation({ reservationId }: { reservationId: number }) {
     const reservation = await getReservationById(reservationId);

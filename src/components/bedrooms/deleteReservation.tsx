@@ -13,7 +13,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { deleteReservation } from "@/app/actions/saveReservation/deleteReservation";
+import { deleteReservation } from "@/app/actions/saveReservation";
 
 export function DeleteReservation({ reservationId }: { reservationId: number }) {
     const { toast } = useToast();
