@@ -1,13 +1,17 @@
-import { getReservations } from '@/app/actions/saveReservation/getReservation';
 import React from 'react';
 import { EditReservation } from '../bedrooms/editReservation';
 import { DeleteReservation } from '../bedrooms/deleteReservation';
 import { Badge, BadgeProps } from "@/components/ui/badge";
 import { Status } from '@prisma/client';
 import { calculateDuration } from '@/app/actions/saveReservation/calculateDuration';
+import { getReservations } from '@/app/actions/saveReservation';
 
-async function ReservationsPage() {
-  const reservations = await getReservations();
+const ReservationsPage = async () => {
+  const { user, reservations } = await getReservations();
+
+  if (!user) {
+    return <div>No estás autenticado.</div>;
+  }
 
   if (reservations.length === 0) {
     return <div>No hay reservas disponibles.</div>;
@@ -28,8 +32,11 @@ async function ReservationsPage() {
   return (
     <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
       <h1 className="text-3xl font-bold mb-6 text-center">
-        Los datos de tus reservas
+        Bienvenido, {user.username}
       </h1>
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        Mis Reservaciones
+      </h2>
 
       {reservations.map((reservation) => (
         <div
@@ -67,6 +74,8 @@ async function ReservationsPage() {
             <h2 className="text-xl font-semibold mb-2">
               Duración total de la estancia:
             </h2>
+            <p>Usuario: {user.username} </p>
+            <p>Email: {user.email} </p>
             <p className="text-gray-700 text-lg">
               <span className="font-bold">
                 {calculateDuration(
@@ -115,6 +124,6 @@ async function ReservationsPage() {
       ))}
     </div>
   );
-}
+};
 
 export default ReservationsPage;
