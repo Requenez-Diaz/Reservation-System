@@ -8,15 +8,15 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  username  String     @unique
-  password  String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  roleName  String
-  Role      Role       @relation(fields: [roleName], references: [roleName])
-  reservations Reservation[]
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  username    String        @unique
+  password    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  roleName    String
+  Reservation Reservation[]
+  Role        Role          @relation(fields: [roleName], references: [roleName])
 }
 
 model Role {
@@ -38,10 +38,10 @@ model Bedrooms {
   lowSeasonPrice  Int
   highSeasonPrice Int
   status          Boolean
-  capacity        Int
-  amenities       String[]
   numberBedroom   Int
   seasonsId       Int
+  amenities       String[]
+  capacity        Int
   seasons         Seasons           @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
   bookingsDetails BookingsDetails[]
 }
@@ -60,7 +60,7 @@ model Reservation {
   updatedAt     DateTime @updatedAt
   status        Status
   userId        Int
-  user          User     @relation(fields: [userId], references: [id])
+  User          User     @relation(fields: [userId], references: [id])
 }
 
 model Comments {
