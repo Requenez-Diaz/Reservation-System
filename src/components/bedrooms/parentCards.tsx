@@ -7,6 +7,7 @@ interface Item {
   lowSeasonPrice: number;
   status: boolean;
   numberBedroom: number;
+  
 }
 
 interface ParentComponents {
