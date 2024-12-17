@@ -19,7 +19,7 @@ function HeaderBedrooms() {
         </h1>
       </div>
     </div>
-  );
+  );  
 }
 
 export default HeaderBedrooms;

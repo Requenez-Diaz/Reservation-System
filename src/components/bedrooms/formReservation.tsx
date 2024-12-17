@@ -24,7 +24,7 @@ const FormSchema = z.object({
 });
 
 export function FormReservation() {
-    const { toast } = useToast();
+  const { toast } = useToast();
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -47,18 +47,19 @@ export function FormReservation() {
             departureDate: new Date(data.departureDate),
         });
 
-        if (response.success) {
-            toast({
-                title: "Reserva realizada.",
-                description: "La reservación se registró correctamente.",
-            });
-        } else {
-            toast({
-                title: "Reserva no realizada.",
-                description: response.message || "Ha ocurrido un error al realizar la reservación.",
-            });
-        }
-    };
+    if (response.success) {
+      toast({
+        title: 'Reserva realizada.',
+        description: 'La reservación se registró correctamente.'
+      });
+    } else {
+      toast({
+        title: 'Reserva no realizada.',
+        description:
+          response.message || 'Ha ocurrido un error al realizar la reservación.'
+      });
+    }
+  };
 
     return (
         <Form {...form}>
