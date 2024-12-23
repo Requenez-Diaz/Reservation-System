@@ -1,9 +1,17 @@
+'use client';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import { RoomAvailability } from './roomAvailability';
 import { AddReservation } from './addReservation';
 import BedroomDetail from './bedroomDetail';
-import { Wifi, Wind, MessageCircle } from 'lucide-react';
+
+import {
+  Wifi,
+  Wind,
+  MessageCircle,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -13,6 +21,8 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { CommentCount } from '../coments/commentCount';
 
 interface PropsCardsProps {
   typeBedroom: string;
@@ -20,6 +30,7 @@ interface PropsCardsProps {
   lowSeasonPrice: number;
   status: boolean;
   numberBedroom: number;
+  commentCount: number;
 }
 
 export default function PropsCards({
@@ -27,8 +38,15 @@ export default function PropsCards({
   description,
   lowSeasonPrice,
   status,
-  numberBedroom
+  numberBedroom,
+  commentCount
 }: PropsCardsProps) {
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+
+  const toggleComments = () => {
+    setIsCommentsOpen(!isCommentsOpen);
+  };
+
   return (
     <Card className="w-full max-w-screen-sm mx-auto overflow-hidden transition-all duration-300 hover:shadow-xl">
       <div className="relative h-64 overflow-hidden group">
@@ -69,14 +87,36 @@ export default function PropsCards({
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-0 pt-4 flex flex-row items-stretch gap-4">
-          <div className="flex flex-row gap-2 w-full">
+        <CardFooter className="p-0 pt-4 flex flex-col gap-4">
+          <div className="flex flex-row items-stretch gap-2 w-full">
             <AddReservation />
-            <Button variant="outline" className="w-full">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Comentarios
+            <Button
+              variant="outline"
+              className="w-full flex justify-between items-center"
+              onClick={toggleComments}
+            >
+              <div className="flex items-center">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Comentarios
+              </div>
+              {isCommentsOpen ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
             </Button>
           </div>
+          {isCommentsOpen && (
+            <div className="w-full">
+              <CommentCount count={commentCount} />
+              <Link
+                href="comments"
+                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
+              >
+                Ver todos los comentarios
+              </Link>
+            </div>
+          )}
           <RoomAvailability isAvailable={status} />
         </CardFooter>
       </div>

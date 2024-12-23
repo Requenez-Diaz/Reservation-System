@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-
 import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 import Footer from '@/components/footer/footer';
@@ -23,11 +22,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <Navbar />
-      <main className="">{children}</main>
-      <Footer />
-      <Toaster />
-    </div>
+    <html lang="es">
+      <body
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased',
+          fontSans.variable
+        )}
+      >
+        <Provider>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </div>
+          <Toaster />
+        </Provider>
+      </body>
+    </html>
   );
 }
