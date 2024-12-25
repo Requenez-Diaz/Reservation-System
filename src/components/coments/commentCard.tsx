@@ -1,8 +1,9 @@
 import React from 'react';
 import { ThumbsUp, ThumbsDown, MoreVertical, Star } from 'lucide-react';
+import User from '@/app/(site)/navbar/usersComponents/User';
 
 interface CommentCardProps {
-  author: string;
+  user: string;
   date: string;
   content: string;
   rating: number;
@@ -12,7 +13,7 @@ interface CommentCardProps {
 }
 
 export default function CommentCard({
-  author,
+  user,
   date,
   content,
   rating,
@@ -26,11 +27,11 @@ export default function CommentCard({
         <div className="flex items-center space-x-4">
           <img
             src={avatarUrl}
-            alt={author}
+            alt={user}
             className="w-12 h-12 rounded-full object-cover"
           />
           <div>
-            <h3 className="font-semibold text-gray-800">{author}</h3>
+            <h3 className="font-semibold text-gray-800">{user}</h3>
             <p className="text-sm text-gray-500">{date}</p>
           </div>
         </div>

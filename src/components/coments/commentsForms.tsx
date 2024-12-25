@@ -57,11 +57,11 @@ export default function CommentForm({ bedroomId }: { bedroomId?: number }) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 shadow-sm">
-      <h3 className="text-lg font-semibold mb-4">Write a Review</h3>
+      <h3 className="text-lg font-semibold mb-4">Escribe tu comentario</h3>
 
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Rating
+          Calificación
         </label>
         <StarRating rating={rating} onRatingChange={setRating} />
       </div>
@@ -71,14 +71,14 @@ export default function CommentForm({ bedroomId }: { bedroomId?: number }) {
           htmlFor="comment"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Your Review
+          Tu comentario
         </label>
         <textarea
           id="comment"
           name="comment"
           rows={4}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Share your experience..."
+          placeholder="Comparte tu experencias..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           required
@@ -90,14 +90,14 @@ export default function CommentForm({ bedroomId }: { bedroomId?: number }) {
           htmlFor="content"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Content
+          Contenido adicional
         </label>
         <textarea
           id="content"
           name="content"
           rows={2}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Additional content..."
+          placeholder="Contenido adicional..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
           required
@@ -110,7 +110,7 @@ export default function CommentForm({ bedroomId }: { bedroomId?: number }) {
         type="submit"
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
       >
-        Submit Review
+        Enviar Comentario
       </button>
     </form>
   );

@@ -1,51 +1,21 @@
 import React from 'react';
 import { MessageSquare, Star } from 'lucide-react';
+import { getAllComments } from '@/app/actions/comments/getComments';
+import { CommentCountWrapper } from '@/components/coments/commentsCountWrapper';
 import CommentForm from '@/components/coments/commentsForms';
 import CommentCard from '@/components/coments/commentCard';
 
-const SAMPLE_COMMENTS = [
-  {
-    author: 'Sarah Johnson',
-    date: 'March 15, 2024',
-    content:
-      'Amazing room with a spectacular view! The amenities were top-notch and the bed was incredibly comfortable. The staff was very attentive to all our needs.',
-    rating: 5,
-    likes: 24,
-    dislikes: 1,
-    avatarUrl:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
-  },
-  {
-    author: 'Michael Chen',
-    date: 'March 14, 2024',
-    content:
-      'Great location and beautiful decor. The room was spotless and well-maintained. Would definitely recommend to others!',
-    rating: 4,
-    likes: 15,
-    dislikes: 2,
-    avatarUrl:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'
-  },
-  {
-    author: 'Emily Wilson',
-    date: 'March 13, 2024',
-    content:
-      'The room exceeded my expectations. Modern amenities with a cozy feel. Perfect for both business and leisure travelers.',
-    rating: 5,
-    likes: 19,
-    dislikes: 0,
-    avatarUrl:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150'
-  }
-];
+export default async function CommentsPage() {
+  const comments = await getAllComments();
 
-export default function CommentsPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center space-x-2 mb-8">
           <MessageSquare className="w-8 h-8 text-blue-600" />
-          <h1 className="text-3xl font-bold text-gray-900">Room Reviews</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Lo que dicen nuestros cientes
+          </h1>
         </div>
 
         <div className="mb-8">
@@ -53,11 +23,9 @@ export default function CommentsPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Reviews & Ratings
+                  Calificaciones y comentarios
                 </h2>
-                <p className="text-gray-600">
-                  {SAMPLE_COMMENTS.length} reviews
-                </p>
+                <CommentCountWrapper />
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-3xl font-bold text-gray-900">4.7</span>
@@ -81,8 +49,14 @@ export default function CommentsPage() {
           <CommentForm />
 
           <div className="space-y-4">
-            {SAMPLE_COMMENTS.map((comment, index) => (
-              <CommentCard key={index} {...comment} />
+            {comments.map((comment, index) => (
+              <CommentCard
+                key={index}
+                user={comment.User.username}
+                date={comment.User.createdAt.toISOString()}
+                content={comment.content}
+                rating={comment.rating}
+              />
             ))}
           </div>
         </div>
