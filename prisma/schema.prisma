@@ -17,6 +17,7 @@ model User {
   roleName    String
   Reservation Reservation[]
   Role        Role          @relation(fields: [roleName], references: [roleName])
+  comments    Comments[]
 }
 
 model Role {
@@ -44,6 +45,7 @@ model Bedrooms {
   capacity        Int
   seasons         Seasons           @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
   bookingsDetails BookingsDetails[]
+  comments        Comments[]
 }
 
 model Reservation {
@@ -64,10 +66,22 @@ model Reservation {
 }
 
 model Comments {
-  id         Int    @id @default(autoincrement())
-  comment    String
-  boookingId Int
-  comments   String
+  id        Int      @id @default(autoincrement())
+  comments  String
+  content   String
+  rating    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  //relations
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  Bedrooms   Bedrooms? @relation(fields: [bedroomsId], references: [id])
+  bedroomsId Int?
+
+  // @@index([userId], name: "userId")
+  // @@index([bedroomsId], name: "bedroomsId")
+  // @@map("comments")
 }
 
 model Events {
