@@ -26,6 +26,8 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 
 const roomTypes = [
   'Habitación Individual',
@@ -35,7 +37,7 @@ const roomTypes = [
   'Villa'
 ];
 
-export default function SearchForm() {
+export default function BedroomSearch() {
   const [date, setDate] = React.useState<{
     from: Date | undefined;
     to: Date | undefined;
@@ -46,9 +48,32 @@ export default function SearchForm() {
   const [open, setOpen] = React.useState(false);
   const [roomType, setRoomType] = React.useState('');
   const [guests, setGuests] = React.useState(1);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [bedrooms, setBedrooms] = React.useState([]);
+
+  const filteredRoomTypes = React.useMemo(() => {
+    return roomTypes.filter((type) =>
+      type.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
+  const handleSearch = async () => {
+    try {
+      const results = await getAllBedrooms({
+        type: roomType,
+        dateStart: date.from,
+        dateEnd: date.to,
+        guests: guests
+      });
+      setBedrooms(results);
+    } catch (error) {
+      console.error('Error searching bedrooms:', error);
+      setBedrooms([]);
+    }
+  };
 
   return (
-    <div className="min-h-[200px] w-full bg-gradient-to-b from-primary/10 to-background p-8">
+    <div className="min-h-screen w-full bg-gradient-to-b from-primary/10 to-background p-8">
       <Card className="mx-auto max-w-4xl">
         <CardHeader className="text-center">
           <CardTitle className="text-4xl font-bold tracking-tight">
@@ -62,27 +87,31 @@ export default function SearchForm() {
           <div className="grid gap-4 md:grid-cols-[1fr,1fr,auto,auto] md:items-center">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="justify-between text-muted-foreground"
-                >
-                  <MapPin className="mr-2 h-4 w-4 shrink-0" />
-                  {roomType || 'Selecciona tipo de habitación'}
-                </Button>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Buscar tipo de habitación"
+                    className="pl-9"
+                  />
+                </div>
               </PopoverTrigger>
               <PopoverContent className="p-0">
                 <Command>
-                  <CommandInput placeholder="Buscar tipo de habitación..." />
+                  <CommandInput
+                    placeholder="Buscar tipo de habitación..."
+                    value={searchTerm}
+                    onValueChange={setSearchTerm}
+                  />
                   <CommandEmpty>No se encontraron resultados.</CommandEmpty>
                   <CommandGroup>
-                    {roomTypes.map((type) => (
+                    {filteredRoomTypes.map((type) => (
                       <CommandItem
                         key={type}
                         value={type}
                         onSelect={(currentValue) => {
                           setRoomType(currentValue);
+                          setSearchTerm('');
                           setOpen(false);
                         }}
                       >
@@ -156,12 +185,31 @@ export default function SearchForm() {
               </Button>
             </div>
 
-            <Button className="" variant={'success'}>
+            <Button className="" variant={'success'} onClick={handleSearch}>
               Buscar
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      {bedrooms.length > 0 && (
+        <Card className="mx-auto max-w-4xl mt-8">
+          <CardHeader>
+            <CardTitle>Resultados de la búsqueda</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-4">
+              {bedrooms.map((bedroom: any) => (
+                <li key={bedroom.id} className="border-b pb-4">
+                  <h3 className="text-lg font-semibold">{bedroom.type}</h3>
+                  <p>Capacidad: {bedroom.capacity} personas</p>
+                  <p>Precio: ${bedroom.price} por noche</p>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
