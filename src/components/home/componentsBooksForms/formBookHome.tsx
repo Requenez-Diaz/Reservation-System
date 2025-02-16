@@ -57,23 +57,12 @@ export default function BedroomSearch() {
     );
   }, [searchTerm]);
 
-  const handleSearch = async () => {
-    try {
-      const results = await getAllBedrooms({
-        type: roomType,
-        dateStart: date.from,
-        dateEnd: date.to,
-        guests: guests
-      });
-      setBedrooms(results);
-    } catch (error) {
-      console.error('Error searching bedrooms:', error);
-      setBedrooms([]);
-    }
-  };
+  React.useEffect(() => {
+    getAllBedrooms().then((bedrooms) => setBedrooms(bedrooms));
+  }, []);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-primary/10 to-background p-8">
+    <div className="w-full bg-gradient-to-b from-primary/10 to-background p-8">
       <Card className="mx-auto max-w-4xl">
         <CardHeader className="text-center">
           <CardTitle className="text-4xl font-bold tracking-tight">
@@ -86,16 +75,15 @@ export default function BedroomSearch() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-[1fr,1fr,auto,auto] md:items-center">
             <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Buscar tipo de habitación"
-                    className="pl-9"
-                  />
-                </div>
-              </PopoverTrigger>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Buscar tipo de habitación"
+                  className="pl-9"
+                />
+              </div>
+
               <PopoverContent className="p-0">
                 <Command>
                   <CommandInput
@@ -185,7 +173,7 @@ export default function BedroomSearch() {
               </Button>
             </div>
 
-            <Button className="" variant={'success'} onClick={handleSearch}>
+            <Button className="" variant={'success'} >
               Buscar
             </Button>
           </div>
