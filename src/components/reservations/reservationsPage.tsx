@@ -74,15 +74,15 @@ const ReservationsPage = async () => {
             <h2 className="text-xl font-semibold mb-2">
               Duración total de la estancia:
             </h2>
-            <p>Usuario: {user.username} </p>
-            <p>Email: {user.email} </p>
+            <p>Usuario: {user.username}</p>
+            <p>Email: {user.email}</p>
             <p className="text-gray-700 text-lg">
               <span className="font-bold">
                 {calculateDuration(
                   reservation.arrivalDate.toString(),
                   reservation.departureDate.toString()
                 )}
-              </span>
+              </span>{' '}
               noche
               {calculateDuration(
                 reservation.arrivalDate.toString(),
@@ -116,10 +116,16 @@ const ReservationsPage = async () => {
             </p>
           </div>
 
-          <div className="flex justify-between pt-4 gap-4">
-            <DeleteReservation reservationId={reservation.id} />
-            <EditReservation reservationId={reservation.id} />
-          </div>
+          {reservation.status === Status.PENDING ? (
+            <div className="flex justify-between pt-4 gap-4">
+              <DeleteReservation reservationId={reservation.id} />
+              <EditReservation reservationId={reservation.id} />
+            </div>
+          ) : (
+            <div className="text-center text-gray-600 italic">
+              No se pueden modificar reservaciones confirmadas o canceladas.
+            </div>
+          )}
         </div>
       ))}
     </div>

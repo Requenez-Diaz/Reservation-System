@@ -55,6 +55,17 @@ export const saveReservation = async (data: {
             };
         }
 
+        const user = await prisma.user.findUnique({
+            where: { email: userEmail },
+        });
+
+        if (!user) {
+            return {
+                success: false,
+                message: "Usuario no encontrado.",
+            };
+        }
+
         await prisma.reservation.create({
             data: {
                 name,
@@ -66,11 +77,7 @@ export const saveReservation = async (data: {
                 arrivalDate,
                 departureDate,
                 status: Status.PENDING,
-                user: {
-                    connect: {
-                        email: userEmail,
-                    },
-                },
+                userId: user.id,
             },
         });
 
