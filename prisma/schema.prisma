@@ -18,6 +18,8 @@ model User {
   Reservation Reservation[]
   Role        Role          @relation(fields: [roleName], references: [roleName])
   comments    Comments[]
+  image       String?
+  UserImage   UserImage[]
 }
 
 model Role {
@@ -172,6 +174,13 @@ model invoceDetails {
   price    Int
   amount   Int
   invoce   Invoce @relation(fields: [invoceId], references: [id])
+}
+
+model UserImage {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  image  String
+  User   User   @relation(fields: [userId], references: [id])
 }
 
 enum BookingsStatus {
