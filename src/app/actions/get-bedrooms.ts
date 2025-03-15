@@ -24,3 +24,19 @@ export const getAllBedrooms = async () => {
     return [];
   }
 };
+
+export const getBedroomsById = async (id: number) => {
+  try {
+    const bedroom = await prisma.bedrooms.findUnique({
+      where: {
+        id
+      }
+    });
+    console.log('Habitaciónes obtenidas por id', { bedroom });
+    return bedroom;
+  } catch (error) {
+    console.error('Error al obtener la habitación', error);
+
+    return null;
+  }
+};

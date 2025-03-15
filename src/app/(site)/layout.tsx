@@ -1,11 +1,16 @@
+import type React from 'react';
 import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
-
+import { Open_Sans } from 'next/font/google';
 import Footer from '@/components/footer/footer';
-import Navbar from '@/app/(site)/navbar/navigation';
 import Provider from '@/app/(site)/navbar/usersComponents/Provider';
 import { Toaster } from '@/components/ui/toaster';
-import { Open_Sans } from 'next/font/google';
+import dynamic from 'next/dynamic';
+
+// Import Navbar with SSR disabled to prevent hydration mismatch
+const Navbar = dynamic(() => import('@/app/(site)/navbar/navigation'), {
+  ssr: false
+});
 
 export const fontSans = Open_Sans({
   subsets: ['latin'],

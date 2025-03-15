@@ -7,12 +7,6 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Bed, Users, Wifi, Coffee } from 'lucide-react';
-import { SelectRoomModal } from '../offers/SelectRoomModal';
-import { rooms } from './roomsType';
-import { ModalDescriptions } from './carrouselDescriptions/modalDescriptions';
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import OrdersRooms from '../bedrooms/ordersRooms';
 import ParentCards from '../bedrooms/parentCards';

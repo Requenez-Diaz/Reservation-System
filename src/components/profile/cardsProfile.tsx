@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import type React from 'react';
+
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Edit2, User } from 'lucide-react';
+import { Edit2, User, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,16 +15,17 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/use-toast';
+import { useSession } from 'next-auth/react'; // Ajusta esto según tu sistema de autenticación
+import { UploadFile } from '@/app/actions/upload/uploadFile';
 
 const profileSchema = z.object({
-  name: z
+  username: z
     .string()
     .min(2, { message: 'El nombre debe tener al menos 2 caracteres' }),
   email: z.string().email({ message: 'Correo electrónico inválido' }),
@@ -33,6 +36,14 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
+  const [avatarSrc, setAvatarSrc] = useState(ProfileTypes.avatar);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Obtener la sesión del usuario (ajusta esto según tu sistema de autenticación)
+  const { data: session } = useSession();
+  const userId = Number(session?.user?.id);
+
   const {
     register,
     handleSubmit,
@@ -42,6 +53,13 @@ export default function UserProfile() {
     defaultValues: ProfileTypes
   });
 
+  // Cargar la imagen del usuario al iniciar
+  useEffect(() => {
+    if (userId && ProfileTypes.avatar) {
+      setAvatarSrc(ProfileTypes.avatar);
+    }
+  }, [userId]);
+
   const onSubmit = (data: ProfileFormValues) => {
     setIsEditing(false);
     toast({
@@ -49,6 +67,67 @@ export default function UserProfile() {
       description: 'Tu información de perfil ha sido actualizada exitosamente.'
     });
   };
+
+  const handleAvatarClick = () => {
+    if (isEditing) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
+
+    try {
+      setIsUploading(true);
+
+      // Convertir la imagen a base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+
+        // Mostrar la imagen inmediatamente para feedback visual
+        setAvatarSrc(base64String);
+
+        // Subir la imagen al servidor con el ID del usuario autenticado
+        const result = await UploadFile(userId, base64String);
+
+        if (result.success) {
+          toast({
+            title: 'Imagen actualizada',
+            description: 'Tu foto de perfil ha sido actualizada exitosamente.'
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: 'No se pudo actualizar la imagen. Inténtalo de nuevo.',
+            variant: 'destructive'
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Ocurrió un error al procesar la imagen.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  if (!userId) {
+    return (
+      <div className="container mx-auto p-4">
+        <Card>
+          <CardContent className="p-6">
+            <p>Debes iniciar sesión para ver tu perfil.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -70,15 +149,30 @@ export default function UserProfile() {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-4">
-                    <Avatar className="w-20 h-20">
-                      <AvatarImage
-                        src={ProfileTypes.avatar}
-                        alt={ProfileTypes.name}
+                    <div className="relative">
+                      <Avatar
+                        className={`w-20 h-20 ${isEditing ? 'cursor-pointer hover:opacity-80' : ''}`}
+                        onClick={handleAvatarClick}
+                      >
+                        <AvatarImage src={avatarSrc} alt={ProfileTypes.name} />
+                        <AvatarFallback>
+                          <User className="w-10 h-10" />
+                        </AvatarFallback>
+                      </Avatar>
+                      {isEditing && (
+                        <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1">
+                          <Upload size={14} />
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        disabled={isUploading}
                       />
-                      <AvatarFallback>
-                        <User className="w-10 h-10" />
-                      </AvatarFallback>
-                    </Avatar>
+                    </div>
                     <Button
                       type="button"
                       variant="outline"
@@ -88,17 +182,22 @@ export default function UserProfile() {
                       {isEditing ? 'Cancelar' : 'Editar Perfil'}
                     </Button>
                   </div>
+                  {isEditing && (
+                    <p className="text-sm text-muted-foreground">
+                      Haz clic en la imagen para cambiar tu foto de perfil
+                    </p>
+                  )}
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="name">Nombre</Label>
                       <Input
-                        id="name"
-                        {...register('name')}
+                        id="username"
+                        {...register('username')}
                         disabled={!isEditing}
                       />
-                      {errors.name && (
+                      {errors.username && (
                         <p className="text-red-500 text-sm">
-                          {errors.name.message}
+                          {errors.username.message}
                         </p>
                       )}
                     </div>

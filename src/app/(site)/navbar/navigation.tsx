@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { ActiveLink } from '@/components/active-link/ActiveLink';
 import UserAccountnav from '@/app/(site)/navbar/usersComponents/UserAccountnav';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
@@ -17,9 +17,27 @@ const navItems = [
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: session } = useSession();
+  const [isMounted, setIsMounted] = useState(false);
+  const { data: session, status } = useSession();
 
-  console.log(session);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Render a skeleton loader when not mounted
+  if (!isMounted) {
+    return (
+      <nav className="bg-white p-4">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="w-32 h-8 bg-gray-200 rounded"></div>
+          <div className="hidden md:flex items-center gap-x-7">
+            <div className="w-64 h-6 bg-gray-200 rounded"></div>
+            <div className="w-24 h-8 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="bg-white p-4">
@@ -53,7 +71,9 @@ export default function Navbar() {
           </ul>
 
           <div className="flex gap-x-6">
-            {session?.user ? (
+            {status === 'loading' ? (
+              <div className="w-24 h-8 bg-gray-200 rounded"></div>
+            ) : session?.user ? (
               <UserAccountnav />
             ) : (
               <Link
@@ -67,7 +87,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Menú móvil */}
+      {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden mt-4">
           <ul className="flex flex-col gap-y-4 text-black">
@@ -78,7 +98,9 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="mt-4">
-            {session?.user ? (
+            {status === 'loading' ? (
+              <div className="w-24 h-8 bg-gray-200 rounded"></div>
+            ) : session?.user ? (
               <UserAccountnav />
             ) : (
               <Link

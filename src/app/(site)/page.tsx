@@ -1,6 +1,5 @@
 import ContainerHome from '@/components/home/containerHome';
 
-
 const Dashboard = async () => {
   return (
     <main className="">

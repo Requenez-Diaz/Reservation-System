@@ -1,0 +1,59 @@
+'use client';
+
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface Bedroom {
+  id: number;
+  typeBedroom: string;
+  description: string;
+  lowSeasonPrice: number;
+  highSeasonPrice: number;
+  status: boolean;
+  numberBedroom: number;
+  seasonsId: number;
+  amenities: any[];
+  capacity: number;
+  bookingsDetails: any[];
+}
+
+export default function BedroomDetails() {
+  const router = useRouter();
+  const { id } = router.query;
+  console.log('ID de la habitación:', id);
+  const [bedroom, setBedroom] = useState<Bedroom | null>(null);
+
+  useEffect(() => {
+    if (id) {
+      // Replace this with your actual API call
+      fetch(`/habitaciones/${id}`)
+        .then((response) => response.json())
+        .then((data) => setBedroom(data))
+        .catch((error) =>
+          console.error('Error fetching bedroom details:', error)
+        );
+    }
+  }, [id]);
+
+  if (!bedroom) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>{bedroom.typeBedroom}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>{bedroom.description}</p>
+          <p>Capacidad: {bedroom.capacity} personas</p>
+          <p>Precio temporada baja: ${bedroom.lowSeasonPrice}</p>
+          <p>Precio temporada alta: ${bedroom.highSeasonPrice}</p>
+          <p>Número de habitación: {bedroom.numberBedroom}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

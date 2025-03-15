@@ -7,7 +7,7 @@ interface Item {
   lowSeasonPrice: number;
   status: boolean;
   numberBedroom: number;
-  
+  commentCount: number;
 }
 
 interface ParentComponents {
