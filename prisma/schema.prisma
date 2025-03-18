@@ -178,7 +178,7 @@ model invoceDetails {
 
 model UserImage {
   id     Int    @id @default(autoincrement())
-  userId Int
+  userId Int    @unique
   image  String
   User   User   @relation(fields: [userId], references: [id])
 }
