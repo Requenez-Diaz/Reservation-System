@@ -14,7 +14,7 @@ export default function AvatarNavigationsClient() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/api/user');
+        const response = await fetch('/profile');
         const data = await response.json();
 
         if (data.user) {

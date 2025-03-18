@@ -6,11 +6,7 @@ import Footer from '@/components/footer/footer';
 import Provider from '@/app/(site)/navbar/usersComponents/Provider';
 import { Toaster } from '@/components/ui/toaster';
 import dynamic from 'next/dynamic';
-
-// Import Navbar with SSR disabled to prevent hydration mismatch
-const Navbar = dynamic(() => import('@/app/(site)/navbar/navigation'), {
-  ssr: false
-});
+import Navbar from './navbar/navigation';
 
 export const fontSans = Open_Sans({
   subsets: ['latin'],
@@ -69,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={fontSans.variable}>
+    <div lang="es" className={fontSans.variable}>
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
@@ -85,6 +81,6 @@ export default function RootLayout({
           <Toaster />
         </Provider>
       </body>
-    </html>
+    </div>
   );
 }

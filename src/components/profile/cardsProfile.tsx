@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/use-toast';
 import { useSession } from 'next-auth/react'; // Ajusta esto según tu sistema de autenticación
 import { UploadFile } from '@/app/actions/upload/uploadFile';
+import { getUserImage } from '@/app/actions/upload/getUsersImage';
 
 const profileSchema = z.object({
   username: z
@@ -36,11 +37,10 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
-  const [avatarSrc, setAvatarSrc] = useState(ProfileTypes.avatar);
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Obtener la sesión del usuario (ajusta esto según tu sistema de autenticación)
   const { data: session } = useSession();
   const userId = Number(session?.user?.id);
 
@@ -53,11 +53,22 @@ export default function UserProfile() {
     defaultValues: ProfileTypes
   });
 
-  // Cargar la imagen del usuario al iniciar
   useEffect(() => {
-    if (userId && ProfileTypes.avatar) {
-      setAvatarSrc(ProfileTypes.avatar);
-    }
+    const fetchUserImage = async () => {
+      if (!userId) return;
+
+      try {
+        const result = await getUserImage();
+
+        if (result.success && result.image) {
+          setAvatarSrc(result.image);
+        }
+      } catch (error) {
+        console.error('Error al cargar la imagen del usuario:', error);
+      }
+    };
+
+    fetchUserImage();
   }, [userId]);
 
   const onSubmit = (data: ProfileFormValues) => {
@@ -78,6 +89,26 @@ export default function UserProfile() {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
 
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Error',
+        description: 'El archivo seleccionado no es una imagen válida.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: 'Error',
+        description: 'La imagen es demasiado grande. El tamaño máximo es 5MB.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     try {
       setIsUploading(true);
 
@@ -85,11 +116,8 @@ export default function UserProfile() {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64String = reader.result as string;
-
-        // Mostrar la imagen inmediatamente para feedback visual
         setAvatarSrc(base64String);
 
-        // Subir la imagen al servidor con el ID del usuario autenticado
         const result = await UploadFile(userId, base64String);
 
         if (result.success) {
@@ -97,12 +125,22 @@ export default function UserProfile() {
             title: 'Imagen actualizada',
             description: 'Tu foto de perfil ha sido actualizada exitosamente.'
           });
+          const event = new CustomEvent('user-image-updated');
+          window.dispatchEvent(event);
         } else {
           toast({
             title: 'Error',
-            description: 'No se pudo actualizar la imagen. Inténtalo de nuevo.',
+            description:
+              result.error ||
+              'No se pudo actualizar la imagen. Inténtalo de nuevo.',
             variant: 'destructive'
           });
+
+          const imageResult = await getUserImage();
+
+          if (imageResult.success && imageResult.image) {
+            setAvatarSrc(imageResult.image);
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -151,13 +189,23 @@ export default function UserProfile() {
                   <div className="flex items-center space-x-4">
                     <div className="relative">
                       <Avatar
-                        className={`w-20 h-20 ${isEditing ? 'cursor-pointer hover:opacity-80' : ''}`}
+                        className={`w-20 h-20 relative ${isEditing ? 'cursor-pointer hover:opacity-80' : ''}`}
                         onClick={handleAvatarClick}
                       >
-                        <AvatarImage src={avatarSrc} alt={ProfileTypes.name} />
+                        {avatarSrc ? (
+                          <AvatarImage
+                            src={avatarSrc}
+                            alt={ProfileTypes.name}
+                          />
+                        ) : null}
                         <AvatarFallback>
                           <User className="w-10 h-10" />
                         </AvatarFallback>
+                        {isUploading && (
+                          <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center">
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        )}
                       </Avatar>
                       {isEditing && (
                         <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1">
