@@ -15,11 +15,11 @@ model User {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   roleName    String
+  image       String?
+  comments    Comments[]
   Reservation Reservation[]
   Role        Role          @relation(fields: [roleName], references: [roleName])
-  comments    Comments[]
-  image       String?
-  UserImage   UserImage[]
+  UserImage   UserImage?
 }
 
 model Role {
@@ -35,19 +35,20 @@ model UsersRole {
 }
 
 model Bedrooms {
-  id              Int               @id @default(autoincrement())
-  typeBedroom     String
-  description     String
-  lowSeasonPrice  Int
-  highSeasonPrice Int
-  status          Boolean
-  numberBedroom   Int
-  seasonsId       Int
-  amenities       String[]
-  capacity        Int
-  seasons         Seasons           @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
-  bookingsDetails BookingsDetails[]
-  comments        Comments[]
+  id                 Int                  @id @default(autoincrement())
+  typeBedroom        String
+  description        String
+  lowSeasonPrice     Int
+  highSeasonPrice    Int
+  status             Boolean
+  numberBedroom      Int
+  seasonsId          Int
+  amenities          String[]
+  capacity           Int
+  seasons            Seasons              @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
+  BedroomsPromotions BedroomsPromotions[]
+  bookingsDetails    BookingsDetails[]
+  comments           Comments[]
 }
 
 model Reservation {
@@ -68,22 +69,16 @@ model Reservation {
 }
 
 model Comments {
-  id        Int      @id @default(autoincrement())
-  comments  String
-  content   String
-  rating    Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  //relations
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-
-  Bedrooms   Bedrooms? @relation(fields: [bedroomsId], references: [id])
+  id         Int       @id @default(autoincrement())
+  comments   String
   bedroomsId Int?
-
-  // @@index([userId], name: "userId")
-  // @@index([bedroomsId], name: "bedroomsId")
-  // @@map("comments")
+  content    String
+  createdAt  DateTime  @default(now())
+  rating     Int       @default(0)
+  updatedAt  DateTime  @updatedAt
+  userId     Int
+  Bedrooms   Bedrooms? @relation(fields: [bedroomsId], references: [id])
+  User       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Events {
@@ -109,15 +104,6 @@ model historicReservations {
   date        DateTime
 }
 
-model promotions {
-  id                 Int               @id @default(autoincrement())
-  codePromotions     String
-  porcentageDescuent Int
-  dateStart          DateTime
-  dateEnd            DateTime
-  bookingsDetails    BookingsDetails[]
-}
-
 model Services {
   id          String             @id @default(uuid())
   nameService String
@@ -127,11 +113,12 @@ model Services {
 }
 
 model Seasons {
-  id         Int        @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   nameSeason String
   dateStart  DateTime
   dateEnd    DateTime
   bedrooms   Bedrooms[]
+  Promotions Promotions[]
 }
 
 model bookingsServices {
@@ -157,7 +144,7 @@ model BookingsDetails {
   bedroomsId   Int
   promotionsId Int
   bedrooms     Bedrooms   @relation(fields: [bedroomsId], references: [id])
-  promotions   promotions @relation(fields: [promotionsId], references: [id])
+  promotions   Promotions @relation(fields: [promotionsId], references: [id])
 }
 
 model Invoce {
@@ -181,6 +168,31 @@ model UserImage {
   userId Int    @unique
   image  String
   User   User   @relation(fields: [userId], references: [id])
+}
+
+model BedroomsPromotions {
+  id          Int        @id @default(autoincrement())
+  bedroomId   Int
+  promotionId Int
+  Bedrooms    Bedrooms   @relation(fields: [bedroomId], references: [id])
+  Promotions  Promotions @relation(fields: [promotionId], references: [id])
+
+  @@unique([bedroomId, promotionId])
+}
+
+model Promotions {
+  id                 Int                  @id @default(autoincrement())
+  codePromotions     String
+  porcentageDescuent Int
+  dateStart          DateTime
+  dateEnd            DateTime
+  description        String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  seasonId           Int
+  BedroomsPromotions BedroomsPromotions[]
+  bookingsDetails    BookingsDetails[]
+  Seasons            Seasons              @relation(fields: [seasonId], references: [id])
 }
 
 enum BookingsStatus {
