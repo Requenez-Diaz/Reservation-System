@@ -1,18 +1,15 @@
 'use client';
 
 import * as React from 'react';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { CalendarIcon, MapPin, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { MapPin, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem
+  CommandItem,
+  CommandList
 } from '@/components/ui/command';
 import {
   Popover,
@@ -26,29 +23,68 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms';
+import Link from 'next/link';
 
-const roomTypes = [
-  'Habitación Individual',
-  'Habitación Doble',
-  'Suite',
-  'Apartamento',
-  'Villa'
-];
+interface Bedroom {
+  id: number;
+  typeBedroom: string;
+  description: string;
+  lowSeasonPrice: number;
+  highSeasonPrice: number;
+  status: boolean;
+  numberBedroom: number;
+  seasonsId: number;
+  amenities: any[];
+  capacity: number;
+  bookingsDetails: any[];
+}
 
-export default function SearchForm() {
-  const [date, setDate] = React.useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
-    from: undefined,
-    to: undefined
-  });
+export default function BedroomSearch() {
   const [open, setOpen] = React.useState(false);
   const [roomType, setRoomType] = React.useState('');
   const [guests, setGuests] = React.useState(1);
+  const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
+  const [searchResults, setSearchResults] = React.useState<Bedroom[]>([]);
+
+  React.useEffect(() => {
+    const fetchBedrooms = async () => {
+      try {
+        const response: Bedroom[] = await getAllBedrooms();
+        console.log('API Response:', response);
+
+        if (!Array.isArray(response) || response.length === 0) {
+          console.error('API response is not an array or is empty');
+          return;
+        }
+
+        console.log('Bedrooms:', response);
+        setBedrooms(response);
+      } catch (error) {
+        console.error('Error fetching bedrooms:', error);
+      }
+    };
+
+    fetchBedrooms();
+  }, []);
+
+  const handleSearch = () => {
+    console.log('Search parameters:', { roomType, guests });
+    console.log('Available bedrooms:', bedrooms);
+
+    const results = bedrooms.filter(
+      (bedroom) =>
+        bedroom.typeBedroom.toLowerCase().includes(roomType.toLowerCase()) &&
+        bedroom.capacity >= guests
+    );
+
+    console.log('Search results:', results);
+    setSearchResults(results);
+  };
 
   return (
-    <div className="min-h-[200px] w-full bg-gradient-to-b from-primary/10 to-background p-8">
+    <div className="w-full bg-gradient-to-b from-primary/10 to-background p-8">
       <Card className="mx-auto max-w-4xl">
         <CardHeader className="text-center">
           <CardTitle className="text-4xl font-bold tracking-tight">
@@ -59,77 +95,44 @@ export default function SearchForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-[1fr,1fr,auto,auto] md:items-center">
+          <div className="grid gap-4 md:grid-cols-[1fr,auto,auto] md:items-center">
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="justify-between text-muted-foreground"
-                >
-                  <MapPin className="mr-2 h-4 w-4 shrink-0" />
-                  {roomType || 'Selecciona tipo de habitación'}
-                </Button>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Buscar tipo de habitación"
+                    className="pl-9"
+                    value={roomType}
+                    onChange={(e) => setRoomType(e.target.value)}
+                  />
+                </div>
               </PopoverTrigger>
               <PopoverContent className="p-0">
                 <Command>
-                  <CommandInput placeholder="Buscar tipo de habitación..." />
-                  <CommandEmpty>No se encontraron resultados.</CommandEmpty>
-                  <CommandGroup>
-                    {roomTypes.map((type) => (
-                      <CommandItem
-                        key={type}
-                        value={type}
-                        onSelect={(currentValue) => {
-                          setRoomType(currentValue);
-                          setOpen(false);
-                        }}
-                      >
-                        {type}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                  <CommandInput
+                    placeholder="Buscar tipo de habitación..."
+                    value={roomType}
+                    onValueChange={setRoomType}
+                  />
+                  <CommandList>
+                    <CommandEmpty>No se encontraron resultados.</CommandEmpty>
+                    <CommandGroup>
+                      {bedrooms.map((bedroom) => (
+                        <CommandItem
+                          key={bedroom.id}
+                          onSelect={() => {
+                            setRoomType(bedroom.typeBedroom);
+                            setOpen(false);
+                          }}
+                        >
+                          {bedroom.typeBedroom}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
                 </Command>
-              </PopoverContent>
-            </Popover>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    'justify-between text-left text-muted-foreground',
-                    !date && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, 'dd/MM/y', { locale: es })} -{' '}
-                        {format(date.to, 'dd/MM/y', { locale: es })}
-                      </>
-                    ) : (
-                      format(date.from, 'dd/MM/y', { locale: es })
-                    )
-                  ) : (
-                    'Selecciona fechas'
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={(range) =>
-                    setDate({ from: range?.from, to: range?.to })
-                  }
-                  numberOfMonths={2}
-                  locale={es}
-                />
               </PopoverContent>
             </Popover>
 
@@ -156,12 +159,40 @@ export default function SearchForm() {
               </Button>
             </div>
 
-            <Button className="" variant={'success'}>
+            <Button className="" variant={'success'} onClick={handleSearch}>
               Buscar
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      {searchResults.length > 0 && (
+        <Card className="mx-auto max-w-4xl mt-8">
+          <CardHeader>
+            <CardTitle>Resultados de la búsqueda</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-4">
+              {searchResults.map((bedroom) => (
+                <li key={bedroom.id} className="border-b pb-4">
+                  <Link
+                    href={`/habitaciones/${bedroom.id}`}
+                    className="block hover:bg-gray-100 p-2 rounded"
+                  >
+                    <h3 className="text-lg font-semibold">
+                      {bedroom.typeBedroom}
+                    </h3>
+                    <p>{bedroom.description}</p>
+                    <p>Capacidad: {bedroom.capacity} personas</p>
+                    <p>Precio temporada baja: ${bedroom.lowSeasonPrice}</p>
+                    <p>Precio temporada alta: ${bedroom.highSeasonPrice}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

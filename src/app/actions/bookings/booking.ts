@@ -14,10 +14,10 @@ export const saveBookings = async (formData: FormData) => {
     const userIdNumber =
       typeof userId === 'string' ? parseInt(userId) : undefined;
 
-    const booking = await prisma.bookings.create({
+    const booking = await prisma.reservation.create({
       data: {
         status: status as BookingsDetails['status'],
-        created_at: new Date(),
+        createdAt: new Date(),
         bookingsDetails: bookingsDetails
           ? JSON.parse(String(bookingsDetails))
           : {},

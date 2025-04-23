@@ -7,7 +7,7 @@ interface Item {
   lowSeasonPrice: number;
   status: boolean;
   numberBedroom: number;
-  
+  commentCount: number;
 }
 
 interface ParentComponents {
@@ -25,3 +25,5 @@ const ParentCards = ({ items }: ParentComponents) => {
 };
 
 export default ParentCards;
+
+

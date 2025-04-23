@@ -1,11 +1,12 @@
+import type React from 'react';
 import type { Metadata } from 'next';
 import { cn } from '@/lib/utils';
-
+import { Open_Sans } from 'next/font/google';
 import Footer from '@/components/footer/footer';
-import Navbar from '@/app/(site)/navbar/navigation';
 import Provider from '@/app/(site)/navbar/usersComponents/Provider';
 import { Toaster } from '@/components/ui/toaster';
-import { Open_Sans } from 'next/font/google';
+import dynamic from 'next/dynamic';
+import Navbar from './navbar/navigation';
 
 export const fontSans = Open_Sans({
   subsets: ['latin'],
@@ -64,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={fontSans.variable}>
+    <div lang="es" className={fontSans.variable}>
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
@@ -80,6 +81,6 @@ export default function RootLayout({
           <Toaster />
         </Provider>
       </body>
-    </html>
+    </div>
   );
 }
