@@ -1,6 +1,7 @@
 import { Badge, Bed, Wifi, Coffee } from 'lucide-react';
-import type { RoomCardProps } from './types';
+
 import { ModalBookRooms } from './modalRoomsBooks';
+import { RoomCardProps } from './ types';
 
 export default function RoomCard({
   type,

@@ -1,5 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -35,4 +37,8 @@ export function getInitials(name: string): string {
 
   // Si hay múltiples palabras, tomar la primera letra de la primera y última palabra
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+export function formatDate(date: string | Date): string {
+  return format(new Date(date), 'dd MMM yyyy', { locale: es });
 }
