@@ -14,14 +14,11 @@ import { updateReservation } from '@/app/actions/saveReservation';
 import { bedroomsTypes } from '../bedroomstype/bedroomsType';
 
 const FormSchema = z.object({
-    name: z.string().trim().min(1, "El nombre es obligatorio."),
-    lastName: z.string().trim().min(1, "El apellido es obligatorio."),
-    email: z.string().trim().email("Introduce un correo electrónico válido."),
-    guests: z.coerce.number().min(1, "Debe haber al menos 1 huésped."),
-    rooms: z.coerce.number().min(1, "Debe seleccionar al menos una habitación."),
-    bedroomsType: z.string().min(1, "El tipo de habitación es requerido."),
-    arrivalDate: z.string().min(1, "La fecha de llegada es requerida."),
-    departureDate: z.string().min(1, "La fecha de salida es requerida."),
+    guests: z.coerce.number().min(1, 'Debe haber al menos 1 huésped.'),
+    rooms: z.coerce.number().min(1, 'Debe seleccionar al menos una habitación.'),
+    bedroomsType: z.string().min(1, 'Selecciona un tipo de habitación.'),
+    arrivalDate: z.string().min(1, 'La fecha de llegada es obligatoria.'),
+    departureDate: z.string().min(1, 'La fecha de salida es obligatoria.')
 });
 
 export function FormEditReservation({ reservation }: { reservation: Reservation | null }) {
@@ -30,9 +27,6 @@ export function FormEditReservation({ reservation }: { reservation: Reservation 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            name: reservation?.name,
-            lastName: reservation?.lastName,
-            email: reservation?.email,
             guests: reservation?.guests,
             rooms: reservation?.rooms,
             bedroomsType: reservation?.bedroomsType,
@@ -48,9 +42,6 @@ export function FormEditReservation({ reservation }: { reservation: Reservation 
 
         const formData = {
             reservationId: reservation?.id.toString() || '',
-            name: data.name,
-            lastName: data.lastName,
-            email: data.email,
             guests: data.guests.toString(),
             rooms: data.rooms.toString(),
             bedroomsType: data.bedroomsType,
@@ -69,49 +60,8 @@ export function FormEditReservation({ reservation }: { reservation: Reservation 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Nombre</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder='Nombre' />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="lastName"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Apellido</FormLabel>
-                                <FormControl>
-                                    <Input {...field} placeholder='Apellido' />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Correo</FormLabel>
-                                <FormControl>
-                                    <Input {...field} type="email" placeholder='Correo electrónico' />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
                     <FormField
                         control={form.control}
                         name="guests"
@@ -125,9 +75,6 @@ export function FormEditReservation({ reservation }: { reservation: Reservation 
                             </FormItem>
                         )}
                     />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="rooms"
@@ -141,25 +88,26 @@ export function FormEditReservation({ reservation }: { reservation: Reservation 
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="bedroomsType"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Tipo de habitación</FormLabel>
-                                <FormControl>
-                                    <select {...field} className="border border-gray-300 rounded-lg p-2">
-                                        <option value="" disabled>Selecciona el tipo de habitación</option>
-                                        {bedroomsTypes.map((type, index) => (
-                                            <option key={index} value={type}>{type}</option>
-                                        ))}
-                                    </select>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
                 </div>
+
+                <FormField
+                    control={form.control}
+                    name="bedroomsType"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Tipo de habitación</FormLabel>
+                            <FormControl>
+                                <select {...field} className="border border-gray-300 rounded-lg p-2 w-full">
+                                    <option value="" disabled>Selecciona el tipo de habitación</option>
+                                    {bedroomsTypes.map((type, index) => (
+                                        <option key={index} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                     <FormField

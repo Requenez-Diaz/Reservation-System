@@ -5,16 +5,13 @@ import { revalidatePath } from "next/cache";
 
 export const updateReservation = async (data: {
     reservationId: string;
-    name: string;
-    lastName: string;
-    email: string;
     bedroomsType: string;
     guests: string;
     rooms: string;
     arrivalDate: string;
     departureDate: string;
 }) => {
-    const { reservationId, name, lastName, email, bedroomsType, guests, rooms, arrivalDate, departureDate } = data;
+    const { reservationId, bedroomsType, guests, rooms, arrivalDate, departureDate } = data;
 
     if (!reservationId) {
         console.error("No se encontró la reservación");
@@ -27,9 +24,6 @@ export const updateReservation = async (data: {
                 id: parseInt(reservationId),
             },
             data: {
-                name,
-                lastName,
-                email,
                 bedroomsType,
                 guests: parseInt(guests),
                 rooms: parseInt(rooms),
