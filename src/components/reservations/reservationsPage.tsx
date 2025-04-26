@@ -31,9 +31,6 @@ const ReservationsPage = async () => {
 
   return (
     <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Bienvenido, {user.username}
-      </h1>
       <h2 className="text-2xl font-bold mb-6 text-center">
         Mis Reservaciones
       </h2>
@@ -45,9 +42,9 @@ const ReservationsPage = async () => {
         >
           <div className="flex justify-between mb-4">
             <div>
-              <h2 className="text-xl font-semibold">Nombre</h2>
+              <h2 className="text-xl font-semibold">Usuario</h2>
               <p className="text-gray-700">
-                {reservation.name} {reservation.lastName}
+                {user.username}
               </p>
             </div>
 

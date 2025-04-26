@@ -19,13 +19,37 @@ import {
 import { bedroomsTypes } from '../bedroomstype/bedroomsType';
 import { saveReservation } from '@/app/actions/saveReservation';
 
-const FormSchema = z.object({
-  guests: z.coerce.number().min(1, 'Debe haber al menos 1 huésped.'),
-  rooms: z.coerce.number().min(1, 'Debe seleccionar al menos una habitación.'),
-  bedroomsType: z.string().min(1, 'Selecciona un tipo de habitación.'),
-  arrivalDate: z.string().min(1, 'La fecha de llegada es obligatoria.'),
-  departureDate: z.string().min(1, 'La fecha de salida es obligatoria.')
-});
+const FormSchema = z
+  .object({
+    guests: z.coerce.number().min(1, 'Debe haber al menos 1 huésped.'),
+    rooms: z.coerce.number().min(1, 'Debe seleccionar al menos una habitación.'),
+    bedroomsType: z.string().min(1, 'Selecciona un tipo de habitación.'),
+    arrivalDate: z.string().min(1, 'La fecha de llegada es obligatoria.'),
+    departureDate: z.string().min(1, 'La fecha de salida es obligatoria.')
+  })
+  .refine((data) => {
+    const today = new Date();
+    const arrival = new Date(data.arrivalDate);
+
+    // Comparamos solo la parte de la fecha (YYYY-MM-DD)
+    const todayStr = today.toISOString().split('T')[0];
+    const arrivalStr = arrival.toISOString().split('T')[0];
+
+    return arrivalStr >= todayStr;
+  }, {
+    message: 'Seleccione una fecha actual o posterior para la llegada.',
+    path: ['arrivalDate']
+  })
+  .refine((data) => {
+    const arrival = new Date(data.arrivalDate);
+    const departure = new Date(data.departureDate);
+
+    return departure > arrival;
+  }, {
+    message: 'La fecha de salida debe ser mayor que la fecha de llegada.',
+    path: ['departureDate']
+  });
+
 
 export function FormReservation() {
   const { toast } = useToast();
