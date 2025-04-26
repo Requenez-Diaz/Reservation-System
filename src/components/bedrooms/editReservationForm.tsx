@@ -9,17 +9,46 @@ import { Reservation } from '@prisma/client';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/components/ui/form";
 import { updateReservation } from '@/app/actions/saveReservation';
 import { bedroomsTypes } from '../bedroomstype/bedroomsType';
 
-const FormSchema = z.object({
-    guests: z.coerce.number().min(1, 'Debe haber al menos 1 huésped.'),
-    rooms: z.coerce.number().min(1, 'Debe seleccionar al menos una habitación.'),
-    bedroomsType: z.string().min(1, 'Selecciona un tipo de habitación.'),
-    arrivalDate: z.string().min(1, 'La fecha de llegada es obligatoria.'),
-    departureDate: z.string().min(1, 'La fecha de salida es obligatoria.')
-});
+const FormSchema = z
+    .object({
+        guests: z.coerce.number().min(1, 'Debe haber al menos 1 huésped.'),
+        rooms: z.coerce.number().min(1, 'Debe seleccionar al menos una habitación.'),
+        bedroomsType: z.string().min(1, 'Selecciona un tipo de habitación.'),
+        arrivalDate: z.string().min(1, 'La fecha de llegada es obligatoria.'),
+        departureDate: z.string().min(1, 'La fecha de salida es obligatoria.')
+    })
+    .refine((data) => {
+        const today = new Date();
+        const arrival = new Date(data.arrivalDate);
+
+        const todayStr = today.toISOString().split('T')[0];
+        const arrivalStr = arrival.toISOString().split('T')[0];
+
+        return arrivalStr >= todayStr;
+    }, {
+        message: 'Seleccione una fecha actual o posterior para la llegada.',
+        path: ['arrivalDate']
+    })
+    .refine((data) => {
+        const arrival = new Date(data.arrivalDate);
+        const departure = new Date(data.departureDate);
+
+        return departure > arrival;
+    }, {
+        message: 'La fecha de salida debe ser mayor que la fecha de llegada.',
+        path: ['departureDate']
+    });
 
 export function FormEditReservation({ reservation }: { reservation: Reservation | null }) {
     const { toast } = useToast();
@@ -37,11 +66,14 @@ export function FormEditReservation({ reservation }: { reservation: Reservation 
 
     const handleSubmit = async (data: z.infer<typeof FormSchema>) => {
         if (!reservation) {
-            return toast({ title: "Error", description: "No se encontró la reservación" });
+            return toast({
+                title: "Error",
+                description: "No se encontró la reservación"
+            });
         }
 
         const formData = {
-            reservationId: reservation?.id.toString() || '',
+            reservationId: reservation.id.toString(),
             guests: data.guests.toString(),
             rooms: data.rooms.toString(),
             bedroomsType: data.bedroomsType,
@@ -51,9 +83,15 @@ export function FormEditReservation({ reservation }: { reservation: Reservation 
 
         const response = await updateReservation(formData);
         if (response?.success) {
-            toast({ title: "Reservación actualizada.", description: "La reservación se actualizó correctamente." });
+            toast({
+                title: "Reservación actualizada.",
+                description: "La reservación se actualizó correctamente."
+            });
         } else {
-            toast({ title: "Error", description: response?.message || "Error al actualizar la reservación." });
+            toast({
+                title: "Error",
+                description: response?.message || "Error al actualizar la reservación."
+            });
         }
     };
 
