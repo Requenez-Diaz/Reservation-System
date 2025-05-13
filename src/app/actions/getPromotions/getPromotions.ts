@@ -7,9 +7,11 @@ export async function getPromotions() {
     const promotions = await prisma.promotions.findMany({
       include: {
         Seasons: true,
+
         BedroomsPromotions: {
           include: {
-            Bedrooms: true
+            Bedrooms: true,
+            Promotions: true
           }
         }
       }
