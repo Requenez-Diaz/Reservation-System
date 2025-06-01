@@ -1,40 +1,37 @@
-import { TestimonialsType } from './type';
+import { Testimonial } from './type';
 
-export const initialsTestimonials: TestimonialsType[] = [
+export const initialTestimonials: Testimonial[] = [
   {
     id: 1,
     name: 'María González',
-    image: '/placeholder.svg?height=40&width=40',
+    avatar: '/placeholder.svg?height=40&width=40',
     rating: 5,
     comment:
       '¡Experiencia increíble! La habitación estaba impecable y el servicio fue excepcional. Definitivamente volveré a reservar aquí.',
-    stayDate: 'Marzo 2024'
+    roomType: 'Suite Deluxe',
+    stayDate: 'Marzo 2024',
+    location: 'Madrid, España'
   },
   {
     id: 2,
-    name: 'Juan Pérez',
-    image: '/placeholder.svg?height=40&width=40',
-    rating: 4,
+    name: 'Carlos Rodríguez',
+    avatar: '/placeholder.svg?height=40&width=40',
+    rating: 5,
     comment:
-      'Muy buena atención y las instalaciones son muy cómodas. Me encantó la ubicación, cerca de todo.',
-    stayDate: 'Abril 2024'
+      'Perfecto para mi viaje de negocios. Ubicación excelente, WiFi rápido y desayuno delicioso. Muy recomendado.',
+    roomType: 'Habitación Ejecutiva',
+    stayDate: 'Febrero 2024',
+    location: 'Barcelona, España'
   },
   {
     id: 3,
-    name: 'Ana López',
-    image: '/placeholder.svg?height=40&width=40',
-    rating: 5,
+    name: 'Ana Martínez',
+    avatar: '/placeholder.svg?height=40&width=40',
+    rating: 4,
     comment:
-      'Una experiencia maravillosa. La habitación era espaciosa y bien decorada. El desayuno fue delicioso.',
-    stayDate: 'Mayo 2024'
-  },
-  {
-    id: 4,
-    name: 'Carlos Martínez',
-    image: '/placeholder.svg?height=40&width=40',
-    rating: 3,
-    comment:
-      'El lugar es bueno, pero creo que podría mejorar en limpieza. La atención del personal fue excelente.',
-    stayDate: 'Junio 2024'
+      'Muy buena relación calidad-precio. Las instalaciones están bien mantenidas y el personal es muy amable.',
+    roomType: 'Habitación Estándar',
+    stayDate: 'Enero 2024',
+    location: 'Valencia, España'
   }
 ];

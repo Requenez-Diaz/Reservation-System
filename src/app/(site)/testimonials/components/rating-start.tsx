@@ -9,7 +9,7 @@ interface RatingStarProps {
   onRatingChange?: (rating: number) => void;
 }
 
-export function RatingStar({
+export function RatingStars({
   rating,
   interactive = false,
   size = 'sm',
