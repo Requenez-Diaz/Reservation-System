@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import OrdersRooms from '../bedrooms/ordersRooms';
 import ParentCards from '../bedrooms/parentCards';
