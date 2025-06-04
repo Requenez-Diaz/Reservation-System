@@ -1,8 +1,6 @@
 'use client';
 
-import type React from 'react';
-
-import { useState } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,130 +13,326 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { TestimonialFormData } from '../type';
+
+import { useToast } from '@/components/ui/use-toast';
+
+import { Loader2, User, MapPin } from 'lucide-react';
+import {
+  createTestimonial,
+  getBedrooms,
+  getCurrentUser
+} from '@/app/actions/testimonials/create-testimonials';
 import { RatingStars } from '../components/rating-start';
 
-interface TestimonialFormProps {
-  onSubmit: (formData: TestimonialFormData) => void;
+interface Bedroom {
+  id: number;
+  typeBedroom: string;
+  type: string;
+  description?: string;
 }
 
-export function TestimonialForm({ onSubmit }: TestimonialFormProps) {
-  const [formData, setFormData] = useState<TestimonialFormData>({
-    name: '',
-    rating: 5,
-    comment: '',
-    roomType: '',
-    stayDate: '',
-    location: ''
-  });
+interface CurrentUser {
+  id: number;
+  username: string;
+  email: string;
+  name?: string;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
+interface CreateTestimonialFormProps {
+  onSuccess?: () => void;
+  className?: string;
+}
+
+export function CreateTestimonialForm({
+  onSuccess,
+  className
+}: CreateTestimonialFormProps) {
+  const [isPending, startTransition] = useTransition();
+  const [rating, setRating] = useState(5);
+  const [bedrooms, setBedrooms] = useState<Bedroom[]>([]);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedRoom, setSelectedRoom] = useState('');
+  const { toast } = useToast();
+
+  // Cargar datos iniciales
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        setIsLoading(true);
+
+        // Cargar habitaciones y usuario en paralelo
+        const [bedroomsResult, userResult] = await Promise.all([
+          getBedrooms(),
+          getCurrentUser()
+        ]);
+
+        if (bedroomsResult.success) {
+          setBedrooms(bedroomsResult.bedrooms);
+        } else {
+          console.warn(
+            'No se pudieron cargar las habitaciones:',
+            bedroomsResult.error
+          );
+        }
+
+        if (userResult.success) {
+          setCurrentUser(userResult.user);
+        } else {
+          toast({
+            title: 'Error de autenticación',
+            description: 'Debes iniciar sesión para crear un testimonial',
+            variant: 'destructive'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+        toast({
+          title: 'Error',
+          description: 'Error al cargar los datos del formulario',
+          variant: 'destructive'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [toast]);
+
+  const handleSubmit = async (formData: FormData) => {
+    // Agregar el rating al FormData
+    formData.set('rating', rating.toString());
+
+    startTransition(async () => {
+      try {
+        const result = await createTestimonial(formData);
+
+        if (result.success) {
+          toast({
+            title: '¡Testimonial creado!',
+            description: 'Tu experiencia ha sido compartida exitosamente'
+          });
+
+          // Resetear el formulario
+          const form = document.getElementById(
+            'create-testimonial-form'
+          ) as HTMLFormElement;
+          form?.reset();
+          setRating(5);
+          setSelectedRoom('');
+
+          onSuccess?.();
+        } else {
+          toast({
+            title: 'Error al crear testimonial',
+            description: result.error,
+            variant: 'destructive'
+          });
+        }
+      } catch (error) {
+        console.error('Error in form submission:', error);
+        toast({
+          title: 'Error inesperado',
+          description: 'Ocurrió un error al procesar tu solicitud',
+          variant: 'destructive'
+        });
+      }
+    });
   };
 
+  // Estado de carga inicial
+  if (isLoading) {
+    return (
+      <Card className={`max-w-2xl mx-auto ${className}`}>
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+            <span className="text-gray-600">Cargando formulario...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Si no hay usuario autenticado
+  if (!currentUser) {
+    return (
+      <Card className={`max-w-2xl mx-auto ${className}`}>
+        <CardContent className="p-8 text-center">
+          <User className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Inicia sesión requerido
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Debes iniciar sesión para compartir tu experiencia
+          </p>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            Iniciar sesión
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <h3 className="text-xl font-semibold">Comparte tu experiencia</h3>
+    <Card className={`max-w-2xl mx-auto ${className}`}>
+      <CardHeader className="pb-4">
+        <div className="flex items-center space-x-3">
+          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <User className="h-5 w-5 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900">
+              Comparte tu experiencia
+            </h3>
+            <p className="text-sm text-gray-600">
+              Hola,{' '}
+              <span className="font-medium">
+                {currentUser.name || currentUser.username}
+              </span>
+            </p>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+      <CardContent className="pt-0">
+        <form
+          id="create-testimonial-form"
+          action={handleSubmit}
+          className="space-y-6"
+        >
+          {/* Información personal */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nombre completo</Label>
+              <Label htmlFor="name" className="text-sm font-medium">
+                Nombre completo
+              </Label>
               <Input
                 id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                name="name"
+                defaultValue={currentUser.name || currentUser.username || ''}
                 required
+                disabled={isPending}
+                className="transition-colors"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="location">Ubicación</Label>
+              <Label htmlFor="location" className="text-sm font-medium">
+                <MapPin className="inline h-4 w-4 mr-1" />
+                Ubicación
+              </Label>
               <Input
                 id="location"
+                name="location"
                 placeholder="Ciudad, País"
-                value={formData.location}
-                onChange={(e) =>
-                  setFormData({ ...formData, location: e.target.value })
-                }
                 required
+                disabled={isPending}
+                className="transition-colors"
               />
             </div>
           </div>
 
+          {/* Detalles de la estancia */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="roomType">Tipo de habitación</Label>
+              <Label htmlFor="typeBedroom" className="text-sm font-medium">
+                Tipo de habitación
+              </Label>
               <Select
-                value={formData.roomType}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, roomType: value })
-                }
+                name="typeBedroom"
+                required
+                disabled={isPending}
+                value={selectedRoom}
+                onValueChange={setSelectedRoom}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona el tipo" />
+                <SelectTrigger className="transition-colors">
+                  <SelectValue placeholder="Selecciona tu habitación" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="standard">Habitación Estándar</SelectItem>
-                  <SelectItem value="deluxe">Habitación Deluxe</SelectItem>
-                  <SelectItem value="suite">Suite</SelectItem>
-                  <SelectItem value="executive">
-                    Habitación Ejecutiva
-                  </SelectItem>
+                  {bedrooms.length > 0 ? (
+                    bedrooms.map((bedroom) => (
+                      <SelectItem key={bedroom.id} value={bedroom.typeBedroom}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {bedroom.typeBedroom}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {bedroom.type}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="Habitación Estándar">
+                      Habitación Estándar
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="stayDate">Fecha de estancia</Label>
+              <Label htmlFor="stayDate" className="text-sm font-medium">
+                Fecha de estancia
+              </Label>
               <Input
                 id="stayDate"
-                placeholder="Mes Año"
-                value={formData.stayDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, stayDate: e.target.value })
-                }
+                name="stayDate"
+                placeholder="Ej: Enero 2024"
                 required
+                disabled={isPending}
+                className="transition-colors"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Calificación</Label>
-            <div className="flex gap-1">
+          {/* Calificación */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Calificación general</Label>
+            <div className="flex items-center space-x-2">
               <RatingStars
-                rating={formData.rating}
+                rating={rating}
                 interactive={true}
                 size="md"
-                onRatingChange={(rating) =>
-                  setFormData({ ...formData, rating })
-                }
+                onRatingChange={setRating}
               />
+              <span className="text-sm text-gray-600 ml-2">({rating}/5)</span>
             </div>
           </div>
 
+          {/* Comentario */}
           <div className="space-y-2">
-            <Label htmlFor="comment">Tu comentario</Label>
+            <Label htmlFor="comment" className="text-sm font-medium">
+              Tu experiencia
+            </Label>
             <Textarea
               id="comment"
-              placeholder="Comparte tu experiencia con nosotros..."
-              value={formData.comment}
-              onChange={(e) =>
-                setFormData({ ...formData, comment: e.target.value })
-              }
+              name="comment"
+              placeholder="Cuéntanos sobre tu estancia: ¿qué te gustó más? ¿Recomendarías este lugar?"
               rows={4}
               required
+              disabled={isPending}
+              className="transition-colors resize-none"
             />
+            <p className="text-xs text-gray-500">
+              Comparte detalles específicos que puedan ayudar a otros huéspedes
+            </p>
           </div>
 
+          {/* Botón de envío */}
           <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
+            disabled={isPending}
           >
-            Publicar reseña
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Publicando testimonial...
+              </>
+            ) : (
+              'Publicar testimonial'
+            )}
           </Button>
         </form>
       </CardContent>

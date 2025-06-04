@@ -9,6 +9,8 @@ interface TestimonialCardProps {
 }
 
 export function TestimonialCard({ testimonial }: TestimonialCardProps) {
+
+  
   return (
     <Card className="h-full">
       <CardContent className="p-6 space-y-4">

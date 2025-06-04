@@ -2,12 +2,16 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Testimonial, TestimonialFormData } from './type';
 import { initialTestimonials } from './data';
 import { SectionHeader } from './components/section-header';
-import { TestimonialForm } from './forms/testimonial-form';
 import { TestimonialCard } from './components/testimonial-card';
 import StatsSection from './components/stats-section';
+import { Testimonial, TestimonialFormData } from './type';
+import { CreateTestimonialForm } from './forms/testimonial-form';
+
+interface TestimonialsSectionProps {
+  onSubmit?: (formData: TestimonialFormData) => void;
+}
 
 export default function TestimonialsSection() {
   const [testimonials, setTestimonials] =
@@ -41,7 +45,7 @@ export default function TestimonialsSection() {
     );
 
     return {
-      averageRating: parseFloat(averageRating.toFixed(1)),
+      averageRating: Number.parseFloat(averageRating.toFixed(1)),
       totalReviews,
       satisfactionPercentage
     };
@@ -67,8 +71,7 @@ export default function TestimonialsSection() {
         </Button>
       </div>
 
-      {/* Review Form */}
-      {showForm && <TestimonialForm onSubmit={handleSubmitTestimonial} />}
+      {showForm && <CreateTestimonialForm onSubmit={handleSubmitTestimonial} />}
 
       {/* Testimonials Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

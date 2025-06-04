@@ -8,18 +8,21 @@ datasource db {
 }
 
 model User {
-  id          Int           @id @default(autoincrement())
-  email       String        @unique
-  username    String        @unique
-  password    String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  roleName    String
-  image       String?
-  comments    Comments[]
-  Reservation Reservation[]
-  Role        Role          @relation(fields: [roleName], references: [roleName])
-  UserImage   UserImage?
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  username     String         @unique
+  password     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  roleName     String
+  image        String?
+  comments     Comments[]
+  Reservation  Reservation[]
+  Role         Role           @relation(fields: [roleName], references: [roleName])
+  UserImage    UserImage?
+  testimonials testimonials[]
+
+  @@map("users")
 }
 
 model Role {
@@ -49,6 +52,9 @@ model Bedrooms {
   BedroomsPromotions BedroomsPromotions[]
   bookingsDetails    BookingsDetails[]
   comments           Comments[]
+  testimonials       testimonials[]
+
+  @@map("bedrooms")
 }
 
 model Reservation {
@@ -90,10 +96,22 @@ model Events {
 }
 
 model testimonials {
-  id           Int      @id @default(autoincrement())
-  name         String
-  date         DateTime
-  testimonials String
+  id        Int       @id @default(autoincrement())
+  name      String
+  avatar    String
+  rating    Int
+  comment   String
+  roomType  String
+  stayDate  DateTime
+  location  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  User      User?     @relation(fields: [userId], references: [id])
+  userId    Int?
+  Bedrooms  Bedrooms? @relation(fields: [bedroomId], references: [id])
+  bedroomId Int?
+
+  @@map("testimonials")
 }
 
 model historicReservations {
