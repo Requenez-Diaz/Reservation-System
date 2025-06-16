@@ -7,6 +7,13 @@ export interface Testimonial {
   roomType: string;
   stayDate: string;
   location: string;
+  createdAt?: Date;
+  userId?: number;
+  User?: {
+    id: number;
+    username: string;
+    email: string;
+  };
 }
 
 export interface TestimonialFormData {
@@ -16,4 +23,16 @@ export interface TestimonialFormData {
   roomType: string;
   stayDate: string;
   location: string;
+}
+
+export interface Bedroom {
+  id: number;
+  typeBedroom: string;
+  description?: string;
+}
+
+export interface CurrentUser {
+  id: number;
+  username: string;
+  email: string;
 }

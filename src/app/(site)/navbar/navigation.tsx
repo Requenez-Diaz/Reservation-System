@@ -24,20 +24,20 @@ export default function Navbar() {
     setIsMounted(true);
   }, []);
 
-  // Render a skeleton loader when not mounted
-  if (!isMounted) {
-    return (
-      <nav className="bg-white p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="w-32 h-8 bg-gray-200 rounded"></div>
-          <div className="hidden md:flex items-center gap-x-7">
-            <div className="w-64 h-6 bg-gray-200 rounded"></div>
-            <div className="w-24 h-8 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
+  // // Render a skeleton loader when not mounted
+  // if (!isMounted) {
+  //   return (
+  //     <nav className="bg-white p-4">
+  //       <div className="container mx-auto flex justify-between items-center">
+  //         <div className="w-32 h-8 bg-gray-200 rounded"></div>
+  //         <div className="hidden md:flex items-center gap-x-7">
+  //           <div className="w-64 h-6 bg-gray-200 rounded"></div>
+  //           <div className="w-24 h-8 bg-gray-200 rounded"></div>
+  //         </div>
+  //       </div>
+  //     </nav>
+  //   );
+  // }
 
   return (
     <nav className="bg-white p-4">

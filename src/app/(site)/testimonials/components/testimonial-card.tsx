@@ -9,8 +9,6 @@ interface TestimonialCardProps {
 }
 
 export function TestimonialCard({ testimonial }: TestimonialCardProps) {
-
-  
   return (
     <Card className="h-full">
       <CardContent className="p-6 space-y-4">
@@ -29,10 +27,12 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+            <h4 className="font-semibold text-gray-900">
+              {testimonial.User?.username}
+            </h4>
             <div className="flex items-center gap-1 text-sm text-gray-500">
               <MapPin className="h-3 w-3" />
-              {testimonial.location}
+              {testimonial.location || 'Ubicación no disponible'}
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ import BannerHome from './bannerHome';
 import BookingsFormsHome from './componentsBooksForms/formBookHome';
 import GalleryBedrooms from './galleryBedrooms/galleryBedrooms';
 import RoomInfoHome from './roomInfoHome';
-import TestimonialSection from '@/app/(site)/testimonials/testimonialsSections';
+import TestimonialsSection from '@/app/(site)/testimonials/testimonialsSections';
 
 const ContainerHome = () => {
   return (
@@ -20,7 +20,7 @@ const ContainerHome = () => {
       <GalleryBedrooms />
       <CardDescriptions />
       <RoomInfoHome />
-      <TestimonialSection />
+      <TestimonialsSection />
     </div>
   );
 };
