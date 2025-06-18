@@ -15,17 +15,17 @@ const navItems = [
   { path: '/reservaciones', text: 'Reservaciones' }
 ];
 
-export default function Navbar() {
+export default function NavbarTwoPass() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    setIsMounted(true);
+    setHasMounted(true);
   }, []);
 
-  // Render a consistent skeleton loader when not mounted to prevent hydration mismatch
-  if (!isMounted) {
+  // Primera pasada: renderizado consistente servidor/cliente
+  if (!hasMounted) {
     return (
       <nav className="bg-white p-4">
         <div className="container mx-auto flex justify-between items-center">
@@ -49,7 +49,7 @@ export default function Navbar() {
             <ul className="flex gap-x-6 text-black">
               {navItems.map((navItem) => (
                 <li key={navItem.path}>
-                  <span className="text-gray-400">{navItem.text}</span>
+                  <span className="text-gray-500">{navItem.text}</span>
                 </li>
               ))}
             </ul>
@@ -63,6 +63,7 @@ export default function Navbar() {
     );
   }
 
+  // Segunda pasada: renderizado completo con funcionalidad
   return (
     <nav className="bg-white p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -112,7 +113,7 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      {isMounted && isMenuOpen && (
+      {isMenuOpen && (
         <div className="md:hidden mt-4">
           <ul className="flex flex-col gap-y-4 text-black">
             {navItems.map((navItem) => (
