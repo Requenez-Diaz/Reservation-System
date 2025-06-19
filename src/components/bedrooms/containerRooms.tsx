@@ -2,7 +2,6 @@ import React from 'react';
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import OrdersRooms from './ordersRooms';
 import ParentCards from './parentCards';
-import Testimonial from '@/app/(site)/testimonials/testimonialsSections';
 
 const ContainerRooms = async () => {
   const bedroomData = await getAllBedrooms();
@@ -18,7 +17,7 @@ const ContainerRooms = async () => {
     <div>
       <OrdersRooms />
       <ParentCards items={mappedItems} />
-      <Testimonial />
+      {/* <Testimonial /> */}
     </div>
   );
 };

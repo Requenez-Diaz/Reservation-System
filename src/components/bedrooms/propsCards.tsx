@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RoomAvailability } from './roomAvailability';
 import { AddReservation } from './addReservation';
 import BedroomDetail from './bedroomDetail';
@@ -48,8 +48,8 @@ export default function PropsCards({
   };
 
   return (
-    <Card className="w-full max-w-screen-sm mx-auto overflow-hidden transition-all duration-300 hover:shadow-xl">
-      <div className="relative h-64 overflow-hidden group">
+    <Card className="w-screen max-w-md mt-3 mx-3 overflow-hidden transition-all duration-300 hover:shadow-xl">
+      <div className="relative h-40 overflow-hidden group">
         <Image
           alt="Imagen de la habitación"
           src="https://media.istockphoto.com/id/1390233984/es/foto/habitaci%C3%B3n-de-lujo-moderna.webp?b=1&s=170667a&w=0&k=20&c=sLPzMweWiHutEfXwpxoo4Ew8Wu_kZxzT5dRUohKbP40="
@@ -58,51 +58,55 @@ export default function PropsCards({
           className="rounded-t-lg transition-transform duration-500 ease-in-out group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-500 flex items-center justify-center">
-          <span className="text-white text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <span className="text-white text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             Ver detalles
           </span>
         </div>
       </div>
-      <div className="p-6">
+      <div className="p-3">
         <CardHeader className="p-0">
-          <CardTitle className="text-2xl font-bold text-gray-800 mb-2">
+          <CardTitle className="text-lg font-bold text-gray-800 mb-1">
             {typeBedroom}
           </CardTitle>
-          <Badge variant={status ? 'success' : 'destructive'} className="mb-4">
+          <Badge
+            variant={status ? 'success' : 'destructive'}
+            className="mb-2 text-xs"
+          >
             {status ? 'Disponible' : 'No disponible'}
           </Badge>
         </CardHeader>
-        <CardContent className="p-0 space-y-2">
+        <CardContent className="p-0 space-y-1">
           <BedroomDetail label="Descripción" value={description} />
           <BedroomDetail label="Precio" value={lowSeasonPrice} isPrice />
           <BedroomDetail label="Número de habitación" value={numberBedroom} />
-          <div className="flex items-center space-x-4 mt-2">
+          <div className="flex items-center space-x-3 mt-1">
             <div className="flex items-center">
-              <Wifi className="w-5 h-5 text-blue-500 mr-1" />
-              <span className="text-sm">WiFi</span>
+              <Wifi className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-xs">WiFi</span>
             </div>
             <div className="flex items-center">
-              <Wind className="w-5 h-5 text-blue-500 mr-1" />
-              <span className="text-sm">Aire acondicionado</span>
+              <Wind className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-xs">A/C</span>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-0 pt-4 flex flex-col gap-4">
-          <div className="flex flex-row items-stretch gap-2 w-full">
+        <CardFooter className="p-0 pt-2 flex flex-col gap-2">
+          <div className="flex flex-row items-stretch gap-1 w-full">
             <AddReservation />
             <Button
               variant="outline"
-              className="w-full flex justify-between items-center"
+              size="sm"
+              className="w-full flex justify-between items-center text-xs"
               onClick={toggleComments}
             >
               <div className="flex items-center">
-                <MessageCircle className="w-4 h-4 mr-2" />
+                <MessageCircle className="w-3 h-3 mr-1" />
                 Comentarios
               </div>
               {isCommentsOpen ? (
-                <ChevronUp className="w-4 h-4" />
+                <ChevronUp className="w-3 h-3" />
               ) : (
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-3 h-3" />
               )}
             </Button>
           </div>
@@ -111,7 +115,7 @@ export default function PropsCards({
               <CommentCount count={commentCount} />
               <Link
                 href="comments"
-                className="text-sm text-blue-500 hover:underline mt-2 inline-block"
+                className="text-xs text-blue-500 hover:underline mt-1 inline-block"
               >
                 Ver todos los comentarios
               </Link>

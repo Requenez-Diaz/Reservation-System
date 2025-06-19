@@ -16,7 +16,7 @@ interface ParentComponents {
 
 const ParentCards = ({ items }: ParentComponents) => {
   return (
-    <div className="flex flex-wrap content-center justify-center">
+    <div className="flex flex-wrap content-center mt-5 justify-center">
       {items.map((item) => (
         <PropsCards key={item.numberBedroom} {...item} />
       ))}
@@ -25,5 +25,3 @@ const ParentCards = ({ items }: ParentComponents) => {
 };
 
 export default ParentCards;
-
-
