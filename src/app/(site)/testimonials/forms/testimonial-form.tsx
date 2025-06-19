@@ -1,0 +1,341 @@
+'use client';
+
+import { useState, useTransition, useEffect } from 'react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+
+import { useToast } from '@/components/ui/use-toast';
+
+import { Loader2, User, MapPin } from 'lucide-react';
+import {
+  createTestimonial,
+  getBedrooms,
+  getCurrentUser
+} from '@/app/actions/testimonials/create-testimonials';
+import { RatingStars } from '../components/rating-start';
+
+interface Bedroom {
+  id: number;
+  typeBedroom: string;
+  type: string;
+  description?: string;
+}
+
+interface CurrentUser {
+  id: number;
+  username: string;
+  email: string;
+  name?: string;
+}
+
+interface CreateTestimonialFormProps {
+  onSuccess?: () => void;
+  className?: string;
+}
+
+export function CreateTestimonialForm({
+  onSuccess,
+  className
+}: CreateTestimonialFormProps) {
+  const [isPending, startTransition] = useTransition();
+  const [rating, setRating] = useState(5);
+  const [bedrooms, setBedrooms] = useState<Bedroom[]>([]);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedRoom, setSelectedRoom] = useState('');
+  const { toast } = useToast();
+
+  // Cargar datos iniciales
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        setIsLoading(true);
+
+        // Cargar habitaciones y usuario en paralelo
+        const [bedroomsResult, userResult] = await Promise.all([
+          getBedrooms(),
+          getCurrentUser()
+        ]);
+
+        if (bedroomsResult.success) {
+          setBedrooms(bedroomsResult.bedrooms);
+        } else {
+          console.warn(
+            'No se pudieron cargar las habitaciones:',
+            bedroomsResult.error
+          );
+        }
+
+        if (userResult.success) {
+          setCurrentUser(userResult.user);
+        } else {
+          toast({
+            title: 'Error de autenticación',
+            description: 'Debes iniciar sesión para crear un testimonial',
+            variant: 'destructive'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+        toast({
+          title: 'Error',
+          description: 'Error al cargar los datos del formulario',
+          variant: 'destructive'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [toast]);
+
+  const handleSubmit = async (formData: FormData) => {
+    // Agregar el rating al FormData
+    formData.set('rating', rating.toString());
+
+    startTransition(async () => {
+      try {
+        const result = await createTestimonial(formData);
+
+        if (result.success) {
+          toast({
+            title: '¡Testimonial creado!',
+            description: 'Tu experiencia ha sido compartida exitosamente'
+          });
+
+          // Resetear el formulario
+          const form = document.getElementById(
+            'create-testimonial-form'
+          ) as HTMLFormElement;
+          form?.reset();
+          setRating(5);
+          setSelectedRoom('');
+
+          onSuccess?.();
+        } else {
+          toast({
+            title: 'Error al crear testimonial',
+            description: result.error,
+            variant: 'destructive'
+          });
+        }
+      } catch (error) {
+        console.error('Error in form submission:', error);
+        toast({
+          title: 'Error inesperado',
+          description: 'Ocurrió un error al procesar tu solicitud',
+          variant: 'destructive'
+        });
+      }
+    });
+  };
+
+  // Estado de carga inicial
+  if (isLoading) {
+    return (
+      <Card className={`max-w-2xl mx-auto ${className}`}>
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+            <span className="text-gray-600">Cargando formulario...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Si no hay usuario autenticado
+  if (!currentUser) {
+    return (
+      <Card className={`max-w-2xl mx-auto ${className}`}>
+        <CardContent className="p-8 text-center">
+          <User className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Inicia sesión requerido
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Debes iniciar sesión para compartir tu experiencia
+          </p>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            Iniciar sesión
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={`max-w-2xl mx-auto ${className}`}>
+      <CardHeader className="pb-4">
+        <div className="flex items-center space-x-3">
+          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <User className="h-5 w-5 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900">
+              Comparte tu experiencia
+            </h3>
+            <p className="text-sm text-gray-600">
+              Hola,{' '}
+              <span className="font-medium">
+                {currentUser.name || currentUser.username}
+              </span>
+            </p>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="pt-0">
+        <form
+          id="create-testimonial-form"
+          action={handleSubmit}
+          className="space-y-6"
+        >
+          {/* Información personal */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                Nombre completo
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                defaultValue={currentUser.name || currentUser.username || ''}
+                required
+                disabled={isPending}
+                className="transition-colors"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location" className="text-sm font-medium">
+                <MapPin className="inline h-4 w-4 mr-1" />
+                Ubicación
+              </Label>
+              <Input
+                id="location"
+                name="location"
+                placeholder="Ciudad, País"
+                required
+                disabled={isPending}
+                className="transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Detalles de la estancia */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="typeBedroom" className="text-sm font-medium">
+                Tipo de habitación
+              </Label>
+              <Select
+                name="typeBedroom"
+                required
+                disabled={isPending}
+                value={selectedRoom}
+                onValueChange={setSelectedRoom}
+              >
+                <SelectTrigger className="transition-colors">
+                  <SelectValue placeholder="Selecciona tu habitación" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bedrooms.length > 0 ? (
+                    bedrooms.map((bedroom) => (
+                      <SelectItem key={bedroom.id} value={bedroom.typeBedroom}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {bedroom.typeBedroom}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {bedroom.type}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="Habitación Estándar">
+                      Habitación Estándar
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="stayDate" className="text-sm font-medium">
+                Fecha de estancia
+              </Label>
+              <Input
+                id="stayDate"
+                name="stayDate"
+                placeholder="Ej: Enero 2024"
+                required
+                disabled={isPending}
+                className="transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Calificación */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Calificación general</Label>
+            <div className="flex items-center space-x-2">
+              <RatingStars
+                rating={rating}
+                interactive={true}
+                size="md"
+                onRatingChange={setRating}
+              />
+              <span className="text-sm text-gray-600 ml-2">({rating}/5)</span>
+            </div>
+          </div>
+
+          {/* Comentario */}
+          <div className="space-y-2">
+            <Label htmlFor="comment" className="text-sm font-medium">
+              Tu experiencia
+            </Label>
+            <Textarea
+              id="comment"
+              name="comment"
+              placeholder="Cuéntanos sobre tu estancia: ¿qué te gustó más? ¿Recomendarías este lugar?"
+              rows={4}
+              required
+              disabled={isPending}
+              className="transition-colors resize-none"
+            />
+            <p className="text-xs text-gray-500">
+              Comparte detalles específicos que puedan ayudar a otros huéspedes
+            </p>
+          </div>
+
+          {/* Botón de envío */}
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Publicando testimonial...
+              </>
+            ) : (
+              'Publicar testimonial'
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
