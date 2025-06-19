@@ -8,7 +8,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Reservation } from '@prisma/client';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -19,52 +18,23 @@ import {
 } from "@/components/ui/form";
 import { updateReservation } from '@/app/actions/saveReservation';
 import { bedroomsTypes } from '../bedroomstype/bedroomsType';
-
-const FormSchema = z
-    .object({
-        guests: z.coerce.number().min(1, 'Debe haber al menos 1 huésped.'),
-        rooms: z.coerce.number().min(1, 'Debe seleccionar al menos una habitación.'),
-        bedroomsType: z.string().min(1, 'Selecciona un tipo de habitación.'),
-        arrivalDate: z.string().min(1, 'La fecha de llegada es obligatoria.'),
-        departureDate: z.string().min(1, 'La fecha de salida es obligatoria.')
-    })
-    .refine((data) => {
-        const today = new Date();
-        const arrival = new Date(data.arrivalDate);
-
-        const todayStr = today.toISOString().split('T')[0];
-        const arrivalStr = arrival.toISOString().split('T')[0];
-
-        return arrivalStr >= todayStr;
-    }, {
-        message: 'Seleccione una fecha actual o posterior para la llegada.',
-        path: ['arrivalDate']
-    })
-    .refine((data) => {
-        const arrival = new Date(data.arrivalDate);
-        const departure = new Date(data.departureDate);
-
-        return departure > arrival;
-    }, {
-        message: 'La fecha de salida debe ser mayor que la fecha de llegada.',
-        path: ['departureDate']
-    });
+import { ReservationFormValues, ReservationSchema } from './reservationSchema';
 
 export function FormEditReservation({ reservation }: { reservation: Reservation | null }) {
     const { toast } = useToast();
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<ReservationFormValues>({
+        resolver: zodResolver(ReservationSchema),
         defaultValues: {
-            guests: reservation?.guests,
-            rooms: reservation?.rooms,
-            bedroomsType: reservation?.bedroomsType,
-            arrivalDate: reservation?.arrivalDate.toISOString().split('T')[0],
-            departureDate: reservation?.departureDate.toISOString().split('T')[0],
+            guests: reservation?.guests ?? 1,
+            rooms: reservation?.rooms ?? 1,
+            bedroomsType: reservation?.bedroomsType ?? "",
+            arrivalDate: reservation?.arrivalDate.toISOString().split('T')[0] ?? "",
+            departureDate: reservation?.departureDate.toISOString().split('T')[0] ?? "",
         },
     });
 
-    const handleSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const handleSubmit = async (data: ReservationFormValues) => {
         if (!reservation) {
             return toast({
                 title: "Error",
