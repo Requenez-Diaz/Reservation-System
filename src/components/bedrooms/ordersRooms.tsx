@@ -1,21 +1,20 @@
-import React from 'react';
-import { Button } from '../ui/button';
+import { Bed } from 'lucide-react';
 
 const OrdersRooms = () => {
   return (
-    <div className="flex flex-row justify-between mx-4 p-2">
-      <h1 className="text-2xl">Habitaciones</h1>
-      <div className="mx-4 space-x-4">
-        <Button className="bg-blue-300 hover:bg-transparent text-black">
-          Defecto
-        </Button>
-
-        <Button className="bg-white-300 border rounded-lg hover:bg-transparent text-black">
-          A-Z
-        </Button>
-        <Button className="bg-white-300 border rounded-xl hover:bg-transparent text-black">
-          Ultima Vista
-        </Button>
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 mx-5 p-6 rounded-lg shadow-sm">
+      <div className="flex items-center space-x-3">
+        <div className="p-2 bg-blue-100 rounded-full">
+          <Bed className="h-6 w-6 text-blue-600" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Habitaciones Disponibles
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Encuentra la habitación perfecta para tu estancia
+          </p>
+        </div>
       </div>
     </div>
   );

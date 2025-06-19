@@ -5,8 +5,7 @@ import { Open_Sans } from 'next/font/google';
 import Footer from '@/components/footer/footer';
 import Provider from '@/app/(site)/navbar/usersComponents/Provider';
 import { Toaster } from '@/components/ui/toaster';
-import dynamic from 'next/dynamic';
-import Navbar from './navbar/navigation';
+import NavbarTwoPass from './navbar/navbar-twoPass';
 
 export const fontSans = Open_Sans({
   subsets: ['latin'],
@@ -74,7 +73,7 @@ export default function RootLayout({
       >
         <Provider>
           <div className="flex flex-col min-h-screen">
-            <Navbar />
+            <NavbarTwoPass />
             <main className="flex-grow">{children}</main>
             <Footer />
           </div>

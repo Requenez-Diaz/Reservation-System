@@ -33,16 +33,6 @@ export default function AvatarNavigationsClient() {
     fetchUserData();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="h-[500px] flex justify-center items-center">
-        <Avatar>
-          <AvatarFallback>...</AvatarFallback>
-        </Avatar>
-      </div>
-    );
-  }
-
   if (!userData) {
     return (
       <div className="h-[500px] flex justify-center items-center">
