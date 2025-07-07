@@ -10,7 +10,9 @@ const ContainerRooms = async () => {
     description: bedroom.description,
     lowSeasonPrice: bedroom.lowSeasonPrice,
     status: bedroom.status,
-    numberBedroom: bedroom.numberBedroom
+    numberBedroom: bedroom.numberBedroom,
+    image: bedroom.image,
+    commentCount: bedroom.bookingsDetails.length
   }));
 
   return (

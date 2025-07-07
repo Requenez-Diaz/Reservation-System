@@ -2,12 +2,14 @@
 
 import prisma from '@/lib/db';
 
+
 export const getAllBedrooms = async () => {
   try {
     const bedrooms = await prisma.bedrooms.findMany({
       where: {
         status: true
       },
+
       include: {
         bookingsDetails: {
           where: {
@@ -16,7 +18,9 @@ export const getAllBedrooms = async () => {
         }
       }
     });
-    console.log('Habitaciones', bedrooms);
+    // bedrooms.forEach((bedroom) => {
+    //   console.log('imagen de la habitacion ', bedroom.image);
+    // });
     return bedrooms;
   } catch (error) {
     console.error('Error al obtener las habitaciones', error);

@@ -11,7 +11,8 @@ export default async function RoomInfoHome() {
     description: bedroom.description,
     lowSeasonPrice: bedroom.lowSeasonPrice,
     status: bedroom.status,
-    numberBedroom: bedroom.numberBedroom
+    numberBedroom: bedroom.numberBedroom,
+    image: bedroom.image
   }));
 
   return (

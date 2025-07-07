@@ -7,24 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  username     String         @unique
-  password     String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  roleName     String
-  image        String?
-  comments     Comments[]
-  Reservation  Reservation[]
-  Role         Role           @relation(fields: [roleName], references: [roleName])
-  UserImage    UserImage?
-  testimonials testimonials[]
-
-  @@map("users")
-}
-
 model Role {
   id       Int    @id @default(autoincrement())
   descript String
@@ -35,26 +17,6 @@ model Role {
 model UsersRole {
   Id_user Int @unique
   Id_role Int
-}
-
-model Bedrooms {
-  id                 Int                  @id @default(autoincrement())
-  typeBedroom        String
-  description        String
-  lowSeasonPrice     Int
-  highSeasonPrice    Int
-  status             Boolean
-  numberBedroom      Int
-  seasonsId          Int
-  amenities          String[]
-  capacity           Int
-  seasons            Seasons              @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
-  BedroomsPromotions BedroomsPromotions[]
-  bookingsDetails    BookingsDetails[]
-  comments           Comments[]
-  testimonials       testimonials[]
-
-  @@map("bedrooms")
 }
 
 model Reservation {
@@ -99,17 +61,17 @@ model testimonials {
   id        Int       @id @default(autoincrement())
   name      String
   avatar    String
-  rating    Int
   comment   String
+  location  String
+  rating    Int
   roomType  String
   stayDate  DateTime
-  location  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  User      User?     @relation(fields: [userId], references: [id])
+  bedroomId Int?
   userId    Int?
   Bedrooms  Bedrooms? @relation(fields: [bedroomId], references: [id])
-  bedroomId Int?
+  User      User?     @relation(fields: [userId], references: [id])
 
   @@map("testimonials")
 }
@@ -135,7 +97,7 @@ model Seasons {
   nameSeason String
   dateStart  DateTime
   dateEnd    DateTime
-  bedrooms   Bedrooms[]
+  Bedrooms   Bedrooms[]
   Promotions Promotions[]
 }
 
@@ -211,6 +173,43 @@ model Promotions {
   BedroomsPromotions BedroomsPromotions[]
   bookingsDetails    BookingsDetails[]
   Seasons            Seasons              @relation(fields: [seasonId], references: [id])
+}
+
+model Bedrooms {
+  id                 Int                  @id @default(autoincrement())
+  typeBedroom        String
+  description        String
+  lowSeasonPrice     Int
+  highSeasonPrice    Int
+  status             Boolean
+  numberBedroom      Int
+  seasonsId          Int
+  amenities          String[]
+  capacity           Int
+  createdAt          DateTime             @default(now())
+  image              String
+  updatedAt          DateTime
+  Seasons            Seasons              @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
+  BedroomsPromotions BedroomsPromotions[]
+  bookingsDetails    BookingsDetails[]
+  comments           Comments[]
+  testimonials       testimonials[]
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  username     String         @unique
+  password     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  roleName     String
+  image        String?
+  comments     Comments[]
+  Reservation  Reservation[]
+  Role         Role           @relation(fields: [roleName], references: [roleName])
+  UserImage    UserImage?
+  testimonials testimonials[]
 }
 
 enum BookingsStatus {

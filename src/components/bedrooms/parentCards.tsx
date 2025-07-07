@@ -8,6 +8,7 @@ interface Item {
   status: boolean;
   numberBedroom: number;
   commentCount: number;
+  image: string;
 }
 
 interface ParentComponents {

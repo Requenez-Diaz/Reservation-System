@@ -31,6 +31,7 @@ interface PropsCardsProps {
   status: boolean;
   numberBedroom: number;
   commentCount: number;
+  image: string;
 }
 
 export default function PropsCards({
@@ -39,24 +40,74 @@ export default function PropsCards({
   lowSeasonPrice,
   status,
   numberBedroom,
-  commentCount
+  commentCount,
+  image
 }: PropsCardsProps) {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const toggleComments = () => {
     setIsCommentsOpen(!isCommentsOpen);
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  // Función para verificar si la imagen es base64
+  const isBase64Image = (str: string) => {
+    console.log(isBase64Image, 'Probando ');
+    return str.startsWith('data:image/');
+  };
+
   return (
     <Card className="w-screen max-w-md mt-3 mx-3 overflow-hidden transition-all duration-300 hover:shadow-xl">
       <div className="relative h-40 overflow-hidden group">
-        <Image
-          alt="Imagen de la habitación"
-          src="https://media.istockphoto.com/id/1390233984/es/foto/habitaci%C3%B3n-de-lujo-moderna.webp?b=1&s=170667a&w=0&k=20&c=sLPzMweWiHutEfXwpxoo4Ew8Wu_kZxzT5dRUohKbP40="
-          layout="fill"
-          objectFit="cover"
-          className="rounded-t-lg transition-transform duration-500 ease-in-out group-hover:scale-110"
-        />
+        {image && !imageError ? (
+          isBase64Image(image) ? (
+            // Imagen en base64
+            <Image
+              src={image || '/placeholder.svg'}
+              alt={`Habitación ${typeBedroom}`}
+              fill
+              className="object-cover transition-transform hover:scale-105"
+              onError={handleImageError}
+              priority={false}
+            />
+          ) : (
+            // Imagen con URL normal
+            <Image
+              src={image || '/placeholder.svg'}
+              alt={`Habitación ${typeBedroom}`}
+              fill
+              className="object-cover transition-transform hover:scale-105"
+              onError={handleImageError}
+              priority={false}
+            />
+          )
+        ) : (
+          // Imagen placeholder cuando no hay imagen o hay error
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm">Imagen no disponible</p>
+            </div>
+          </div>
+        )}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-500 flex items-center justify-center">
           <span className="text-white text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             Ver detalles
@@ -121,7 +172,6 @@ export default function PropsCards({
               </Link>
             </div>
           )}
-          <RoomAvailability isAvailable={status} />
         </CardFooter>
       </div>
     </Card>
