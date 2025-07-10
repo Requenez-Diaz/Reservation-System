@@ -56,7 +56,8 @@ export const saveUsers = async (formData: FormData) => {
         email: rawFormUser.email,
         username: rawFormUser.username,
         password: hashedPassword,
-        roleName: 'User' // Asigna el roleName directamente como "User"
+        roleName: 'User',
+        updatedAt: new Date()
       }
     });
 

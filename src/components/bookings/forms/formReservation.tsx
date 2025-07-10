@@ -2,16 +2,26 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ReservationFormValues, ReservationSchema } from './reservationSchema';
 import { saveReservation } from '@/app/actions/saveReservation';
-import { bedroomsTypes } from '../bedroomstype/bedroomsType';
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DialogClose, DialogFooter } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icons/icons';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  ReservationFormValues,
+  ReservationSchema
+} from '../types/reservationSchema';
+import { bedroomsTypes } from '@/components/bedroomstype/bedroomsType';
 
 export function FormReservation() {
   const { toast } = useToast();
@@ -42,7 +52,8 @@ export function FormReservation() {
     } else {
       toast({
         title: 'Error',
-        description: response.message || 'Hubo un problema al registrar la reservación.'
+        description:
+          response.message || 'Hubo un problema al registrar la reservación.'
       });
     }
   };
@@ -58,7 +69,12 @@ export function FormReservation() {
               <FormItem>
                 <FormLabel>Huéspedes</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" min="1" placeholder="Número de huéspedes" />
+                  <Input
+                    {...field}
+                    type="number"
+                    min="1"
+                    placeholder="Número de huéspedes"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -71,7 +87,12 @@ export function FormReservation() {
               <FormItem>
                 <FormLabel>Habitaciones</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" min="1" placeholder="Cantidad de habitaciones" />
+                  <Input
+                    {...field}
+                    type="number"
+                    min="1"
+                    placeholder="Cantidad de habitaciones"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -90,9 +111,13 @@ export function FormReservation() {
                   {...field}
                   className="border border-gray-300 rounded-lg p-2 w-full"
                 >
-                  <option value="" disabled>Selecciona el tipo</option>
+                  <option value="" disabled>
+                    Selecciona el tipo
+                  </option>
                   {bedroomsTypes.map((type, index) => (
-                    <option key={index} value={type}>{type}</option>
+                    <option key={index} value={type}>
+                      {type}
+                    </option>
                   ))}
                 </select>
               </FormControl>

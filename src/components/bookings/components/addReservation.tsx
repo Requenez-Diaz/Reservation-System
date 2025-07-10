@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { FormReservation } from './formReservation';
+import FormReservation from '../forms/formReservation';
 
 export function AddReservation() {
   return (

@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { RoomAvailability } from './roomAvailability';
-import { AddReservation } from './addReservation';
+import { AddReservation } from '../bookings/components/addReservation';
 import BedroomDetail from './bedroomDetail';
 
 import {
