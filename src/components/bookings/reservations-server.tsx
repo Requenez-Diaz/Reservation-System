@@ -8,12 +8,9 @@ export default async function ReservationsServer() {
   console.log('🚀 ReservationsServer: Iniciando renderizado...');
 
   try {
-    // Paso 1: Obtener sesión
-    console.log('📋 Obteniendo sesión...');
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      console.log('❌ No hay sesión de usuario');
       return (
         <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md text-center">
@@ -28,13 +25,9 @@ export default async function ReservationsServer() {
       );
     }
 
-    console.log('✅ Sesión encontrada para usuario:', session.user.id);
-
-    // Paso 2: Validar y convertir ID
     const userId = Number(session.user.id);
 
     if (isNaN(userId) || userId <= 0) {
-      console.log('❌ ID de usuario inválido:', session.user.id);
       return (
         <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md text-center">
@@ -48,22 +41,8 @@ export default async function ReservationsServer() {
         </div>
       );
     }
-
-    console.log('✅ ID de usuario válido:', userId);
-
-    // Paso 3: Obtener datos
-    console.log('📊 Obteniendo reservaciones...');
     const result = await getReservationsByUsers(userId);
-
-    console.log('📊 Resultado obtenido:', {
-      success: result.success,
-      hasUser: !!result.user,
-      reservationsCount: result.reservations?.length || 0
-    });
-
-    // Paso 4: Manejar errores
     if (!result.success) {
-      console.log('❌ Error en la consulta:', result.message);
       return (
         <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md text-center">
@@ -77,8 +56,6 @@ export default async function ReservationsServer() {
         </div>
       );
     }
-
-    // Paso 5: Validar usuario
     if (!result.user) {
       console.log('❌ No se encontró información del usuario');
       return (
@@ -95,9 +72,7 @@ export default async function ReservationsServer() {
       );
     }
 
-    // Paso 6: Manejar caso sin reservaciones
     if (!result.reservations || result.reservations.length === 0) {
-      console.log('ℹ️ No hay reservaciones para mostrar');
       return (
         <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md text-center">
@@ -116,8 +91,6 @@ export default async function ReservationsServer() {
       );
     }
 
-    // Paso 7: Renderizar componente cliente
-    console.log('✅ Renderizando componente cliente con datos');
     return (
       <ReservationsClient
         reservations={result.reservations}
@@ -125,8 +98,6 @@ export default async function ReservationsServer() {
       />
     );
   } catch (error) {
-    console.error('💥 Error crítico en ReservationsServer:', error);
-
     return (
       <div className="flex flex-col min-h-screen justify-center items-center p-6 bg-gray-100">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md text-center">

@@ -1,7 +1,7 @@
 'use client';
 
-import { EditReservation } from '../bedrooms/editReservation';
-import { DeleteReservation } from '../bedrooms/deleteReservation';
+import { EditReservation } from './components/editReservation';
+import { DeleteReservation } from './components/deleteReservation';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Status } from '@prisma/client';
 
@@ -155,8 +155,8 @@ export function ReservationsClient({
                 <div className="border-t pt-4">
                   {reservation.status === Status.PENDING ? (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      {/* <DeleteReservation reservationId={reservation.id} />
-                      <EditReservation reservationId={reservation.id} /> */}
+                      <DeleteReservation reservationId={reservation.id} />
+                      <EditReservation reservationId={reservation.id} />
                     </div>
                   ) : (
                     <div className="text-center text-gray-500 italic">

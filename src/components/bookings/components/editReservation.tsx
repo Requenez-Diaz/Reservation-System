@@ -1,0 +1,118 @@
+'use client';
+
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+import FormEditReservation from './editReservationForm';
+import { getReservationById } from '@/app/actions/saveReservation/getReservation';
+
+interface Reservation {
+  id: number;
+  arrivalDate: Date;
+  departureDate: Date;
+  rooms: number;
+  bedroomsType: string;
+  guests: number;
+  status: string;
+}
+
+export function EditReservation({ reservationId }: { reservationId: number }) {
+  const [reservation, setReservation] = useState<Reservation | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const loadReservation = async () => {
+    if (reservation) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log('Cargando reservación con ID:', reservationId);
+
+      const result = await getReservationById(reservationId);
+
+      console.log('Resultado del Server Action:', result);
+
+      if (result.success && result.reservation) {
+        setReservation(result.reservation);
+      } else {
+        setError(result.message || 'Error al cargar la reservación');
+      }
+    } catch (err) {
+      console.error('Error loading reservation:', err);
+      setError('Error inesperado al cargar la reservación');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (isOpen) {
+      loadReservation();
+    }
+  }, [isOpen]);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      // Limpiar datos cuando se cierra
+      setReservation(null);
+      setError(null);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="default" className="bg-green-600 hover:bg-green-700">
+          Cambiar elección
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px] p-6">
+        <DialogHeader>
+          <DialogTitle>Editar reservación</DialogTitle>
+          <DialogDescription>
+            Completa la información para editar su reservación.
+          </DialogDescription>
+        </DialogHeader>
+
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            <span>Cargando reservación...</span>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-600">{error}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 bg-transparent"
+              onClick={loadReservation}
+            >
+              Reintentar
+            </Button>
+          </div>
+        )}
+
+        {reservation && !loading && !error && (
+          <FormEditReservation
+            reservation={reservation}
+            onSuccess={() => setIsOpen(false)}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
