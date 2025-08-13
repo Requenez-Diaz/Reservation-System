@@ -67,3 +67,26 @@ export const saveUsers = async (formData: FormData) => {
     throw error;
   }
 };
+
+export async function getUsers(id: number) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        username: true,
+        email: true
+      }
+    });
+
+    if (!user) {
+      return { success: false, error: 'Usuario no encontrado' };
+    }
+
+    console.log({ user }, 'user Getting');
+    return { success: true, data: user };
+  } catch (error) {
+    console.error('Error al obtener usuario:', error);
+    return { success: false, error: 'Error al obtener usuario' };
+  }
+}
