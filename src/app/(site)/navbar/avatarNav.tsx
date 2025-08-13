@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useSession } from 'next-auth/react'; // Ajusta según tu sistema de autenticación
+import { useSession } from 'next-auth/react';
 import { getUserImage } from '@/app/actions/upload/getUsersImage';
+import { UserIcon } from 'lucide-react'; // Importamos el icono de usuario
 
 export default function UserAvatarClient() {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -37,7 +38,6 @@ export default function UserAvatarClient() {
       setIsLoading(false);
     }
 
-    // Escuchar el evento de actualización de imagen
     const handleImageUpdate = () => {
       fetchUserImage();
     };
@@ -49,16 +49,20 @@ export default function UserAvatarClient() {
     };
   }, [session, status]);
 
-  const initials = userName ? userName.charAt(0).toUpperCase() : 'U';
+  const initials = userName ? userName.charAt(0).toUpperCase() : null;
 
   return (
     <Avatar>
+      {/* Si hay una imagen de usuario, la muestra */}
       {userImage ? <AvatarImage src={userImage} alt={userName} /> : null}
+
       <AvatarFallback>
         {isLoading ? (
           <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-primary animate-spin" />
-        ) : (
+        ) : initials ? (
           initials
+        ) : (
+          <UserIcon className="h-4 w-4" />
         )}
       </AvatarFallback>
     </Avatar>

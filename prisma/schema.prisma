@@ -20,7 +20,7 @@ model UsersRole {
 }
 
 model Reservation {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   name          String
   lastName      String
   email         String
@@ -29,11 +29,13 @@ model Reservation {
   rooms         Int
   arrivalDate   DateTime
   departureDate DateTime
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
   status        Status
   userId        Int
-  User          User     @relation(fields: [userId], references: [id])
+  User          User        @relation(fields: [userId], references: [id])
+  promotionId   Int?
+  Promotions    Promotions? @relation(fields: [promotionId], references: [id])
 }
 
 model Comments {
@@ -173,6 +175,7 @@ model Promotions {
   BedroomsPromotions BedroomsPromotions[]
   bookingsDetails    BookingsDetails[]
   Seasons            Seasons              @relation(fields: [seasonId], references: [id])
+  Reservation        Reservation[]
 }
 
 model Bedrooms {
