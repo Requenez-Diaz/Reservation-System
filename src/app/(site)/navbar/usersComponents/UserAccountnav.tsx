@@ -1,17 +1,13 @@
-'use client';
-
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSession } from 'next-auth/react';
 import { MenuDrop } from '../menuProfile';
 
-const UserAccountnav = () => {
-  const session = useSession({ required: true });
+export default function AvatarNavigations() {
+  const { data: session } = useSession();
 
   return (
-    <div className="flex flex-row items-center justify-evenly">
-      <h1 className="mr-4">{session.data?.user?.username}</h1>
+    <div className="relative group">
       <MenuDrop />
     </div>
   );
-};
-
-export default UserAccountnav;
+}

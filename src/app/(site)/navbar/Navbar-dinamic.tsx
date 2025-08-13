@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
-// Importar componentes que dependen de la sesión de forma dinámica
 const DynamicActiveLink = dynamic(
   () =>
     import('@/components/active-link/ActiveLink').then((mod) => ({
