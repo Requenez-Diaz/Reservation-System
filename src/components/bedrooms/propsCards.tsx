@@ -1,17 +1,10 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-import { RoomAvailability } from './roomAvailability';
 import { AddReservation } from '../bookings/components/addReservation';
 import BedroomDetail from './bedroomDetail';
 
-import {
-  Wifi,
-  Wind,
-  MessageCircle,
-  ChevronDown,
-  ChevronUp
-} from 'lucide-react';
+import { Wifi, Wind, MessageCircleMore } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -21,8 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { CommentCount } from '../coments/commentCount';
+import { generateWhatsappUrl } from './messages/message-encode';
 
 interface PropsCardsProps {
   typeBedroom: string;
@@ -43,20 +35,12 @@ export default function PropsCards({
   commentCount,
   image
 }: PropsCardsProps) {
-  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
-
-  const toggleComments = () => {
-    setIsCommentsOpen(!isCommentsOpen);
-  };
 
   const handleImageError = () => {
     setImageError(true);
   };
-
-  // Función para verificar si la imagen es base64
   const isBase64Image = (str: string) => {
-    console.log(isBase64Image, 'Probando ');
     return str.startsWith('data:image/');
   };
 
@@ -75,7 +59,6 @@ export default function PropsCards({
               priority={false}
             />
           ) : (
-            // Imagen con URL normal
             <Image
               src={image || '/placeholder.svg'}
               alt={`Habitación ${typeBedroom}`}
@@ -86,7 +69,6 @@ export default function PropsCards({
             />
           )
         ) : (
-          // Imagen placeholder cuando no hay imagen o hay error
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
             <div className="text-center text-gray-500">
               <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-lg flex items-center justify-center">
@@ -142,36 +124,29 @@ export default function PropsCards({
           </div>
         </CardContent>
         <CardFooter className="p-0 pt-2 flex flex-col gap-2">
-          <div className="flex flex-row items-stretch gap-1 w-full">
-            <AddReservation />
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full flex justify-between items-center text-xs"
-              onClick={toggleComments}
-            >
-              <div className="flex items-center">
-                <MessageCircle className="w-3 h-3 mr-1" />
-                Comentarios
-              </div>
-              {isCommentsOpen ? (
-                <ChevronUp className="w-3 h-3" />
-              ) : (
-                <ChevronDown className="w-3 h-3" />
-              )}
-            </Button>
-          </div>
-          {isCommentsOpen && (
-            <div className="w-full">
-              <CommentCount count={commentCount} />
-              <Link
-                href="comments"
-                className="text-xs text-blue-500 hover:underline mt-1 inline-block"
-              >
-                Ver todos los comentarios
-              </Link>
+          {/* Contenedor que alinea los dos botones en fila */}
+          <div className="flex flex-row items-stretch gap-2 w-full">
+            {/* Opción 1: Reservación con el componente original */}
+            <div className="flex-1">
+              <AddReservation />
             </div>
-          )}
+
+            <a
+              href={generateWhatsappUrl(
+                typeBedroom,
+                numberBedroom,
+                lowSeasonPrice
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1"
+            >
+              <Button className="w-full bg-green-500 hover:bg-green-600">
+                <MessageCircleMore className="w-4 h-4 mr-2" />
+                WhatsApp
+              </Button>
+            </a>
+          </div>
         </CardFooter>
       </div>
     </Card>
