@@ -20,8 +20,7 @@ import {
   type ReservationFormValues,
   ReservationSchema
 } from '../types/reservationSchema';
-import { bedroomsTypes } from '@/components/bedroomstype/bedroomsType';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +32,7 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 import { Calendar, Clock, AlertTriangle } from 'lucide-react';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 
 interface AvailabilityInfo {
   availableRooms: number;
@@ -58,6 +58,31 @@ export function FormReservation() {
     arrivalDate: string;
     departureDate: string;
   } | null>(null);
+
+  // Nuevo estado para almacenar los tipos de habitación
+  const [bedroomsTypes, setBedroomsTypes] = useState<string[]>([]);
+
+  // Usa useEffect para cargar los tipos de habitación cuando el componente se monte
+  useEffect(() => {
+    const fetchBedroomsTypes = async () => {
+      try {
+        const bedrooms = await getAllBedrooms();
+        const types = bedrooms.map((bedroom) => bedroom.typeBedroom);
+        // Usa un Set para obtener solo tipos únicos y luego conviértelo a un array
+        const uniqueTypes = Array.from(new Set(types));
+        setBedroomsTypes(uniqueTypes);
+      } catch (error) {
+        console.error('Error fetching bedroom types:', error);
+        toast({
+          title: 'Error',
+          description: 'No se pudieron cargar los tipos de habitación.',
+          variant: 'destructive'
+        });
+      }
+    };
+
+    fetchBedroomsTypes();
+  }, []); // El array vacío asegura que se ejecute solo una vez al inicio
 
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(ReservationSchema),
