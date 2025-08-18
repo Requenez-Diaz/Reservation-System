@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Importa useEffect
 import {
   Form,
   FormControl,
@@ -17,11 +17,11 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { updateReservation } from '@/app/actions/saveReservation';
-import { bedroomsTypes } from '../../bedroomstype/bedroomsType';
 import {
   type ReservationFormValues,
   ReservationSchema
 } from '../types/reservationSchema';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 
 interface Reservation {
   id: number;
@@ -35,7 +35,7 @@ interface Reservation {
 
 interface FormEditReservationProps {
   reservation: Reservation;
-  onSuccess?: () => void; // Callback para cerrar el diálogo
+  onSuccess?: () => void;
 }
 
 export function FormEditReservation({
@@ -44,6 +44,28 @@ export function FormEditReservation({
 }: FormEditReservationProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bedroomsTypes, setBedroomsTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchBedroomsTypes = async () => {
+      try {
+        const bedrooms = await getAllBedrooms();
+        // Mapea los resultados para obtener solo el 'typeBedroom' y elimina duplicados
+        const types = bedrooms.map((bedroom) => bedroom.typeBedroom);
+        const uniqueTypes = Array.from(new Set(types));
+        setBedroomsTypes(uniqueTypes);
+      } catch (error) {
+        console.error('Error fetching bedroom types:', error);
+        toast({
+          title: 'Error',
+          description: 'No se pudieron cargar los tipos de habitación.',
+          variant: 'destructive'
+        });
+      }
+    };
+
+    fetchBedroomsTypes();
+  }, []);
 
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(ReservationSchema),
