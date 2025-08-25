@@ -7,8 +7,8 @@ interface Item {
   lowSeasonPrice: number;
   status: boolean;
   numberBedroom: number;
-  commentCount: number;
   image: string;
+  slug: string;
 }
 
 interface ParentComponents {

@@ -12,6 +12,8 @@ interface SaveReservationData {
   rooms: number;
   arrivalDate: Date;
   departureDate: Date;
+  name: string;
+  lastName: string;
 }
 
 interface SaveReservationResponse {
@@ -35,9 +37,6 @@ export const saveReservation = async (
   data: SaveReservationData
 ): Promise<SaveReservationResponse> => {
   const session = await getServerSession(authOptions);
-  console.log('====================================');
-  console.log('Session:', session);
-  console.log('====================================');
 
   const user = session?.user;
   if (!user || !user.email) {
@@ -52,12 +51,7 @@ export const saveReservation = async (
   const { bedroomsType, guests, rooms, arrivalDate, departureDate } = data;
 
   try {
-    // Obtener información de habitaciones desde la base de datos
     const getBedroomInfo = async (bedroomType: string) => {
-      console.log(
-        `🏨 Obteniendo información de habitaciones para tipo: ${bedroomType}`
-      );
-
       const bedrooms = await prisma.bedrooms.findMany({
         where: {
           typeBedroom: bedroomType,
@@ -158,20 +152,6 @@ export const saveReservation = async (
           }
         }
       }
-
-      console.log(
-        `📋 Reservaciones conflictivas encontradas:`,
-        conflictingReservations
-      );
-      console.log(`🏠 Total habitaciones ocupadas: ${totalOccupiedRooms}`);
-      console.log(
-        `🏨 Total habitaciones disponibles en BD: ${bedroomInfo.totalRooms}`
-      );
-      console.log(`✅ Habitaciones libres: ${availableRooms}`);
-      console.log(
-        `📅 Próxima fecha disponible: ${nextAvailableDate?.toISOString()}`
-      );
-
       return {
         availableRooms,
         totalRooms: bedroomInfo.totalRooms,
@@ -216,8 +196,6 @@ export const saveReservation = async (
         }
       }
     });
-
-    console.log(`✅ Reservación creada con ID: ${newReservation.id}`);
 
     revalidatePath('/dashboard/bookings');
 
