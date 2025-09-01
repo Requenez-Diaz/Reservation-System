@@ -12,14 +12,16 @@ const ContainerRooms = async () => {
     status: bedroom.status,
     numberBedroom: bedroom.numberBedroom,
     image: bedroom.image,
-    commentCount: bedroom.bookingsDetails.length
+    slug: bedroom.typeBedroom
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '')
   }));
 
   return (
     <div>
       <OrdersRooms />
       <ParentCards items={mappedItems} />
-      {/* <Testimonial /> */}
     </div>
   );
 };

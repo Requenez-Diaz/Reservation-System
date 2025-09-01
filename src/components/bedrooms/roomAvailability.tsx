@@ -16,7 +16,7 @@ export function RoomAvailability({ isAvailable }: RoomAvailabilityProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="success" className="w-full sm:w-auto">
+        <Button variant="save" className="w-full sm:w-auto">
           Ver disponibilidad
         </Button>
       </DialogTrigger>

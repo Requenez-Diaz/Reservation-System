@@ -13,7 +13,9 @@ export function AddReservation() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="success">Reservar</Button>
+        <Button className="w-full bg-blue-500 hover:bg-blue-600">
+          Reservar
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] p-6">
         <DialogHeader>
