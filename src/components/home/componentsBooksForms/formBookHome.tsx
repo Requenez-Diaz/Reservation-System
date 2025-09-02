@@ -99,14 +99,22 @@ export default function BedroomSearch() {
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Buscar tipo de habitación"
-                    className="pl-9"
-                    value={roomType}
-                    onChange={(e) => setRoomType(e.target.value)}
-                  />
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-start text-left font-normal"
+                  >
+                                   
+                    <MapPin className="mr-2 h-4 w-4 shrink-0 opacity-50" />     
+                               {' '}
+                    {roomType
+                      ? bedrooms.find(
+                          (bedroom) => bedroom.typeBedroom === roomType
+                        )?.typeBedroom
+                      : 'Buscar tipo de habitación...'}
+                                   {' '}
+                  </Button>
                 </div>
               </PopoverTrigger>
               <PopoverContent className="p-0">
@@ -159,7 +167,7 @@ export default function BedroomSearch() {
               </Button>
             </div>
 
-            <Button className="" variant={'success'} onClick={handleSearch}>
+            <Button className="" variant={'save'} onClick={handleSearch}>
               Buscar
             </Button>
           </div>
