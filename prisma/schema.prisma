@@ -192,13 +192,13 @@ model Bedrooms {
   createdAt          DateTime             @default(now())
   image              String
   updatedAt          DateTime
+  slug               String               @unique
   BedroomImages      BedroomImages[]
   Seasons            Seasons              @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
   BedroomsPromotions BedroomsPromotions[]
   bookingsDetails    BookingsDetails[]
   comments           Comments[]
   testimonials       testimonials[]
-  slug               String               @unique
 }
 
 model User {
