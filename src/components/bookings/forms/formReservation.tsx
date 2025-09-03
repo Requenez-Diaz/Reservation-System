@@ -68,6 +68,8 @@ export function FormReservation() {
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(ReservationSchema),
     defaultValues: {
+      name: '',
+      lastName: '',
       guests: undefined,
       rooms: undefined,
       bedroomsType: '',
