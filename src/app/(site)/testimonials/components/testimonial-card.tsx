@@ -54,10 +54,11 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
         <div className="pt-4 border-t border-gray-100 space-y-2">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Calendar className="h-4 w-4" />
-            <span>{testimonial.stayDate}</span>
-          </div>
-          <div className="text-sm font-medium text-blue-600">
-            {testimonial.roomType}
+            <span>
+              {testimonial.createdAt
+                ? testimonial.createdAt.toLocaleDateString()
+                : 'Fecha no disponible'}
+            </span>
           </div>
         </div>
       </CardContent>

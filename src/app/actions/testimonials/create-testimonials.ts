@@ -15,39 +15,16 @@ export const createTestimonial = async (formData: FormData) => {
 
     const userId = session.user.id;
 
-    // Extraer y validar datos del formulario
     const name = formData.get('name') as string;
     const rating = formData.get('rating') as string;
     const comment = formData.get('comment') as string;
-    const typeBedroom = formData.get('typeBedroom') as string;
-    const stayDate = formData.get('stayDate') as string;
     const location = formData.get('location') as string;
 
-    // Debug: Imprimir todos los valores para verificar
-    console.log('FormData values:', {
-      name,
-      rating,
-      comment,
-      typeBedroom,
-      stayDate,
-      location
-    });
-
-    // Validaciones básicas - REACTIVADAS
-    if (
-      !name ||
-      !rating ||
-      !comment ||
-      !typeBedroom ||
-      !stayDate ||
-      !location
-    ) {
+    if (!name || !rating || !comment || !location) {
       const missingFields = [];
       if (!name) missingFields.push('name');
       if (!rating) missingFields.push('rating');
       if (!comment) missingFields.push('comment');
-      if (!typeBedroom) missingFields.push('roomType');
-      if (!stayDate) missingFields.push('stayDate');
       if (!location) missingFields.push('location');
 
       throw new Error(
@@ -60,17 +37,17 @@ export const createTestimonial = async (formData: FormData) => {
       throw new Error('La calificación debe ser un número entre 1 y 5');
     }
 
-    // Crear el testimonial
     const testimonial = await prisma.testimonials.create({
       data: {
         name: name.trim(),
         rating: ratingNumber,
         comment: comment.trim(),
-        roomType: typeBedroom.trim(),
-        stayDate: stayDate.trim(),
         location: location.trim(),
         avatar: '/placeholder.svg?height=40&width=40',
-        userId: Number.parseInt(userId)
+        isApproved: false,
+        User: {
+          connect: { id: Number.parseInt(userId) }
+        }
       },
       include: {
         User: {
@@ -99,7 +76,6 @@ export const createTestimonial = async (formData: FormData) => {
   }
 };
 
-// Función para obtener habitaciones disponibles
 export const getBedrooms = async () => {
   try {
     const bedrooms = await prisma.bedrooms.findMany({
@@ -120,7 +96,6 @@ export const getBedrooms = async () => {
   }
 };
 
-// Función para obtener datos del usuario actual
 export const getCurrentUser = async () => {
   try {
     const session = await getServerSession(authOptions);
@@ -151,10 +126,12 @@ export const getCurrentUser = async () => {
   }
 };
 
-// Función para obtener testimoniales
 export const getTestimonials = async (limit?: number) => {
   try {
     const testimonials = await prisma.testimonials.findMany({
+      where: {
+        isApproved: true
+      },
       orderBy: {
         createdAt: 'desc'
       },
@@ -177,12 +154,12 @@ export const getTestimonials = async (limit?: number) => {
   }
 };
 
-// Función para obtener testimoniales por usuario
 export const getTestimonialsByUser = async (userId: number) => {
   try {
     const testimonials = await prisma.testimonials.findMany({
       where: {
-        userId: userId
+        userId: userId,
+        isApproved: true
       },
       orderBy: {
         createdAt: 'desc'

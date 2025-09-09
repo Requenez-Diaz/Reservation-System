@@ -4,8 +4,6 @@ export interface Testimonial {
   avatar: string;
   rating: number;
   comment: string;
-  roomType: string;
-  stayDate: string;
   location: string;
   createdAt?: Date;
   userId?: number;
@@ -20,8 +18,6 @@ export interface TestimonialFormData {
   name: string;
   rating: number;
   comment: string;
-  roomType: string;
-  stayDate: string;
   location: string;
 }
 

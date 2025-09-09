@@ -1,3 +1,5 @@
+// components/forms/create-testimonial-form.tsx
+
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
@@ -13,6 +15,19 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+
+// Importa la alerta de shadcn/ui
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
 
 import { useToast } from '@/components/ui/use-toast';
 
@@ -54,6 +69,9 @@ export function CreateTestimonialForm({
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState('');
   const { toast } = useToast();
+  // Estado para la alerta
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [formDataState, setFormDataState] = useState<FormData | null>(null);
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -61,7 +79,6 @@ export function CreateTestimonialForm({
       try {
         setIsLoading(true);
 
-        // Cargar habitaciones y usuario en paralelo
         const [bedroomsResult, userResult] = await Promise.all([
           getBedrooms(),
           getCurrentUser()
@@ -100,18 +117,28 @@ export function CreateTestimonialForm({
     loadInitialData();
   }, [toast]);
 
-  const handleSubmit = async (formData: FormData) => {
-    // Agregar el rating al FormData
+  // Manejador del envío del formulario (nueva lógica)
+  const handlePreSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     formData.set('rating', rating.toString());
+
+    setFormDataState(formData);
+    setShowConfirmation(true);
+  };
+
+  const handleSubmit = async () => {
+    if (!formDataState) return;
 
     startTransition(async () => {
       try {
-        const result = await createTestimonial(formData);
+        const result = await createTestimonial(formDataState);
 
         if (result.success) {
           toast({
-            title: '¡Testimonial creado!',
-            description: 'Tu experiencia ha sido compartida exitosamente'
+            title: '¡Testimonial enviado!',
+            description:
+              'Tu experiencia está siendo revisada y se publicará pronto.'
           });
 
           // Resetear el formulario
@@ -137,11 +164,14 @@ export function CreateTestimonialForm({
           description: 'Ocurrió un error al procesar tu solicitud',
           variant: 'destructive'
         });
+      } finally {
+        setShowConfirmation(false);
+        setFormDataState(null);
       }
     });
   };
 
-  // Estado de carga inicial
+  // ... (tu código de renderizado, sin cambios)
   if (isLoading) {
     return (
       <Card className={`max-w-2xl mx-auto ${className}`}>
@@ -155,7 +185,6 @@ export function CreateTestimonialForm({
     );
   }
 
-  // Si no hay usuario autenticado
   if (!currentUser) {
     return (
       <Card className={`max-w-2xl mx-auto ${className}`}>
@@ -176,166 +205,142 @@ export function CreateTestimonialForm({
   }
 
   return (
-    <Card className={`max-w-2xl mx-auto ${className}`}>
-      <CardHeader className="pb-4">
-        <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-            <User className="h-5 w-5 text-blue-600" />
-          </div>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900">
-              Comparte tu experiencia
-            </h3>
-            <p className="text-sm text-gray-600">
-              Hola,{' '}
-              <span className="font-medium">
-                {currentUser.name || currentUser.username}
-              </span>
-            </p>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="pt-0">
-        <form
-          id="create-testimonial-form"
-          action={handleSubmit}
-          className="space-y-6"
-        >
-          {/* Información personal */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">
-                Nombre completo
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                defaultValue={currentUser.name || currentUser.username || ''}
-                required
-                disabled={isPending}
-                className="transition-colors"
-              />
+    <>
+      <Card className={`max-w-2xl mx-auto ${className}`}>
+        <CardHeader className="pb-4">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <User className="h-5 w-5 text-blue-600" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="location" className="text-sm font-medium">
-                <MapPin className="inline h-4 w-4 mr-1" />
-                Ubicación
-              </Label>
-              <Input
-                id="location"
-                name="location"
-                placeholder="Ciudad, País"
-                required
-                disabled={isPending}
-                className="transition-colors"
-              />
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Comparte tu experiencia
+              </h3>
+              <p className="text-sm text-gray-600">
+                Hola,{' '}
+                <span className="font-medium">
+                  {currentUser.name || currentUser.username}
+                </span>
+              </p>
             </div>
           </div>
+        </CardHeader>
 
-          {/* Detalles de la estancia */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="typeBedroom" className="text-sm font-medium">
-                Tipo de habitación
-              </Label>
-              <Select
-                name="typeBedroom"
-                required
-                disabled={isPending}
-                value={selectedRoom}
-                onValueChange={setSelectedRoom}
-              >
-                <SelectTrigger className="transition-colors">
-                  <SelectValue placeholder="Selecciona tu habitación" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bedrooms.length > 0 ? (
-                    bedrooms.map((bedroom) => (
-                      <SelectItem key={bedroom.id} value={bedroom.typeBedroom}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">
-                            {bedroom.typeBedroom}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {bedroom.type}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="Habitación Estándar">
-                      Habitación Estándar
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="stayDate" className="text-sm font-medium">
-                Fecha de estancia
-              </Label>
-              <Input
-                id="stayDate"
-                name="stayDate"
-                placeholder="Ej: Enero 2024"
-                required
-                disabled={isPending}
-                className="transition-colors"
-              />
-            </div>
-          </div>
-
-          {/* Calificación */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Calificación general</Label>
-            <div className="flex items-center space-x-2">
-              <RatingStars
-                rating={rating}
-                interactive={true}
-                size="md"
-                onRatingChange={setRating}
-              />
-              <span className="text-sm text-gray-600 ml-2">({rating}/5)</span>
-            </div>
-          </div>
-
-          {/* Comentario */}
-          <div className="space-y-2">
-            <Label htmlFor="comment" className="text-sm font-medium">
-              Tu experiencia
-            </Label>
-            <Textarea
-              id="comment"
-              name="comment"
-              placeholder="Cuéntanos sobre tu estancia: ¿qué te gustó más? ¿Recomendarías este lugar?"
-              rows={4}
-              required
-              disabled={isPending}
-              className="transition-colors resize-none"
-            />
-            <p className="text-xs text-gray-500">
-              Comparte detalles específicos que puedan ayudar a otros huéspedes
-            </p>
-          </div>
-
-          {/* Botón de envío */}
-          <Button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
-            disabled={isPending}
+        <CardContent className="pt-0">
+          {/* Cambiado `action={handleSubmit}` por `onSubmit={handlePreSubmit}` */}
+          <form
+            id="create-testimonial-form"
+            onSubmit={handlePreSubmit}
+            className="space-y-6"
           >
-            {isPending ? (
-              <>
+            {/* Información personal */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium">
+                  Nombre completo
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  defaultValue={currentUser.name || currentUser.username || ''}
+                  required
+                  disabled={isPending}
+                  className="transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location" className="text-sm font-medium">
+                  <MapPin className="inline h-4 w-4 mr-1" />
+                  Ubicación
+                </Label>
+                <Input
+                  id="location"
+                  name="location"
+                  placeholder="Ciudad, País"
+                  required
+                  disabled={isPending}
+                  className="transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Calificación */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">
+                Calificación general
+              </Label>
+              <div className="flex items-center space-x-2">
+                <RatingStars
+                  rating={rating}
+                  interactive={true}
+                  size="md"
+                  onRatingChange={setRating}
+                />
+                <span className="text-sm text-gray-600 ml-2">({rating}/5)</span>
+              </div>
+            </div>
+
+            {/* Comentario */}
+            <div className="space-y-2">
+              <Label htmlFor="comment" className="text-sm font-medium">
+                Tu experiencia
+              </Label>
+              <Textarea
+                id="comment"
+                name="comment"
+                placeholder="Cuéntanos sobre tu estancia: ¿qué te gustó más? ¿Recomendarías este lugar?"
+                rows={4}
+                required
+                disabled={isPending}
+                className="transition-colors resize-none"
+              />
+              <p className="text-xs text-gray-500">
+                Comparte detalles específicos que puedan ayudar a otros
+                huéspedes
+              </p>
+            </div>
+
+            {/* Botón de envío */}
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
+              disabled={isPending}
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Publicando testimonial...
+                </>
+              ) : (
+                'Publicar testimonial'
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Alerta de confirmación */}
+      <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Enviar testimonial</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tu testimonio será enviado para revisión. Una vez aprobado, se
+              publicará en la página. ¿Deseas continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSubmit} disabled={isPending}>
+              {isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Publicando testimonial...
-              </>
-            ) : (
-              'Publicar testimonial'
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+              ) : (
+                'Sí, enviar'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
