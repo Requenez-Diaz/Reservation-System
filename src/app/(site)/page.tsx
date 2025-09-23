@@ -1,6 +1,6 @@
 import ContainerHome from '@/components/home/containerHome';
 
-const Dashboard = async () => {
+const Dashboard = () => {
   return (
     <main className="">
       <ContainerHome />

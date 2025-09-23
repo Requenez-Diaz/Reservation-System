@@ -34,10 +34,8 @@ export const saveUsers = async (formData: FormData) => {
       email: formData.get('email'),
       password: formData.get('password'),
       confirmPassword: formData.get('confirmPassword'),
-      role: 'User' // Asigna el rol "User" por defecto
+      role: 'User'
     });
-
-    console.log('rawFormUser:', rawFormUser);
     const hashedPassword = await hash(rawFormUser.password, 10);
 
     //Validate if the email exists
@@ -63,7 +61,6 @@ export const saveUsers = async (formData: FormData) => {
 
     return user;
   } catch (error) {
-    console.error('Error saving user:', error);
     throw error;
   }
 };
