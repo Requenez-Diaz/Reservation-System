@@ -41,7 +41,6 @@ export default function BasicNavbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation - Always visible on small screens */}
         <div className="md:hidden pb-3">
           <div className="flex flex-wrap gap-2">
             {navItems.map((item) => (

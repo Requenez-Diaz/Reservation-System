@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSession } from 'next-auth/react';
 import { getUserImage } from '@/app/actions/upload/getUsersImage';
-import { UserIcon } from 'lucide-react'; // Importamos el icono de usuario
+import { UserIcon } from 'lucide-react';
 
 export default function UserAvatarClient() {
   const [userImage, setUserImage] = useState<string | null>(null);
@@ -53,7 +53,6 @@ export default function UserAvatarClient() {
 
   return (
     <Avatar>
-      {/* Si hay una imagen de usuario, la muestra */}
       {userImage ? <AvatarImage src={userImage} alt={userName} /> : null}
 
       <AvatarFallback>

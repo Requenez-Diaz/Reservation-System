@@ -3,10 +3,17 @@
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { ActiveLink } from '@/components/active-link/ActiveLink';
-import UserAccountnav from '@/app/(site)/navbar/usersComponents/UserAccountnav';
 import { useState } from 'react'; // Eliminado useEffect y hasMounted
 import { Menu, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import dynamic from 'next/dynamic';
+
+const UserAccountnav = dynamic(
+  () => import('@/app/(site)/navbar/usersComponents/UserAccountnav'),
+  {
+    ssr: false
+  }
+);
 
 const navItems = [
   { path: '/', text: 'Inicio' },
@@ -19,7 +26,6 @@ export default function NavbarTwoPass() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession();
 
-  // El componente se renderiza directamente sin la lógica de hasMounted
   return (
     <nav className="bg-white p-4">
       <div className="container mx-auto flex justify-between items-center">

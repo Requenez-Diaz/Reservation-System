@@ -18,7 +18,6 @@ interface Bedroom {
   capacity: number;
   bookingsDetails: any[];
 }
-
 export default function BedroomDetails() {
   const params = useParams();
   const id = typeof params.id === 'string' ? Number.parseInt(params.id) : 0;

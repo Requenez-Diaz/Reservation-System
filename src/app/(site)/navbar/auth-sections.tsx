@@ -16,7 +16,7 @@ export default function AuthSections() {
     return <UserAccountnav />;
   }
 
-  <Link className={buttonVariants({ variant: 'blue' })} href="/sign-in">
+  <Link className={buttonVariants({ variant: 'save' })} href="/sign-in">
     Iniciar sesión
   </Link>;
 }

@@ -276,7 +276,7 @@ export default function UserProfile() {
                   </div>
                 </div>
                 {isEditing && (
-                  <Button type="submit" variant={'success'} className="mt-4">
+                  <Button type="submit" variant={'save'} className="mt-4">
                     Guardar Cambios
                   </Button>
                 )}
