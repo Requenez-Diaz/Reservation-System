@@ -1,19 +1,13 @@
+// app/(site)/navbar/navbar-twoPass.tsx
 'use client';
 
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { ActiveLink } from '@/components/active-link/ActiveLink';
-import { useState } from 'react'; // Eliminado useEffect y hasMounted
+import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import dynamic from 'next/dynamic';
-
-const UserAccountnav = dynamic(
-  () => import('@/app/(site)/navbar/usersComponents/UserAccountnav'),
-  {
-    ssr: false
-  }
-);
+import UserAccountnav from '@/app/(site)/navbar/usersComponents/UserAccountnav';
+import { Session } from 'next-auth';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
@@ -22,9 +16,12 @@ const navItems = [
   { path: '/reservaciones', text: 'Reservaciones' }
 ];
 
-export default function NavbarTwoPass() {
+interface NavbarTwoPass {
+  session: Session | null;
+}
+
+export default function NavbarTwoPass({ session }: NavbarTwoPass) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: session, status } = useSession();
 
   return (
     <nav className="bg-white p-4">
@@ -48,7 +45,6 @@ export default function NavbarTwoPass() {
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        {/* Menú para desktop */}
         <div className="hidden md:flex items-center gap-x-7">
           <ul className="flex gap-x-6 text-black">
             {navItems.map((navItem) => (
@@ -59,10 +55,7 @@ export default function NavbarTwoPass() {
           </ul>
 
           <div className="flex gap-x-6">
-            {status === 'loading' ? (
-              // Esqueleto de carga solo para la parte del usuario
-              <div className="w-24 h-8 bg-gray-200 rounded animate-pulse"></div>
-            ) : session?.user ? (
+            {session ? (
               <UserAccountnav />
             ) : (
               <Link
@@ -76,7 +69,6 @@ export default function NavbarTwoPass() {
         </div>
       </div>
 
-      {/* Menú para móviles */}
       {isMenuOpen && (
         <div className="md:hidden mt-4">
           <ul className="flex flex-col gap-y-4 text-black">
@@ -87,10 +79,7 @@ export default function NavbarTwoPass() {
             ))}
           </ul>
           <div className="mt-4">
-            {status === 'loading' ? (
-              // Esqueleto de carga para la parte del usuario en móvil
-              <div className="w-24 h-8 bg-gray-200 rounded animate-pulse"></div>
-            ) : session?.user ? (
+            {session ? (
               <UserAccountnav />
             ) : (
               <Link
