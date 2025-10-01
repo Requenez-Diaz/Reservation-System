@@ -46,9 +46,16 @@ export const saveReservation = async (
     };
   }
 
-  const { name, email } = user;
-  const lastName = user.name ? user.name.split(' ').slice(1).join(' ') : '';
-  const { bedroomsType, guests, rooms, arrivalDate, departureDate } = data;
+  const {
+    name,
+    lastName,
+    bedroomsType,
+    guests,
+    rooms,
+    arrivalDate,
+    departureDate
+  } = data;
+  const { email } = user;
 
   try {
     const getBedroomInfo = async (bedroomType: string) => {
@@ -180,7 +187,7 @@ export const saveReservation = async (
     }
     const newReservation = await prisma.reservation.create({
       data: {
-        name: name || '',
+        name,
         lastName,
         email,
         bedroomsType,
