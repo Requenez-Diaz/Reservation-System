@@ -1,10 +1,11 @@
 import ContainerHome from '@/components/home/containerHome';
+import NavbarTwoPass from './navbar/navbar-twoPass';
 
-const Dashboard = async () => {
+const Dashboard = () => {
   return (
-    <main className="">
+    <div className="">
       <ContainerHome />
-    </main>
+    </div>
   );
 };
 

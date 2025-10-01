@@ -1,3 +1,5 @@
+// components/BedroomSearchForm.tsx
+
 'use client';
 
 import * as React from 'react';
@@ -24,54 +26,44 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { getAllBedrooms } from '@/app/actions/get-bedrooms';
-import Link from 'next/link';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms'; // Mantén el Server Action
+import { Bedroom } from '../roomsType';
 
-interface Bedroom {
-  id: number;
-  typeBedroom: string;
-  description: string;
-  lowSeasonPrice: number;
-  highSeasonPrice: number;
-  status: boolean;
-  numberBedroom: number;
-  seasonsId: number;
-  amenities: any[];
-  capacity: number;
-  bookingsDetails: any[];
+interface BedroomSearchFormProps {
+  onSearch: (results: Bedroom[]) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  isLoading: boolean;
 }
 
-export default function BedroomSearch() {
+export default function BedroomSearchForm({
+  onSearch,
+  setIsLoading,
+  isLoading
+}: BedroomSearchFormProps) {
   const [open, setOpen] = React.useState(false);
   const [roomType, setRoomType] = React.useState('');
   const [guests, setGuests] = React.useState(1);
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
-  const [searchResults, setSearchResults] = React.useState<Bedroom[]>([]);
 
   React.useEffect(() => {
     const fetchBedrooms = async () => {
       try {
         const response: Bedroom[] = await getAllBedrooms();
-        console.log('API Response:', response);
-
         if (!Array.isArray(response) || response.length === 0) {
           console.error('API response is not an array or is empty');
           return;
         }
-
-        console.log('Bedrooms:', response);
         setBedrooms(response);
       } catch (error) {
         console.error('Error fetching bedrooms:', error);
       }
     };
-
     fetchBedrooms();
   }, []);
 
-  const handleSearch = () => {
-    console.log('Search parameters:', { roomType, guests });
-    console.log('Available bedrooms:', bedrooms);
+  const handleSearch = async () => {
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     const results = bedrooms.filter(
       (bedroom) =>
@@ -79,11 +71,80 @@ export default function BedroomSearch() {
         bedroom.capacity >= guests
     );
 
-    console.log('Search results:', results);
-    setSearchResults(results);
+    onSearch(results);
+    setIsLoading(false);
   };
 
   return (
+
+    <Card className="mx-auto max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <CardHeader className="text-center">
+        <CardTitle className="text-4xl font-bold tracking-tight">
+          ¿Qué quieres buscar?
+        </CardTitle>
+        <CardDescription className="text-lg">
+          Descubre el mejor lugar para ti!!
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 md:grid-cols-[1fr,auto,auto] md:items-center">
+          <Popover open={open} onOpenChange={setOpen}>
+            <div className="relative group">
+              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+              <Input
+                type="search"
+                placeholder="Buscar tipo de habitación"
+                className="pl-9 transition-all duration-200 focus:scale-[1.02] focus:shadow-md"
+                value={roomType}
+                onChange={(e) => setRoomType(e.target.value)}
+              />
+            </div>
+
+            <PopoverContent className="p-0 animate-in fade-in slide-in-from-top-2 duration-200">
+              <Command>
+                <CommandInput placeholder="Buscar tipo de habitación..." />
+                <CommandList>
+                  <CommandEmpty>No se encontraron resultados.</CommandEmpty>
+                  <CommandGroup>
+                    {bedrooms.map((bedroom, index) => (
+                      <CommandItem
+                        key={bedroom.id}
+                        className="animate-in fade-in slide-in-from-left-2 duration-200 hover:bg-accent/50 transition-colors"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                        onSelect={() => {
+                          setRoomType(bedroom.typeBedroom);
+                          setOpen(false);
+                        }}
+                      >
+                        {bedroom.typeBedroom}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          <div className="flex items-center">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent"
+              onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
+            >
+              -
+            </Button>
+            <div className="flex items-center gap-2 px-4 transition-all duration-300">
+              <Users className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+              <span className="font-medium tabular-nums transition-all duration-200">
+                {guests}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent"
+              onClick={() => setGuests((prev) => prev + 1)}
+            >
     <div className="w-full bg-gradient-to-b from-primary/10 to-background p-8">
       <Card className="mx-auto max-w-4xl">
         <CardHeader className="text-center">
@@ -171,36 +232,23 @@ export default function BedroomSearch() {
               Buscar
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {searchResults.length > 0 && (
-        <Card className="mx-auto max-w-4xl mt-8">
-          <CardHeader>
-            <CardTitle>Resultados de la búsqueda</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {searchResults.map((bedroom) => (
-                <li key={bedroom.id} className="border-b pb-4">
-                  <Link
-                    href={`/habitaciones/${bedroom.id}`}
-                    className="block hover:bg-gray-100 p-2 rounded"
-                  >
-                    <h3 className="text-lg font-semibold">
-                      {bedroom.typeBedroom}
-                    </h3>
-                    <p>{bedroom.description}</p>
-                    <p>Capacidad: {bedroom.capacity} personas</p>
-                    <p>Precio temporada baja: ${bedroom.lowSeasonPrice}</p>
-                    <p>Precio temporada alta: ${bedroom.highSeasonPrice}</p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+          <Button
+            className="relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100"
+            variant="save"
+            onClick={handleSearch}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Buscando...
+              </div>
+            ) : (
+              'Buscar'
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

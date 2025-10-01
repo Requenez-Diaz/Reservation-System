@@ -1,3 +1,4 @@
+// Provider.tsx
 'use client';
 
 import { Session } from 'next-auth';
@@ -9,8 +10,8 @@ interface ProviderProps {
   session?: Session | null;
 }
 
-const Provider: FC<ProviderProps> = ({ children }) => {
-  return <SessionProvider>{children}</SessionProvider>;
+const Provider: FC<ProviderProps> = ({ children, session }) => {
+  return <SessionProvider session={session}>{children}</SessionProvider>;
 };
 
 export default Provider;

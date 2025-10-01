@@ -67,7 +67,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Menú para móviles */}
       {isMenuOpen && (
         <div className="md:hidden mt-4">
           <ul className="flex flex-col gap-y-4 text-black">

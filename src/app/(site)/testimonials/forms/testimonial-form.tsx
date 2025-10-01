@@ -16,7 +16,6 @@ import {
   SelectValue
 } from '@/components/ui/select';
 
-// Importa la alerta de shadcn/ui
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,16 +63,14 @@ export function CreateTestimonialForm({
 }: CreateTestimonialFormProps) {
   const [isPending, startTransition] = useTransition();
   const [rating, setRating] = useState(5);
-  const [bedrooms, setBedrooms] = useState<Bedroom[]>([]);
+  const [_bedrooms, setBedrooms] = useState<Bedroom[]>([]);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedRoom, setSelectedRoom] = useState('');
+  const [_selectedRoom, setSelectedRoom] = useState('');
   const { toast } = useToast();
-  // Estado para la alerta
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [formDataState, setFormDataState] = useState<FormData | null>(null);
 
-  // Cargar datos iniciales
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -117,7 +114,6 @@ export function CreateTestimonialForm({
     loadInitialData();
   }, [toast]);
 
-  // Manejador del envío del formulario (nueva lógica)
   const handlePreSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -141,7 +137,6 @@ export function CreateTestimonialForm({
               'Tu experiencia está siendo revisada y se publicará pronto.'
           });
 
-          // Resetear el formulario
           const form = document.getElementById(
             'create-testimonial-form'
           ) as HTMLFormElement;
@@ -171,7 +166,6 @@ export function CreateTestimonialForm({
     });
   };
 
-  // ... (tu código de renderizado, sin cambios)
   if (isLoading) {
     return (
       <Card className={`max-w-2xl mx-auto ${className}`}>
@@ -227,13 +221,11 @@ export function CreateTestimonialForm({
         </CardHeader>
 
         <CardContent className="pt-0">
-          {/* Cambiado `action={handleSubmit}` por `onSubmit={handlePreSubmit}` */}
           <form
             id="create-testimonial-form"
             onSubmit={handlePreSubmit}
             className="space-y-6"
           >
-            {/* Información personal */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium">
@@ -264,7 +256,6 @@ export function CreateTestimonialForm({
               </div>
             </div>
 
-            {/* Calificación */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">
                 Calificación general
@@ -280,7 +271,6 @@ export function CreateTestimonialForm({
               </div>
             </div>
 
-            {/* Comentario */}
             <div className="space-y-2">
               <Label htmlFor="comment" className="text-sm font-medium">
                 Tu experiencia
@@ -300,7 +290,6 @@ export function CreateTestimonialForm({
               </p>
             </div>
 
-            {/* Botón de envío */}
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
@@ -319,7 +308,6 @@ export function CreateTestimonialForm({
         </CardContent>
       </Card>
 
-      {/* Alerta de confirmación */}
       <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -330,8 +318,17 @@ export function CreateTestimonialForm({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSubmit} disabled={isPending}>
+            <AlertDialogCancel
+              disabled={isPending}
+              className="bg-red-500 text-white *:hover:bg-red-600 transition-colors"
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSubmit}
+              disabled={isPending}
+              className="bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            >
               {isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

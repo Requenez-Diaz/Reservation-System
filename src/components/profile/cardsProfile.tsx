@@ -98,8 +98,6 @@ export default function UserProfile() {
       });
       return;
     }
-
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
         title: 'Error',
@@ -278,7 +276,7 @@ export default function UserProfile() {
                   </div>
                 </div>
                 {isEditing && (
-                  <Button type="submit" variant={'success'} className="mt-4">
+                  <Button type="submit" variant={'save'} className="mt-4">
                     Guardar Cambios
                   </Button>
                 )}
