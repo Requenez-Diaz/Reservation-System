@@ -76,7 +76,6 @@ export default function BedroomSearchForm({
   };
 
   return (
-
     <Card className="mx-auto max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-700">
       <CardHeader className="text-center">
         <CardTitle className="text-4xl font-bold tracking-tight">
@@ -145,91 +144,7 @@ export default function BedroomSearchForm({
               className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent"
               onClick={() => setGuests((prev) => prev + 1)}
             >
-    <div className="w-full bg-gradient-to-b from-primary/10 to-background p-8">
-      <Card className="mx-auto max-w-4xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-4xl font-bold tracking-tight">
-            ¿Qué quieres buscar?
-          </CardTitle>
-          <CardDescription className="text-lg">
-            Descubre el mejor lugar para ti!!
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-[1fr,auto,auto] md:items-center">
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <div className="relative">
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-start text-left font-normal"
-                  >
-                                   
-                    <MapPin className="mr-2 h-4 w-4 shrink-0 opacity-50" />     
-                               {' '}
-                    {roomType
-                      ? bedrooms.find(
-                          (bedroom) => bedroom.typeBedroom === roomType
-                        )?.typeBedroom
-                      : 'Buscar tipo de habitación...'}
-                                   {' '}
-                  </Button>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="p-0">
-                <Command>
-                  <CommandInput
-                    placeholder="Buscar tipo de habitación..."
-                    value={roomType}
-                    onValueChange={setRoomType}
-                  />
-                  <CommandList>
-                    <CommandEmpty>No se encontraron resultados.</CommandEmpty>
-                    <CommandGroup>
-                      {bedrooms.map((bedroom) => (
-                        <CommandItem
-                          key={bedroom.id}
-                          onSelect={() => {
-                            setRoomType(bedroom.typeBedroom);
-                            setOpen(false);
-                          }}
-                        >
-                          {bedroom.typeBedroom}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-
-            <div className="flex items-center">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-10 w-10"
-                onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
-              >
-                -
-              </Button>
-              <div className="flex items-center gap-2 px-4">
-                <Users className="h-4 w-4" />
-                <span>{guests}</span>
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-10 w-10"
-                onClick={() => setGuests((prev) => prev + 1)}
-              >
-                +
-              </Button>
-            </div>
-
-            <Button className="" variant={'save'} onClick={handleSearch}>
-              Buscar
+              +
             </Button>
           </div>
           <Button
