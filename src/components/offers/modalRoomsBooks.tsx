@@ -40,7 +40,6 @@ export function ModalBookRooms() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle booking logic here
     console.log({ checkIn, checkOut, guests });
     setOpen(false);
   };
@@ -132,7 +131,9 @@ export function ModalBookRooms() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Confirmar reserva</Button>
+            <Button type="submit" variant={'success'}>
+              Confirmar reserva
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
