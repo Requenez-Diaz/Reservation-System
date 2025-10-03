@@ -174,16 +174,12 @@ export default async function BedroomDetailPage({ params }: PageProps) {
                       {bedroom.capacity} personas
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  {/* <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Bed className="w-6 h-6 mx-auto mb-2 text-blue-600" />
                     <p className="text-sm font-medium">Tipo de cama</p>
                     <p className="text-lg font-bold">Cama matrimonial</p>
-                  </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Calendar className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-                    <p className="text-sm font-medium">Tamaño</p>
-                    <p className="text-lg font-bold">25 m²</p>
-                  </div>
+                  </div> */}
+
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Badge variant="info" className="w-full justify-center">
                       Habitación #{bedroom.numberBedroom}

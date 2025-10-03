@@ -157,7 +157,9 @@ export function ReserveRoomDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full md:w-auto">Reservar habitación</Button>
+        <Button variant={'save'} className="w-full md:w-auto">
+          Reservar habitación
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -174,7 +176,7 @@ export function ReserveRoomDialog({
               <span className="font-medium">
                 {bedroom.name} - {bedroom.type} #{bedroom.number}
               </span>
-              <Badge variant="outline" className="ml-auto">
+              <Badge variant="info" className="ml-auto">
                 ID: {bedroom.id}
               </Badge>
             </div>
@@ -317,6 +319,7 @@ export function ReserveRoomDialog({
                 type="submit"
                 disabled={isSubmitting || !currentUser}
                 className="w-full"
+                variant={'save'}
               >
                 {isSubmitting ? 'Creando reserva...' : 'Confirmar reserva'}
               </Button>

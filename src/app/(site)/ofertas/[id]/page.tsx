@@ -76,7 +76,7 @@ export default async function PromotionPage({ params }: PromotionPageProps) {
                 <Tag className="h-5 w-5" />
                 {promotion.codePromotions}
               </CardTitle>
-              <Badge variant={isActive ? 'default' : 'secondary'}>
+              <Badge variant={isActive ? 'success' : 'inactive'}>
                 {isActive ? 'Activa' : 'Inactiva'}
               </Badge>
             </div>
@@ -131,7 +131,7 @@ export default async function PromotionPage({ params }: PromotionPageProps) {
                   {bedroom.typeBedroom} - {bedroom.description} #
                   {bedroom.numberBedroom}
                 </h3>
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="success" className="text-xs">
                   ID: {bedroom.id}
                 </Badge>
               </div>
@@ -186,7 +186,7 @@ export default async function PromotionPage({ params }: PromotionPageProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-muted rounded-lg">
+            <div className="text-center p-4   bg-orange-500/10 rounded-lg">
               <div className="text-2xl font-bold text-primary">
                 {promotion.porcentageDescuent}%
               </div>
@@ -194,13 +194,13 @@ export default async function PromotionPage({ params }: PromotionPageProps) {
                 Descuento aplicado
               </div>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
+            <div className="text-center p-4  bg-orange-500/10 rounded-lg">
               <div className="text-2xl font-bold text-primary">
                 ${discount.toFixed(2)}
               </div>
               <div className="text-sm text-muted-foreground">Ahorro total</div>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
+            <div className="text-center p-4  bg-orange-500/10 rounded-lg">
               <div className="text-2xl font-bold text-primary">1</div>
               <div className="text-sm text-muted-foreground">
                 Habitación específica

@@ -24,15 +24,10 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions);
   return (
-    <html lang="en">
-      <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable
-        )}
-      >
-        <Provider session={session}>
-          <main className="">{children}</main>
+    <html>
+      <body>
+        <Provider>
+          <main>{children}</main>
           <Toaster />
         </Provider>
       </body>

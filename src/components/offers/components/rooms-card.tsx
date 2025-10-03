@@ -45,7 +45,6 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
     });
   };
 
-  // Verificar si está activa
   const now = new Date();
   const isActive =
     now >= new Date(promotion.dateStart) && now <= new Date(promotion.dateEnd);
@@ -55,7 +54,7 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{promotion.codePromotions}</CardTitle>
-          <Badge variant={isActive ? 'default' : 'secondary'}>
+          <Badge variant={isActive ? 'success' : 'inactive'}>
             {isActive ? 'Activa' : 'Inactiva'}
           </Badge>
         </div>
@@ -69,7 +68,7 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
             <span className="font-medium">
               {bedroom.name} - {bedroom.type} #{bedroom.number}
             </span>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="info" className="text-xs">
               ID: {bedroom.id}
             </Badge>
           </div>
@@ -100,7 +99,7 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
 
         {/* Botón para ver detalles */}
         <Link href={`/ofertas/${promotion.id}`}>
-          <Button variant="outline" className="w-full bg-transparent">
+          <Button variant="save" className="w-full">
             <Eye className="h-4 w-4 mr-2" />
             Ver habitación específica
           </Button>
