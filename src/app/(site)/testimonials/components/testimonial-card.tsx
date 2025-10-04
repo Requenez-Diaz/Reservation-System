@@ -56,7 +56,7 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
             <Calendar className="h-4 w-4" />
             <span>
               {testimonial.createdAt
-                ? testimonial.createdAt.toLocaleDateString()
+                ? testimonial.createdAt.toLocaleDateString('en-US')
                 : 'Fecha no disponible'}
             </span>
           </div>
