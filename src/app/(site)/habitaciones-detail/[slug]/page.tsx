@@ -24,13 +24,14 @@ import prisma from '@/lib/db';
 import { getGalleryImages } from '@/app/actions/upload/get-images-gallery';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // 1. Configura el `metadata` para usar el slug
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata(props: PageProps) {
+  const params = await props.params;
   // Busca la habitación por su slug, no por un número
   const bedroom = await prisma.bedrooms.findUnique({
     where: { slug: params.slug }
@@ -53,7 +54,8 @@ export const viewport = {
   themeColor: '#FFFFFF'
 };
 
-export default async function BedroomDetailPage({ params }: PageProps) {
+export default async function BedroomDetailPage(props: PageProps) {
+  const params = await props.params;
   // Obtiene el slug de los parámetros de la URL
   const bedroomSlug = params.slug;
 
