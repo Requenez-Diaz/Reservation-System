@@ -150,12 +150,12 @@ export async function createReservationForPromotion(
         name,
         lastName,
         email,
-        bedroomsType: bedroom.typeBedroom, // Usamos el tipo de la habitación
+        bedroomsType: bedroom.typeBedroom,
         guests,
         rooms,
         arrivalDate,
         departureDate,
-        status: 'CONFIRMED',
+        status: 'PENDING',
         userId,
         promotionId
       }
@@ -164,6 +164,9 @@ export async function createReservationForPromotion(
     // 8. Revalidar y retornar
     revalidatePath('/dashboard/offerts');
     revalidatePath(`/dashboard/offerts/${promotionId}`);
+
+    console.log('Reserva creada con ID:', reservation.id);
+    //TODO: capturar errores específicos de la reserva
 
     return {
       success: true,
