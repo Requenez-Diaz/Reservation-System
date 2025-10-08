@@ -145,12 +145,21 @@ const SignInForm = () => {
             )}
           />
 
+          <div className="mt-2 text-right">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-blue-700 hover:underline"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+
           <div className="mb-5 mt-4">
             <Button
               type="submit"
               value="Iniciar sesion"
               className="w-full "
-              variant={'blue'}
+              variant={'save'}
             >
               Iniciar sesion
             </Button>
