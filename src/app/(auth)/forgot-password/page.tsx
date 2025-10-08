@@ -84,7 +84,9 @@ export default function ForgotPasswordPage() {
             favor revisa tu bandeja de entrada y sigue las instrucciones.
           </p>
           <Link href="/sign-in">
-            <Button className="w-full">Volver al inicio de sesión</Button>
+            <Button variant={'success'} className="w-full">
+              Volver al inicio de sesión
+            </Button>
           </Link>
         </div>
       </div>
@@ -95,8 +97,8 @@ export default function ForgotPasswordPage() {
     <div className="flex justify-center items-center min-h-screen">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
           className="max-w-md w-full p-8 border border-gray-300 rounded-md"
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="mb-6">
             <h2 className="text-2xl font-bold mb-2">Recuperar contraseña</h2>
@@ -146,9 +148,9 @@ export default function ForgotPasswordPage() {
 
           <div className="mt-6">
             <Button
-              type="submit"
               className="w-full"
               disabled={form.formState.isSubmitting}
+              type="submit"
               variant={'save'}
             >
               {form.formState.isSubmitting
