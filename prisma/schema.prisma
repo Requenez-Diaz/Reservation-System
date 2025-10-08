@@ -128,6 +128,19 @@ model BookingsDetails {
   promotions   Promotions @relation(fields: [promotionsId], references: [id])
 }
 
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
 model Invoce {
   id            Int             @id @default(autoincrement())
   clientId      Int
@@ -201,19 +214,20 @@ model Bedrooms {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  username     String         @unique
-  password     String
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime
-  roleName     String
-  image        String?
-  comments     Comments[]
-  Reservation  Reservation[]
-  Role         Role           @relation(fields: [roleName], references: [roleName])
-  UserImage    UserImage?
-  testimonials testimonials[]
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  username           String               @unique
+  password           String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  roleName           String
+  image              String?
+  comments           Comments[]
+  Reservation        Reservation[]
+  Role               Role                 @relation(fields: [roleName], references: [roleName])
+  UserImage          UserImage?
+  testimonials       testimonials[]
+  PasswordResetToken PasswordResetToken[]
 }
 
 model BedroomImages {
