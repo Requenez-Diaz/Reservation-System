@@ -13,7 +13,8 @@ import {
   KeyRound,
   Bell,
   LogOut,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,13 +31,15 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
 import { useSession, signOut } from 'next-auth/react';
 
+// Importa todas las acciones necesarias
 import { UploadFile } from '@/app/actions/upload/uploadFile';
 import { getUserImage } from '@/app/actions/upload/getUsersImage';
 import {
   getProfileData,
-  ProfileData,
-  updateProfileData
+  updateProfileData,
+  ProfileData
 } from '@/app/actions/upload/getProfile';
+import { changePassword } from '@/app/actions/upload/change-password';
 
 const profileSchema = z.object({
   username: z
@@ -45,7 +48,22 @@ const profileSchema = z.object({
   email: z.string().email({ message: 'Correo electrónico inválido' })
 });
 
+// NUEVO SCHEMA PARA CONTRASEÑA
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(1, { message: 'Requerida' }),
+    newPassword: z.string().min(8, {
+      message: 'La nueva contraseña debe tener al menos 8 caracteres.'
+    }),
+    confirmNewPassword: z.string().min(1, { message: 'Requerida' })
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: 'Las contraseñas no coinciden.',
+    path: ['confirmNewPassword']
+  });
+
 type ProfileFormValues = z.infer<typeof profileSchema>;
+type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 type SettingsTab = 'general' | 'security' | 'avatar' | 'notifications';
 
@@ -55,7 +73,7 @@ interface AvatarCardProps {
   isEditing: boolean;
   name: string;
   onAvatarClick: () => void;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -122,34 +140,49 @@ export default function UserProfile() {
   const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
+  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false); // NUEVO ESTADO
   const [defaultProfile, setDefaultProfile] = useState<ProfileData>({
     username: 'Cargando...',
     email: 'Cargando...'
-  }); // Nuevo estado para los datos iniciales
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: session } = useSession();
   const userId = Number(session?.user?.id);
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
+    register: profileRegister,
+    handleSubmit: handleProfileSubmit,
+    formState: { errors: profileErrors, isSubmitting: isProfileSubmitting },
+    reset: profileReset,
     getValues
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-
     defaultValues: defaultProfile
+  });
+
+  const {
+    register: passwordRegister,
+    handleSubmit: handlePasswordSubmit,
+    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+    reset: passwordReset
+  } = useForm<PasswordFormValues>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: ''
+    }
   });
 
   const fetchProfileAndImage = useCallback(async () => {
     if (!userId) return;
+
     try {
       const profileResult = await getProfileData();
       if (profileResult.success && profileResult.data) {
         setDefaultProfile(profileResult.data);
-        reset(profileResult.data);
+        profileReset(profileResult.data);
       } else {
         toast({
           title: 'Error de carga',
@@ -171,13 +204,13 @@ export default function UserProfile() {
     } catch (error) {
       console.error('Error al cargar la imagen del usuario:', error);
     }
-  }, [userId, reset]);
+  }, [userId, profileReset]);
 
   useEffect(() => {
     fetchProfileAndImage();
   }, [fetchProfileAndImage]);
 
-  const onSubmit = async (data: ProfileFormValues) => {
+  const onProfileSubmit = async (data: ProfileFormValues) => {
     try {
       const result = await updateProfileData(data);
 
@@ -209,77 +242,37 @@ export default function UserProfile() {
 
   const handleCancel = () => {
     setIsEditing(false);
-
-    reset(defaultProfile);
+    profileReset(defaultProfile);
   };
 
-  const handleAvatarClick = () => {
-    if (isEditing) {
-      fileInputRef.current?.click();
-    }
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !userId) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: 'Error',
-        description: 'El archivo seleccionado no es una imagen válida.',
-        variant: 'destructive'
-      });
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: 'Error',
-        description: 'La imagen es demasiado grande. El tamaño máximo es 5MB.',
-        variant: 'destructive'
-      });
-      return;
-    }
+  const onPasswordSubmit = async (data: PasswordFormValues) => {
+    const { currentPassword, newPassword } = data;
 
     try {
-      setIsUploading(true);
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64String = reader.result as string;
-        setAvatarSrc(base64String);
+      const result = await changePassword(currentPassword, newPassword);
 
-        const result = await UploadFile(userId, base64String);
-
-        if (result.success) {
-          toast({
-            title: 'Imagen actualizada',
-            description: 'Tu foto de perfil ha sido actualizada exitosamente.'
-          });
-          const event = new CustomEvent('user-image-updated');
-          window.dispatchEvent(event);
-        } else {
-          toast({
-            title: 'Error',
-            description:
-              result.error ||
-              'No se pudo actualizar la imagen. Inténtalo de nuevo.',
-            variant: 'destructive'
-          });
-
-          const imageResult = await getUserImage();
-          if (imageResult.success && imageResult.image) {
-            setAvatarSrc(imageResult.image);
-          }
-        }
-      };
-      reader.readAsDataURL(file);
+      if (result.success) {
+        toast({
+          title: 'Contraseña Actualizada',
+          description: 'Tu contraseña ha sido cambiada exitosamente.'
+        });
+        passwordReset();
+        setIsPasswordFormOpen(false);
+      } else {
+        toast({
+          title: 'Error de Seguridad',
+          description:
+            result.error ||
+            'No se pudo cambiar la contraseña. Verifica la contraseña actual.',
+          variant: 'destructive'
+        });
+      }
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Ocurrió un error al procesar la imagen.',
+        description: 'Ocurrió un error inesperado al cambiar la contraseña.',
         variant: 'destructive'
       });
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -312,6 +305,10 @@ export default function UserProfile() {
       {label}
     </button>
   );
+
+  function handleAvatarClick(): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <div className="container mx-auto p-4 md:p-10">
@@ -369,19 +366,22 @@ export default function UserProfile() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={handleProfileSubmit(onProfileSubmit)}
+                  className="space-y-6"
+                >
                   <div className="grid grid-cols-1 gap-6">
                     <div className="grid gap-2">
                       <Label htmlFor="username">Nombre de Usuario</Label>
                       <Input
                         id="username"
-                        {...register('username')}
-                        disabled={!isEditing || isSubmitting}
+                        {...profileRegister('username')}
+                        disabled={!isEditing || isProfileSubmitting}
                         className="transition-all focus-visible:ring-primary"
                       />
-                      {errors.username && (
+                      {profileErrors.username && (
                         <p className="text-red-500 text-sm">
-                          {errors.username.message}
+                          {profileErrors.username.message}
                         </p>
                       )}
                     </div>
@@ -389,14 +389,14 @@ export default function UserProfile() {
                       <Label htmlFor="email">Correo Electrónico</Label>
                       <Input
                         id="email"
-                        {...register('email')}
-                        disabled={!isEditing || isSubmitting}
+                        {...profileRegister('email')}
+                        disabled={!isEditing || isProfileSubmitting}
                         type="email"
                         className="transition-all focus-visible:ring-primary"
                       />
-                      {errors.email && (
+                      {profileErrors.email && (
                         <p className="text-red-500 text-sm">
-                          {errors.email.message}
+                          {profileErrors.email.message}
                         </p>
                       )}
                     </div>
@@ -407,7 +407,7 @@ export default function UserProfile() {
                       type="button"
                       variant={isEditing ? 'outline' : 'default'}
                       onClick={() => setIsEditing(!isEditing)}
-                      disabled={isSubmitting}
+                      disabled={isProfileSubmitting}
                     >
                       <Edit2 className="mr-2 h-4 w-4" />{' '}
                       {isEditing ? 'Cancelar Edición' : 'Editar Perfil'}
@@ -418,16 +418,16 @@ export default function UserProfile() {
                           type="button"
                           variant="secondary"
                           onClick={handleCancel}
-                          disabled={isSubmitting}
+                          disabled={isProfileSubmitting}
                         >
                           Descartar
                         </Button>
                         <Button
                           type="submit"
                           variant={'default'}
-                          disabled={isSubmitting}
+                          disabled={isProfileSubmitting}
                         >
-                          {isSubmitting ? (
+                          {isProfileSubmitting ? (
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                           ) : null}
                           Guardar Cambios
@@ -463,15 +463,89 @@ export default function UserProfile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex justify-between items-center p-3 border rounded-lg">
-                  <div>
-                    <p className="font-medium">Cambiar Contraseña</p>
-                    <p className="text-sm text-muted-foreground">
-                      Actualiza tu contraseña periódicamente.
-                    </p>
+                <div className="p-3 border rounded-lg">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <p className="font-medium flex items-center gap-2">
+                        <Lock className="w-4 h-4" />
+                        Cambiar Contraseña
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Actualiza tu contraseña para mantener tu cuenta segura.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsPasswordFormOpen(!isPasswordFormOpen)}
+                    >
+                      {isPasswordFormOpen ? 'Cancelar' : 'Cambiar'}
+                    </Button>
                   </div>
-                  <Button variant="outline">Cambiar</Button>
+
+                  {isPasswordFormOpen && (
+                    <form
+                      onSubmit={handlePasswordSubmit(onPasswordSubmit)}
+                      className="space-y-4 border-t pt-4"
+                    >
+                      <div className="grid gap-2">
+                        <Label htmlFor="currentPassword">
+                          Contraseña Actual
+                        </Label>
+                        <Input
+                          id="currentPassword"
+                          type="password"
+                          {...passwordRegister('currentPassword')}
+                          disabled={isPasswordSubmitting}
+                        />
+                        {passwordErrors.currentPassword && (
+                          <p className="text-red-500 text-sm">
+                            {passwordErrors.currentPassword.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="grid gap-2">
+                        <Label htmlFor="newPassword">Nueva Contraseña</Label>
+                        <Input
+                          id="newPassword"
+                          type="password"
+                          {...passwordRegister('newPassword')}
+                          disabled={isPasswordSubmitting}
+                        />
+                        {passwordErrors.newPassword && (
+                          <p className="text-red-500 text-sm">
+                            {passwordErrors.newPassword.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="grid gap-2">
+                        <Label htmlFor="confirmNewPassword">
+                          Confirmar Nueva Contraseña
+                        </Label>
+                        <Input
+                          id="confirmNewPassword"
+                          type="password"
+                          {...passwordRegister('confirmNewPassword')}
+                          disabled={isPasswordSubmitting}
+                        />
+                        {passwordErrors.confirmNewPassword && (
+                          <p className="text-red-500 text-sm">
+                            {passwordErrors.confirmNewPassword.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <Button type="submit" disabled={isPasswordSubmitting}>
+                        {isPasswordSubmitting ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        ) : null}
+                        Establecer Nueva Contraseña
+                      </Button>
+                    </form>
+                  )}
                 </div>
+
                 <div className="flex justify-between items-center p-3 border rounded-lg">
                   <div>
                     <p className="font-medium">
