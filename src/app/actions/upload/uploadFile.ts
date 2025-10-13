@@ -4,7 +4,6 @@ import prisma from '@/lib/db';
 
 export const UploadFile = async (userId: number, imageBase64: string) => {
   try {
-    // Validate inputs
     if (!userId || !imageBase64) {
       return { success: false, error: 'Missing required parameters' };
     }
@@ -14,13 +13,12 @@ export const UploadFile = async (userId: number, imageBase64: string) => {
     }
 
     const approximateSizeInBytes = (imageBase64.length * 3) / 4;
-    const maxSizeInBytes = 5 * 1024 * 1024; 
+    const maxSizeInBytes = 5 * 1024 * 1024;
 
     if (approximateSizeInBytes > maxSizeInBytes) {
       return { success: false, error: 'Image is too large (max 5MB)' };
     }
 
-    // Primero, busca si ya existe una imagen para este usuario
     const existingImage = await prisma.userImage.findFirst({
       where: {
         userId: userId
@@ -37,7 +35,6 @@ export const UploadFile = async (userId: number, imageBase64: string) => {
         }
       });
     } else {
-      // Si no existe, crea una nueva entrada
       await prisma.userImage.create({
         data: {
           userId: userId,
@@ -46,7 +43,6 @@ export const UploadFile = async (userId: number, imageBase64: string) => {
       });
     }
 
-    // También actualiza el campo image en el modelo User (opcional)
     await prisma.user.update({
       where: {
         id: userId
