@@ -76,10 +76,10 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
 
         {/* Descuento */}
         <div className="flex items-center gap-2">
-          <Percent className="h-4 w-4 text-green-600" />
           <span className="text-lg font-semibold text-green-600">
-            {promotion.porcentageDescuent}% de descuento
+            {promotion.porcentageDescuent} % de descuento
           </span>
+          {/* <Percent className="h-4 w-4 text-green-600" /> */}
         </div>
 
         {/* Fechas */}

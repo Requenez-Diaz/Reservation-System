@@ -21,12 +21,13 @@ export async function sendPasswordResetEmail({
       html: getPasswordResetEmailTemplate(resetUrl, userName)
     });
 
+    console.log({ data, error });
     if (error) {
       return { success: false, error };
     }
-
     return { success: true, data };
   } catch (error) {
+    console.log({ error });
     return { success: false, error };
   }
 }

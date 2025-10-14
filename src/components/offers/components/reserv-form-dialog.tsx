@@ -20,7 +20,7 @@ import { CalendarIcon, CreditCard, MapPin, User2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { createReservationForPromotion } from '@/app/actions/bookings/reservation-offerts';
 import { getCurrentUser } from '@/app/actions/testimonials/create-testimonials';
-import { useRouter } from 'next/navigation'; // Importar useRouter
+import { useRouter } from 'next/navigation';
 
 type User = {
   id: number;
@@ -53,7 +53,7 @@ export function ReserveRoomDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
-  const router = useRouter(); // Inicializar router
+  const router = useRouter();
 
   useEffect(() => {
     if (open && !currentUser && !isLoadingUser) {
@@ -127,7 +127,7 @@ export function ReserveRoomDialog({
         formData
       );
 
-      console.log('Reservation result:', result);
+      console.log('Reservation result:', { result });
 
       if (result.success) {
         toast({
