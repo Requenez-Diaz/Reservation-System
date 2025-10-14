@@ -85,9 +85,8 @@ export default async function PromotionPage(props: PromotionPageProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
-              <Percent className="h-4 w-4 text-green-600" />
               <span className="text-2xl font-bold text-green-600">
-                {promotion.porcentageDescuent}% de descuento
+                {promotion.porcentageDescuent} % de descuento
               </span>
             </div>
 
@@ -129,7 +128,7 @@ export default async function PromotionPage(props: PromotionPageProps) {
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-semibold text-blue-800">
-                  {bedroom.typeBedroom} - {bedroom.description} #
+                  {bedroom.typeBedroom} - {bedroom.description}, Habitación #
                   {bedroom.numberBedroom}
                 </h3>
                 <Badge variant="success" className="text-xs">

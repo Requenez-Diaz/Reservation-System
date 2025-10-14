@@ -27,6 +27,8 @@ export async function createReservationForPromotion(
   _prevState: ActionState | undefined,
   formData: FormData
 ): Promise<ActionState> {
+  console.log('[v0] createReservationForPromotion iniciado');
+
   try {
     const promotionId = Number(formData.get('promotionId'));
     const bedroomId = Number(formData.get('bedroomId'));
@@ -42,6 +44,17 @@ export async function createReservationForPromotion(
     const guests = Number(formData.get('guests')) || 0;
     const rooms = Number(formData.get('rooms')) || 0;
     const userId = Number(formData.get('userId'));
+
+    console.log('[v0] Datos recibidos:', {
+      promotionId,
+      bedroomId,
+      name,
+      lastName,
+      email,
+      arrivalDateStr,
+      departureDateStr,
+      userId
+    });
 
     if (
       !promotionId ||
@@ -90,7 +103,7 @@ export async function createReservationForPromotion(
     const promotion = await prisma.promotions.findUnique({
       where: { id: promotionId },
       include: {
-        BedroomsPromotions: true // Incluimos la tabla de unión
+        BedroomsPromotions: true
       }
     });
 
@@ -112,7 +125,7 @@ export async function createReservationForPromotion(
       };
     }
 
-    // 5. **Nueva verificación**: Asegurarse de que el bedroomId está en la promoción
+    // 5. Verificar que el bedroomId está en la promoción
     const isBedroomInPromotion = promotion.BedroomsPromotions.some(
       (bp) => bp.bedroomId === bedroomId
     );
@@ -128,7 +141,7 @@ export async function createReservationForPromotion(
     if (nights <= 0) {
       return {
         success: false,
-        message: 'La reserva debe ser de al menos 1 noche.'
+        message: 'La reserva debe ser de al menos 3 noche.'
       };
     }
 
@@ -145,6 +158,7 @@ export async function createReservationForPromotion(
     }
 
     // 7. Crear la reserva
+    console.log('[v0] Creando reserva en la base de datos...');
     const reservation = await prisma.reservation.create({
       data: {
         name,
@@ -161,20 +175,31 @@ export async function createReservationForPromotion(
       }
     });
 
-    // 8. Revalidar y retornar
-    revalidatePath('/dashboard/offerts');
-    revalidatePath(`/dashboard/offerts/${promotionId}`);
+    console.log('[v0] Reserva creada exitosamente con ID:', reservation.id);
 
-    console.log('Reserva creada con ID:', reservation.id);
-    //TODO: capturar errores específicos de la reserva
+    // 8. Revalidar rutas (no afecta el éxito de la reserva si falla)
+    try {
+      console.log('[v0] Revalidando rutas...');
+      revalidatePath('/dashboard/offerts');
+      revalidatePath(`/dashboard/offerts/${promotionId}`);
+      console.log('[v0] Rutas revalidadas exitosamente');
+    } catch (revalidateError) {
+      console.error('[v0] Error al revalidar rutas:', revalidateError);
+      // No afecta el resultado, la reserva ya fue creada
+    }
 
+    console.log('[v0] Retornando éxito');
     return {
       success: true,
       message: 'Reserva creada exitosamente.',
       reservationId: reservation.id
     };
   } catch (error) {
-    console.error('Error al crear la reserva:', error);
+    console.error('[v0] Error capturado en catch principal:', error);
+    console.error(
+      '[v0] Stack trace:',
+      error instanceof Error ? error.stack : 'No stack available'
+    );
     return { success: false, message: 'Error al crear la reserva.' };
   }
 }

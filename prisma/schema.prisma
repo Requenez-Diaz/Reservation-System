@@ -34,6 +34,7 @@ model Reservation {
   status        Status
   userId        Int
   promotionId   Int?
+  isRead        Boolean     @default(false)
   Promotions    Promotions? @relation(fields: [promotionId], references: [id])
   User          User        @relation(fields: [userId], references: [id])
 }
@@ -66,11 +67,11 @@ model testimonials {
   comment    String
   location   String
   rating     Int
-  isApproved Boolean   @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   bedroomId  Int?
   userId     Int?
+  isApproved Boolean   @default(false)
   Bedrooms   Bedrooms? @relation(fields: [bedroomId], references: [id])
   User       User?     @relation(fields: [userId], references: [id])
 
@@ -133,8 +134,8 @@ model PasswordResetToken {
   userId    Int      @unique
   token     String   @unique
   expiresAt DateTime
-  used      Boolean  @default(false)
   createdAt DateTime @default(now())
+  used      Boolean  @default(false)
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
@@ -214,20 +215,20 @@ model Bedrooms {
 }
 
 model User {
-  id                 Int                  @id @default(autoincrement())
-  email              String               @unique
-  username           String               @unique
+  id                 Int                 @id @default(autoincrement())
+  email              String              @unique
+  username           String              @unique
   password           String
-  createdAt          DateTime             @default(now())
+  createdAt          DateTime            @default(now())
   updatedAt          DateTime
   roleName           String
   image              String?
   comments           Comments[]
+  PasswordResetToken PasswordResetToken?
   Reservation        Reservation[]
-  Role               Role                 @relation(fields: [roleName], references: [roleName])
+  Role               Role                @relation(fields: [roleName], references: [roleName])
   UserImage          UserImage?
   testimonials       testimonials[]
-  PasswordResetToken PasswordResetToken[]
 }
 
 model BedroomImages {

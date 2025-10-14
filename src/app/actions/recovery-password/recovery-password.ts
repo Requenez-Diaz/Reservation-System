@@ -22,6 +22,8 @@ export async function requestPasswordReset(email: string) {
     const user = await prisma.user.findUnique({
       where: { email: validatedData.email }
     });
+
+    console.log(user);
     if (!user) {
       console.log(validatedData.email);
       return {
@@ -51,6 +53,8 @@ export async function requestPasswordReset(email: string) {
       resetUrl,
       userName: user.username || undefined
     });
+
+    console.log({ emailResult });
 
     if (!emailResult.success) {
       return {
