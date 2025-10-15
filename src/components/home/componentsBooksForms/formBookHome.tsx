@@ -1,23 +1,15 @@
-// components/BedroomSearchForm.tsx
-
 'use client';
 
 import * as React from 'react';
-import { MapPin, Users } from 'lucide-react';
+import { Users, Calendar, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import {
   Card,
   CardContent,
@@ -25,8 +17,16 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { getAllBedrooms } from '@/app/actions/get-bedrooms'; // Mantén el Server Action
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms';
+
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Bedroom } from '../roomsType';
 
 interface BedroomSearchFormProps {
@@ -35,14 +35,19 @@ interface BedroomSearchFormProps {
   isLoading: boolean;
 }
 
+const ROOM_STATUS = [
+  { value: 'all', label: 'Todas' },
+  { value: 'available', label: 'Disponible' }
+] as const;
+
 export default function BedroomSearchForm({
   onSearch,
   setIsLoading,
   isLoading
 }: BedroomSearchFormProps) {
-  const [open, setOpen] = React.useState(false);
-  const [roomType, setRoomType] = React.useState('');
+  const [status, setStatus] = React.useState('all');
   const [guests, setGuests] = React.useState(1);
+  const [date, setDate] = React.useState<Date>();
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
 
   React.useEffect(() => {
@@ -65,11 +70,31 @@ export default function BedroomSearchForm({
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 800));
 
-    const results = bedrooms.filter(
-      (bedroom) =>
-        bedroom.typeBedroom.toLowerCase().includes(roomType.toLowerCase()) &&
-        bedroom.capacity >= guests
-    );
+    const results = bedrooms.filter((bedroom) => {
+      const statusMatch =
+        status === 'all' || (status === 'available' && bedroom.status === true);
+
+      // Filter by capacity
+      const capacityMatch = bedroom.capacity >= guests;
+
+      let dateMatch = true;
+      if (
+        date &&
+        bedroom.bookingsDetails &&
+        bedroom.bookingsDetails.length > 0
+      ) {
+        const hasConflict = bedroom.bookingsDetails.some((booking) => {
+          const bookingStart = new Date(booking.dateStart);
+          const bookingEnd = booking.dateEnd
+            ? new Date(booking.dateEnd)
+            : bookingStart;
+          return date >= bookingStart && date <= bookingEnd;
+        });
+        dateMatch = !hasConflict;
+      }
+
+      return statusMatch && capacityMatch && dateMatch;
+    });
 
     onSearch(results);
     setIsLoading(false);
@@ -86,43 +111,24 @@ export default function BedroomSearchForm({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 md:grid-cols-[1fr,auto,auto] md:items-center">
-          <Popover open={open} onOpenChange={setOpen}>
-            <div className="relative group">
-              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
-              <Input
-                type="search"
-                placeholder="Buscar tipo de habitación"
-                className="pl-9 transition-all duration-200 focus:scale-[1.02] focus:shadow-md"
-                value={roomType}
-                onChange={(e) => setRoomType(e.target.value)}
-              />
-            </div>
+        <div className="grid gap-4 md:grid-cols-[1fr,auto,1fr,auto] md:items-center">
+          <div className="relative group">
+            <CheckCircle2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary z-10 pointer-events-none" />
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="pl-9 transition-all duration-200 focus:scale-[1.02] focus:shadow-md">
+                <SelectValue placeholder="Estado de habitación" />
+              </SelectTrigger>
+              <SelectContent>
+                {ROOM_STATUS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-            <PopoverContent className="p-0 animate-in fade-in slide-in-from-top-2 duration-200">
-              <Command>
-                <CommandInput placeholder="Buscar tipo de habitación..." />
-                <CommandList>
-                  <CommandEmpty>No se encontraron resultados.</CommandEmpty>
-                  <CommandGroup>
-                    {bedrooms.map((bedroom, index) => (
-                      <CommandItem
-                        key={bedroom.id}
-                        className="animate-in fade-in slide-in-from-left-2 duration-200 hover:bg-accent/50 transition-colors"
-                        style={{ animationDelay: `${index * 50}ms` }}
-                        onSelect={() => {
-                          setRoomType(bedroom.typeBedroom);
-                          setOpen(false);
-                        }}
-                      >
-                        {bedroom.typeBedroom}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          {/* Guests selector */}
           <div className="flex items-center">
             <Button
               variant="outline"
@@ -147,6 +153,37 @@ export default function BedroomSearchForm({
               +
             </Button>
           </div>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="pl-9 justify-start text-left font-normal transition-all duration-200 hover:scale-[1.02] hover:shadow-md relative bg-transparent"
+              >
+                <Calendar className="absolute left-3 h-4 w-4 text-muted-foreground" />
+                {date ? (
+                  format(date, 'PPP', { locale: es })
+                ) : (
+                  <span className="text-muted-foreground">
+                    Fecha disponibilidad
+                  </span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto p-0 animate-in fade-in slide-in-from-top-2 duration-200"
+              align="start"
+            >
+              <CalendarComponent
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+                locale={es}
+              />
+            </PopoverContent>
+          </Popover>
+
           <Button
             className="relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100"
             variant="save"
