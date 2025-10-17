@@ -1,7 +1,6 @@
 import { getPromotions } from '@/app/actions/getPromotions/getPromotions';
 import { PromotionRoomCard } from '@/components/offers/components/rooms-card';
 
-
 export default async function OffertsPage() {
   const result = await getPromotions();
 
@@ -41,9 +40,9 @@ export default async function OffertsPage() {
                 (bp: any) => ({
                   bedroom: {
                     id: bp.Bedrooms.id,
-                    name: bp.Bedrooms.description, // or another field if 'name' is different
-                    type: bp.Bedrooms.typeBedroom, // or another field if 'type' is different
-                    number: String(bp.Bedrooms.numberBedroom), // ensure string
+                    name: bp.Bedrooms.description,
+                    type: bp.Bedrooms.typeBedroom,
+                    number: String(bp.Bedrooms.numberBedroom),
                     typeBedroom: bp.Bedrooms.typeBedroom
                   }
                 })

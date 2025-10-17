@@ -5,6 +5,9 @@ import prisma from '@/lib/db';
 export async function getPromotions() {
   try {
     const promotions = await prisma.promotions.findMany({
+      where: {
+        dateEnd: { gte: new Date() }
+      },
       include: {
         Seasons: true,
 
