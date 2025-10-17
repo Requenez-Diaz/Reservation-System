@@ -22,6 +22,9 @@ import { AddReservation } from '@/components/bookings/components/addReservation'
 import { generateWhatsappUrl } from '@/components/bedrooms/messages/message-encode';
 import prisma from '@/lib/db';
 import { getGalleryImages } from '@/app/actions/upload/get-images-gallery';
+interface AddReservationProps {
+  selectedBedroomType?: string;
+}
 
 interface PageProps {
   params: Promise<{
@@ -29,10 +32,8 @@ interface PageProps {
   }>;
 }
 
-// 1. Configura el `metadata` para usar el slug
 export async function generateMetadata(props: PageProps) {
   const params = await props.params;
-  // Busca la habitación por su slug, no por un número
   const bedroom = await prisma.bedrooms.findUnique({
     where: { slug: params.slug }
   });
@@ -44,7 +45,7 @@ export async function generateMetadata(props: PageProps) {
   }
 
   return {
-    metadataBase: new URL('http://localhost:3000'),
+    metadataBase: new URL('http://localhost:3001'),
     title: `${bedroom.typeBedroom} - Hotel`,
     description: bedroom.description
   };
@@ -56,53 +57,31 @@ export const viewport = {
 
 export default async function BedroomDetailPage(props: PageProps) {
   const params = await props.params;
-  // Obtiene el slug de los parámetros de la URL
   const bedroomSlug = params.slug;
 
   if (!bedroomSlug) {
     notFound();
   }
 
-  // Busca la habitación por el campo 'slug' en lugar del 'id'
   const bedroom = await prisma.bedrooms.findUnique({
     where: { slug: bedroomSlug }
   });
 
-  // Si no se encuentxra la habitación, muestra la página 404
   if (!bedroom) {
     notFound();
   }
 
-  // El resto del código se mantiene igual, ya que 'bedroom.id'
-  // se utiliza para obtener las imágenes.
   const imagesResult = await getGalleryImages(bedroom.id);
   const galleryImages =
     Array.isArray(imagesResult.data) && imagesResult.success
       ? imagesResult.data
       : [];
 
-  const amenities = [
-    { icon: Wind, name: 'Aire acondicionado', available: true },
-    { icon: Wifi, name: 'WiFi gratuito', available: true },
-    { icon: Tv, name: 'Smart TV', available: true },
-    { icon: Bath, name: 'Baño privado', available: true },
-    { icon: Coffee, name: 'Cafetera', available: true },
-    { icon: Car, name: 'Estacionamiento', available: true },
-    { icon: Utensils, name: 'Minibar', available: true }
-  ];
-
-  const features = [
-    'Vista panorámica',
-    'Escritorio ejecutivo',
-    'Closet walk-in',
-    'Balcón privado',
-    'Control de temperatura'
-  ];
+  const selectedBedroomType = bedroom.typeBedroom || '';
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             {bedroom.typeBedroom}
@@ -119,13 +98,10 @@ export default async function BedroomDetailPage(props: PageProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Image Gallery */}
             <Card>
               <CardContent className="p-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Imagen principal (la primera de la galería) */}
                   <div className="relative h-96 col-span-1 md:col-span-2 overflow-hidden rounded-lg">
                     {galleryImages.length > 0 && (
                       <Image
@@ -139,7 +115,6 @@ export default async function BedroomDetailPage(props: PageProps) {
                     )}
                   </div>
 
-                  {/* Galería de miniaturas (las siguientes imágenes) */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 col-span-1 md:col-span-2">
                     {galleryImages.slice(1).map((image, index) => (
                       <div
@@ -158,8 +133,6 @@ export default async function BedroomDetailPage(props: PageProps) {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Room Details */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -216,8 +189,8 @@ export default async function BedroomDetailPage(props: PageProps) {
 
                 <Separator />
 
-                <div className="space-y-4">
-                  <AddReservation />
+                <div className="space-y-4 m-7">
+                  <AddReservation selectedBedroomType={selectedBedroomType} />
 
                   <a
                     href={generateWhatsappUrl(
@@ -228,7 +201,7 @@ export default async function BedroomDetailPage(props: PageProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button className="w-full bg-green-500 hover:bg-green-600">
+                    <Button className="w-full bg-green-500 hover:bg-green-600 mt-5">
                       <Phone className="w-4 h-4 mr-2" />
                       Consultar por WhatsApp
                     </Button>
@@ -241,7 +214,7 @@ export default async function BedroomDetailPage(props: PageProps) {
                   <p className="text-sm font-medium text-gray-700">
                     ¿Necesitas ayuda?
                   </p>
-                  <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+                  <div className="flex flex-col items-center justify-center gap-2 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
                       <Phone className="w-4 h-4" />
                       <span>+505 8646-9676</span>

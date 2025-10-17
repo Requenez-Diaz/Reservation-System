@@ -21,12 +21,10 @@ interface Bedroom {
 export default function BedroomDetails() {
   const router = useRouter();
   const { id } = router.query;
-  console.log('ID de la habitación:', id);
   const [bedroom, setBedroom] = useState<Bedroom | null>(null);
 
   useEffect(() => {
     if (id) {
-      // Replace this with your actual API call
       fetch(`/habitaciones/${id}`)
         .then((response) => response.json())
         .then((data) => setBedroom(data))

@@ -9,7 +9,11 @@ import {
 } from '@/components/ui/dialog';
 import FormReservation from '../forms/formReservation';
 
-export function AddReservation() {
+interface AddReservationProps {
+  selectedBedroomType?: string;
+}
+
+export function AddReservation({ selectedBedroomType }: AddReservationProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -24,7 +28,7 @@ export function AddReservation() {
             Completa la información a continuación para reservar tu habitación.
           </DialogDescription>
         </DialogHeader>
-        <FormReservation />
+        <FormReservation selectedBedroomType={selectedBedroomType} />
       </DialogContent>
     </Dialog>
   );

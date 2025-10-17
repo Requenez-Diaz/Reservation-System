@@ -10,31 +10,23 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DialogClose, DialogFooter } from '@/components/ui/dialog';
-import Icon from '@/components/ui/icons/icons';
-import { UseFormReturn } from 'react-hook-form';
-import { ReservationFormValues } from '../types/reservationSchema';
-import { useState } from 'react';
+import { UndoIcon, Loader2Icon, SaveIcon } from 'lucide-react';
+import type { UseFormReturn } from 'react-hook-form';
+import type { ReservationFormValues } from '../types/reservationSchema';
 
 interface FormFieldsProps {
   form: UseFormReturn<ReservationFormValues>;
   isSubmitting: boolean;
-  bedroomsTypes: string[];
+  selectedBedroomType?: string;
 }
 
 export default function FormFields({
   form,
   isSubmitting,
-  bedroomsTypes
+  selectedBedroomType
 }: FormFieldsProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleReservationSuccess = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <>
-      {/* Nuevos campos de Nombre y Apellido */}
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
@@ -120,28 +112,23 @@ export default function FormFields({
       <FormField
         control={form.control}
         name="bedroomsType"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Tipo de habitación</FormLabel>
-            <FormControl>
-              <select
-                {...field}
-                className="border border-gray-300 rounded-lg p-2 w-full"
-                disabled={isSubmitting}
-              >
-                <option value="" disabled>
-                  Selecciona el tipo
-                </option>
-                {bedroomsTypes.map((type, index) => (
-                  <option key={index} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        render={({ field }) => {
+          return (
+            <FormItem>
+              <FormLabel>Tipo de habitación</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="text"
+                  disabled={true}
+                  readOnly
+                  className="bg-muted cursor-not-allowed"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
       />
 
       <div className="grid grid-cols-2 gap-4">
@@ -176,7 +163,7 @@ export default function FormFields({
       <DialogFooter className="flex justify-end gap-4">
         <DialogClose asChild>
           <Button type="button" variant="destructive" disabled={isSubmitting}>
-            <Icon action="undo" className="mr-2" />
+            <UndoIcon className="mr-2 size-4" />
             Cancelar
           </Button>
         </DialogClose>
@@ -184,12 +171,12 @@ export default function FormFields({
         <Button type="submit" disabled={isSubmitting} variant="save">
           {isSubmitting ? (
             <>
-              <Icon action="loading" className="mr-2 animate-spin" />
+              <Loader2Icon className="mr-2 size-4 animate-spin" />
               Procesando...
             </>
           ) : (
             <>
-              <Icon action="save" className="mr-2" />
+              <SaveIcon className="mr-2 size-4" />
               Reservar
             </>
           )}
