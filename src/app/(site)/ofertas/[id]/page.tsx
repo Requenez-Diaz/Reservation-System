@@ -29,13 +29,12 @@ export default async function PromotionPage(props: PromotionPageProps) {
   }
 
   const promotion = result.data;
-  const bedroom = promotion.BedroomsPromotions[0]?.Bedrooms; // Solo una habitación
-
+  const bedroom = promotion.BedroomsPromotions[0]?.Bedrooms;
   if (!bedroom) {
     notFound();
   }
 
-  const originalPrice = bedroom.highSeasonPrice || 0; // Ajusta según tu lógica de temporadas
+  const originalPrice = bedroom.highSeasonPrice || 0;
   const discount = (originalPrice * promotion.porcentageDescuent) / 100;
   const finalPrice = originalPrice - discount;
 
@@ -113,7 +112,6 @@ export default async function PromotionPage(props: PromotionPageProps) {
           </CardContent>
         </Card>
 
-        {/* Información de la habitación específica */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -179,7 +177,6 @@ export default async function PromotionPage(props: PromotionPageProps) {
         </Card>
       </div>
 
-      {/* Información adicional */}
       <Card>
         <CardHeader>
           <CardTitle>Información Adicional</CardTitle>
@@ -210,7 +207,6 @@ export default async function PromotionPage(props: PromotionPageProps) {
         </CardContent>
       </Card>
 
-      {/* Alerta si la promoción no está activa */}
       {!isActive && (
         <Card className="border-orange-200 bg-orange-50">
           <CardContent className="pt-6">

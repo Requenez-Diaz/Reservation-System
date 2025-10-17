@@ -10,7 +10,6 @@ import {
   type ReservationFormValues,
   ReservationSchema
 } from '../types/reservationSchema';
-import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 
 import { ConflictAlertDialog } from './ConflictAlertDialog';
 import FormFields from './form-field';
@@ -27,7 +26,11 @@ interface AvailabilityInfo {
   }>;
 }
 
-export function FormReservation() {
+interface FormReservationProps {
+  selectedBedroomType?: string;
+}
+
+export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConflictAlert, setShowConflictAlert] = useState(false);
@@ -39,31 +42,11 @@ export function FormReservation() {
     arrivalDate: string;
     departureDate: string;
   } | null>(null);
-  const [bedroomsTypes, setBedroomsTypes] = useState<string[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleReservationSuccess = () => {
-    setIsModalOpen(false);
-  };
-
-  useEffect(() => {
-    const fetchBedroomsTypes = async () => {
-      try {
-        const bedrooms = await getAllBedrooms();
-        const types = bedrooms.map((bedroom) => bedroom.typeBedroom);
-        const uniqueTypes = Array.from(new Set(types));
-        setBedroomsTypes(uniqueTypes);
-      } catch (error) {
-        console.error('Error fetching bedroom types:', error);
-        toast({
-          title: 'Error',
-          description: 'No se pudieron cargar los tipos de habitación.',
-          variant: 'destructive'
-        });
-      }
-    };
-    fetchBedroomsTypes();
-  }, []);
+  console.log(
+    '[v0] FormReservation - selectedBedroomType prop:',
+    selectedBedroomType
+  );
 
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(ReservationSchema),
@@ -72,11 +55,29 @@ export function FormReservation() {
       lastName: '',
       guests: undefined,
       rooms: undefined,
-      bedroomsType: '',
+      bedroomsType: selectedBedroomType || '',
       arrivalDate: '',
       departureDate: ''
     }
   });
+
+  useEffect(() => {
+    if (selectedBedroomType) {
+      console.log(
+        '[v0] Resetting form with bedroomsType:',
+        selectedBedroomType
+      );
+      form.reset({
+        name: '',
+        lastName: '',
+        guests: undefined,
+        rooms: undefined,
+        bedroomsType: selectedBedroomType,
+        arrivalDate: '',
+        departureDate: ''
+      });
+    }
+  }, [selectedBedroomType, form]);
 
   const calculateSuggestedDates = (
     nextAvailableDate: Date,
@@ -96,6 +97,8 @@ export function FormReservation() {
   };
 
   const handleSubmit = async (data: ReservationFormValues) => {
+    console.log('[v0] Submitting form with data:', data);
+
     setIsSubmitting(true);
     try {
       const finalData = {
@@ -135,7 +138,7 @@ export function FormReservation() {
         }
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('[v0] Error submitting form:', error);
       toast({
         title: 'Error',
         description: 'Error inesperado al procesar la reservación.',
@@ -148,8 +151,11 @@ export function FormReservation() {
 
   const handleAcceptSuggestedDates = () => {
     if (suggestedDates && originalFormData) {
-      form.setValue('arrivalDate', suggestedDates.arrivalDate);
-      form.setValue('departureDate', suggestedDates.departureDate);
+      form.reset({
+        ...originalFormData,
+        arrivalDate: suggestedDates.arrivalDate,
+        departureDate: suggestedDates.departureDate
+      });
       setShowConflictAlert(false);
       toast({
         title: 'Fechas actualizadas',
@@ -180,7 +186,7 @@ export function FormReservation() {
           <FormFields
             form={form}
             isSubmitting={isSubmitting}
-            bedroomsTypes={bedroomsTypes}
+            selectedBedroomType={selectedBedroomType}
           />
         </form>
       </Form>

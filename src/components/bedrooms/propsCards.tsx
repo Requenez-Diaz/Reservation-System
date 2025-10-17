@@ -21,12 +21,11 @@ interface PropsCardsProps {
   slug?: string;
 }
 
-// Función utilitaria para generar un slug, idéntica a la que usas en el Server Action
 function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '_') // <-- CORREGIDO: ahora usa guión medio
+    .replace(/\s+/g, '_')
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '_')
     .replace(/^-+|-+$/g, '');
@@ -51,14 +50,7 @@ export default function PropsCards({
     return str.startsWith('data:image/');
   };
 
-  // Usa la función utilitaria para generar el slug si no se proporciona
   const finalSlug = slug || generateSlug(typeBedroom);
-
-  console.log('PropsCards Debug:');
-  console.log('- typeBedroom:', typeBedroom);
-  console.log('- slug prop:', slug);
-  console.log('- finalSlug:', finalSlug);
-  console.log('- URL generada:', `/habitaciones-detail/${finalSlug}`);
 
   return (
     <Card className="w-screen max-w-md mt-3 mx-3 overflow-hidden transition-all duration-300 hover:shadow-xl">
@@ -154,7 +146,7 @@ export default function PropsCards({
         <div className="mt-4 border-t pt-4">
           <CardFooter className="p-0 flex flex-col sm:flex-row gap-2">
             <div className="flex-1">
-              <AddReservation />
+              <AddReservation selectedBedroomType={typeBedroom} />
             </div>
 
             <a
