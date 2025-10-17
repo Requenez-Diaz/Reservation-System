@@ -156,7 +156,7 @@ export function ReservationsClient({
                   {reservation.status === Status.PENDING ? (
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <DeleteReservation reservationId={reservation.id} />
-                      <EditReservation reservationId={reservation.id} />
+                      {/* <EditReservation reservationId={reservation.id} /> */}
                     </div>
                   ) : (
                     <div className="text-center text-gray-500 italic">
