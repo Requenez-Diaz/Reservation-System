@@ -20,7 +20,6 @@ import { CalendarIcon, CreditCard, MapPin, User2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { createReservationForPromotion } from '@/app/actions/bookings/reservation-offerts';
 import { getCurrentUser } from '@/app/actions/testimonials/create-testimonials';
-import { useRouter } from 'next/navigation';
 
 type User = {
   id: number;
@@ -53,7 +52,6 @@ export function ReserveRoomDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     if (open && !currentUser && !isLoadingUser) {
@@ -107,46 +105,46 @@ export function ReserveRoomDialog({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
+
     if (!currentUser) {
       toast({
         title: 'Error',
         description: 'Debes iniciar sesión para hacer una reserva.',
         variant: 'destructive'
       });
-      setIsSubmitting(false);
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const formData = new FormData(e.currentTarget);
-      console.log('Form data:', Object.fromEntries(formData.entries()));
 
-      const result = await createReservationForPromotion(
-        { success: false, message: '' },
-        formData
-      );
-
-      console.log('Reservation result:', { result });
+      const result = await createReservationForPromotion(undefined, formData);
 
       if (result.success) {
         toast({
-          title: 'Reserva confirmada',
-          description: `Reserva #${result.reservationId} creada exitosamente.`
+          title: '¡Reserva confirmada!',
+          description:
+            result.message ||
+            `Reserva #${result.reservationId} creada exitosamente.`
         });
         setOpen(false);
-        e.currentTarget.reset();
       } else {
         toast({
           title: 'No se pudo crear la reserva',
-          description: result.message,
+          description: result.message || 'Ocurrió un error desconocido.',
           variant: 'destructive'
         });
       }
     } catch (error) {
+      console.error('[ERROR] Error en handleSubmit:', error);
       toast({
         title: 'Error',
-        description: 'Ocurrió un error al crear la reserva',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Ocurrió un error al crear la reserva',
         variant: 'destructive'
       });
     } finally {
@@ -225,7 +223,6 @@ export function ReserveRoomDialog({
             <input type="hidden" name="promotionId" value={promotionId} />
             <input type="hidden" name="bedroomId" value={bedroom.id} />
             <input type="hidden" name="pricePerNight" value={pricePerNight} />
-            {/* Campo oculto para el userId */}
             {currentUser && (
               <input type="hidden" name="userId" value={currentUser.id} />
             )}
