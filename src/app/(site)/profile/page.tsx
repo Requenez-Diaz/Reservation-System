@@ -241,9 +241,9 @@ export default function UserProfile() {
     return (
       <div className="container mx-auto p-4 md:p-10 flex justify-center items-center h-screen">
         <div className="flex flex-col items-center">
-          <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+          <div className="w-10 h-10 border-4 border-gray-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 
-          <p className="text-orange-700">Cargando perfil...</p>
+          <p className="text-blue-7000">Cargando perfil...</p>
         </div>
       </div>
     );

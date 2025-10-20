@@ -43,34 +43,23 @@ export function GeneralTab({
     values: defaultProfile
   });
 
-  // Estilos específicos para las acciones (sobreescriben los 'variants' si es necesario):
-
-  // 1. Botón de Acción Primaria (Editar / Cancelar Edición)
   const editCancelEditButtonClass = isEditing
-    ? 'bg-stone-500 hover:bg-stone-600 text-white shadow-md shadow-stone-500/50' // Color neutro para "Cancelar Edición"
-    : 'bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/50'; // Color principal para "Editar"
+    ? 'bg-gray-500 hover:bg-gray-600 text-white shadow-md shadow-gray-500/50'
+    : 'bg-blue-500 hover:bg-blue-600 text-white shadow-md shadow-blue-500/50';
 
-  // 2. Botón de Acción Positiva (Guardar Cambios)
   const saveButtonClass =
-    'bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/50'; // Verde (estándar de guardar)
+    'bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/50';
 
-  // 3. Botón de Acción Secundaria/Negativa (Descartar/Cancelar)
   const discardButtonClass =
-    'bg-red-500 hover:bg-red-600 text-white shadow-md shadow-red-500/50'; // Rojo (estándar de descartar)
-
-  // Para el spinner de carga (usamos el color del botón principal que se usa en el momento)
-  const spinnerColor = isEditing
-    ? 'border-green-600 border-t-transparent'
-    : 'border-white border-t-transparent';
+    'bg-red-500 hover:bg-red-600 text-white shadow-md shadow-red-500/50';
 
   return (
-    // Se mantiene el diseño naranja/cálido de la tarjeta
-    <Card className="border-2 border-orange-600 bg-gradient-to-br from-orange-50/50 to-white/50 shadow-lg">
+    <Card className="bg-white shadow-md rounded-xl">
       <CardHeader>
-        <CardTitle className="text-2xl text-orange-700">
+        <CardTitle className="text-2xl text-blue-700">
           Información de la Cuenta
         </CardTitle>
-        <CardDescription className="text-orange-900/80">
+        <CardDescription className="text-gray-600">
           Actualiza tu nombre, correo electrónico y teléfono.
         </CardDescription>
       </CardHeader>
@@ -78,14 +67,14 @@ export function GeneralTab({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="username" className="text-orange-700">
+              <Label htmlFor="username" className="text-blue-700">
                 Nombre de Usuario
               </Label>
               <Input
                 id="username"
                 {...register('username')}
                 disabled={!isEditing || isSubmitting}
-                className="transition-all focus-visible:ring-orange-500 focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="transition-all focus-visible:ring-blue-500 focus-visible:ring-2 focus-visible:ring-offset-2"
               />
               {errors.username && (
                 <p className="text-red-600 text-sm">
@@ -94,7 +83,7 @@ export function GeneralTab({
               )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email" className="text-orange-700">
+              <Label htmlFor="email" className="text-blue-700">
                 Correo Electrónico
               </Label>
               <Input
@@ -102,7 +91,7 @@ export function GeneralTab({
                 {...register('email')}
                 disabled={!isEditing || isSubmitting}
                 type="email"
-                className="transition-all focus-visible:ring-orange-500 focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="transition-all focus-visible:ring-blue-500 focus-visible:ring-2 focus-visible:ring-offset-2"
               />
               {errors.email && (
                 <p className="text-red-600 text-sm">{errors.email.message}</p>
@@ -110,11 +99,10 @@ export function GeneralTab({
             </div>
           </div>
 
-          <div className="flex justify-between pt-4 border-t mt-4">
-            {/* Botón de Editar / Cancelar Edición */}
+          <div className="flex justify-between pt-4 mt-4 border-t border-gray-200">
             <Button
               type="button"
-              className={editCancelEditButtonClass} // Aplica el estilo condicional
+              className={editCancelEditButtonClass}
               onClick={onEditToggle}
               disabled={isSubmitting}
             >
@@ -124,27 +112,22 @@ export function GeneralTab({
 
             {isEditing && (
               <div className="flex gap-2">
-                {/* Botón de Descartar (Acción Negativa/Secundaria) */}
                 <Button
                   type="button"
-                  className={discardButtonClass} // Rojo para descartar
+                  className={discardButtonClass}
                   onClick={onCancel}
                   disabled={isSubmitting}
                 >
                   Descartar
                 </Button>
 
-                {/* Botón de Guardar Cambios (Acción Positiva/Primaria) */}
                 <Button
                   type="submit"
-                  className={saveButtonClass} // Verde para guardar
+                  className={saveButtonClass}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
-                    // Spinner usando el color del botón (verde)
-                    <div
-                      className={`w-4 h-4 border-2 rounded-full animate-spin mr-2 border-white ${isEditing ? 'border-t-green-700' : 'border-t-orange-700'}`}
-                    ></div>
+                    <div className="w-4 h-4 border-2 border-white border-t-green-700 rounded-full animate-spin mr-2"></div>
                   ) : null}
                   Guardar Cambios
                 </Button>

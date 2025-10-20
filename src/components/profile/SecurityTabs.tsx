@@ -40,51 +40,40 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
     }
   });
 
+  const accentText = 'text-blue-600';
+  const inputFocusRing =
+    'focus-visible:ring-blue-500 focus-visible:ring-2 focus-visible:ring-offset-2';
+  const saveButtonClass =
+    'bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/50';
+  const cancelButtonClass = 'bg-gray-500 hover:bg-gray-600 text-white';
+
   const handlePasswordChange = async (data: PasswordFormValues) => {
-    // Simulamos la espera para ver el spinner
-    // await new Promise(resolve => setTimeout(resolve, 1000));
     await onPasswordSubmit(data);
     reset();
     setIsPasswordFormOpen(false);
   };
 
-  const primaryOrange = 'text-orange-600';
-  const primaryOrangeBorder = 'border-orange-600';
-  const inputFocusRing =
-    'focus-visible:ring-orange-500 focus-visible:ring-2 focus-visible:ring-offset-2';
-  const saveButtonClass =
-    'bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/50';
-  const cancelButtonClass = 'bg-stone-500 hover:bg-stone-600 text-white';
-
   return (
-    <Card
-      className={`border-2 ${primaryOrangeBorder} bg-gradient-to-br from-orange-50/50 to-white/50 shadow-lg`}
-    >
+    <Card className="bg-white shadow-md rounded-xl">
       <CardHeader>
-        <CardTitle className={`text-2xl ${primaryOrange}`}>
+        <CardTitle className={`text-2xl ${accentText}`}>
           Seguridad de la Cuenta
         </CardTitle>
-        <CardDescription className="text-orange-900/80">
+        <CardDescription className="text-gray-600">
           Configura tu contraseña y autenticación de dos factores.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div
-          className={`p-4 border-2 rounded-xl transition-all duration-300 ${
-            isPasswordFormOpen
-              ? 'border-orange-400 bg-orange-50/50 shadow-md'
-              : 'border-gray-200'
-          }`}
-        >
+        <div className={`p-4 rounded-xl bg-gray-50`}>
           <div className="flex justify-between items-center mb-4">
             <div>
               <p
-                className={`font-medium flex items-center gap-2 ${primaryOrange}`}
+                className={`font-medium flex items-center gap-2 ${accentText}`}
               >
-                <Lock className={`w-4 h-4 ${primaryOrange}`} />
+                <Lock className={`w-4 h-4 ${accentText}`} />
                 Cambiar Contraseña
               </p>
-              <p className="text-sm text-orange-700/80">
+              <p className="text-sm text-blue-700/80">
                 Actualiza tu contraseña para mantener tu cuenta segura.
               </p>
             </div>
@@ -93,7 +82,7 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
               className={
                 isPasswordFormOpen
                   ? cancelButtonClass
-                  : 'bg-orange-500 hover:bg-orange-600 text-white'
+                  : 'bg-blue-500 hover:bg-blue-600 text-white'
               }
               onClick={() => {
                 setIsPasswordFormOpen(!isPasswordFormOpen);
@@ -109,10 +98,10 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
           {isPasswordFormOpen && (
             <form
               onSubmit={handleSubmit(handlePasswordChange)}
-              className="space-y-4 border-t border-orange-200 pt-4"
+              className="space-y-4 pt-4"
             >
               <div className="grid gap-2">
-                <Label htmlFor="currentPassword" className={primaryOrange}>
+                <Label htmlFor="currentPassword" className={accentText}>
                   Contraseña Actual
                 </Label>
                 <Input
@@ -130,7 +119,7 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="newPassword" className={primaryOrange}>
+                <Label htmlFor="newPassword" className={accentText}>
                   Nueva Contraseña
                 </Label>
                 <Input
@@ -148,7 +137,7 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="confirmNewPassword" className={primaryOrange}>
+                <Label htmlFor="confirmNewPassword" className={accentText}>
                   Confirmar Nueva Contraseña
                 </Label>
                 <Input
@@ -179,12 +168,12 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
           )}
         </div>
 
-        <div className="flex justify-between items-center p-4 border rounded-xl border-gray-200">
+        <div className="flex justify-between items-center p-4 rounded-xl bg-gray-50">
           <div>
-            <p className={`font-medium ${primaryOrange}`}>
+            <p className={`font-medium ${accentText}`}>
               Autenticación de Dos Factores (2FA)
             </p>
-            <p className="text-sm text-orange-700/80">
+            <p className="text-sm text-blue-700/80">
               Añade una capa extra de seguridad a tu cuenta.
             </p>
           </div>

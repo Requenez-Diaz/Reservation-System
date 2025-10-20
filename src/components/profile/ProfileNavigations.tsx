@@ -17,11 +17,11 @@ export function ProfileNavigation({
   activeTab,
   onTabChange
 }: ProfileNavigationProps) {
-  const primaryOrange = 'text-orange-700';
-  const activeBgGradient = 'bg-gradient-to-r from-orange-100/70 to-white/70';
-  const hoverBg = 'hover:bg-orange-50';
-  const textMuted = 'text-orange-800/80';
-  const textActive = 'text-orange-800';
+  const accentText = 'text-blue-700';
+  const activeBg = 'bg-blue-50';
+  const hoverBg = 'hover:bg-blue-100';
+  const textMuted = 'text-gray-600';
+  const textActive = 'text-blue-800';
 
   const NavLink: React.FC<{
     tab: SettingsTab;
@@ -30,9 +30,9 @@ export function ProfileNavigation({
   }> = ({ tab, icon, label }) => (
     <button
       type="button"
-      className={`flex items-center gap-3 rounded-xl px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${
+      className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${
         activeTab === tab
-          ? `${activeBgGradient} font-bold ${textActive} shadow-sm border border-orange-200`
+          ? `${activeBg} font-semibold ${textActive} shadow-sm`
           : `${textMuted}`
       }`}
       onClick={() => onTabChange(tab)}
@@ -44,17 +44,14 @@ export function ProfileNavigation({
 
   return (
     <div className="w-full md:w-64">
-      <h2
-        className={`text-3xl font-extrabold mb-2 tracking-tight ${primaryOrange}`}
-      >
+      <h2 className={`text-3xl font-bold mb-2 tracking-tight ${accentText}`}>
         Configuración
       </h2>
-      <p className="text-sm text-black mb-6">
+      <p className="text-sm text-gray-700 mb-6">
         Ajusta tu cuenta y preferencias.
       </p>
 
-      <nav className="flex flex-col gap-1 p-3 border-2 border-orange-200 rounded-xl bg-white shadow-lg">
-        {/* Enlaces de Navegación */}
+      <nav className="flex flex-col gap-1 p-3 rounded-xl bg-white shadow-md">
         <NavLink
           tab="general"
           icon={<User className="h-5 w-5" />}
@@ -70,18 +67,12 @@ export function ProfileNavigation({
           icon={<KeyRound className="h-5 w-5" />}
           label="Seguridad"
         />
-        <NavLink
-          tab="notifications"
-          icon={<Bell className="h-5 w-5" />}
-          label="Notificaciones"
-        />
 
-        <Separator className="my-2 bg-orange-200" />
+        <Separator className="my-2 bg-gray-200" />
 
-        {/* Botón de Cerrar Sesión: Mantiene el rojo destructivo para UX */}
         <Button
           variant="ghost"
-          className="justify-start text-red-600 hover:text-white hover:bg-red-500/90 rounded-xl transition-colors duration-200"
+          className="justify-start text-gray-600 hover:text-white hover:bg-red-500/90 rounded-lg transition-colors duration-200"
           onClick={() => signOut()}
         >
           <LogOut className="h-5 w-5 mr-3" />
