@@ -69,6 +69,7 @@ export default function ForgotPasswordPage() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -84,7 +85,7 @@ export default function ForgotPasswordPage() {
             favor revisa tu bandeja de entrada y sigue las instrucciones.
           </p>
           <Link href="/sign-in">
-            <Button variant={'success'} className="w-full">
+            <Button variant="success" className="w-full">
               Volver al inicio de sesión
             </Button>
           </Link>
@@ -99,6 +100,7 @@ export default function ForgotPasswordPage() {
         <form
           className="max-w-md w-full p-8 border border-gray-300 rounded-md"
           onSubmit={form.handleSubmit(onSubmit)}
+          aria-label="Formulario de recuperación de contraseña"
         >
           <div className="mb-6">
             <h2 className="text-2xl font-bold mb-2">Recuperar contraseña</h2>
@@ -113,33 +115,15 @@ export default function ForgotPasswordPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl className="relative">
-                  <div className="relative">
-                    <Input
-                      type="email"
-                      placeholder="email@example.com"
-                      className="w-full rounded-lg border border-stroke bg-white py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      {...field}
-                    />
-                    <span className="absolute right-4 top-4">
-                      <svg
-                        className="fill-current"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.5">
-                          <path
-                            d="M19.2516 3.30005H2.75156C1.58281 3.30005 0.585938 4.26255 0.585938 5.46567V16.6032C0.585938 17.7719 1.54844 18.7688 2.75156 18.7688H19.2516C20.4203 18.7688 21.4172 17.8063 21.4172 16.6032V5.4313C21.4172 4.26255 20.4203 3.30005 19.2516 3.30005ZM19.2516 4.84692C19.2859 4.84692 19.3203 4.84692 19.3547 4.84692L11.0016 10.2094L2.64844 4.84692C2.68281 4.84692 2.71719 4.84692 2.75156 4.84692H19.2516ZM19.2516 17.1532H2.75156C2.40781 17.1532 2.13281 16.8782 2.13281 16.5344V6.35942L10.1766 11.5157C10.4172 11.6875 10.6922 11.7563 10.9672 11.7563C11.2422 11.7563 11.5172 11.6875 11.7578 11.5157L19.8016 6.35942V16.5688C19.8703 16.9125 19.5953 17.1532 19.2516 17.1532Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
-                  </div>
+                <FormLabel htmlFor="email">Email</FormLabel>
+                <FormControl>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="email@example.com"
+                    disabled={form.formState.isSubmitting}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -148,11 +132,14 @@ export default function ForgotPasswordPage() {
 
           <div className="mt-6">
             <Button
-              className="w-full"
+              className="w-full flex items-center justify-center gap-2"
               disabled={form.formState.isSubmitting}
               type="submit"
-              variant={'save'}
+              variant="save"
             >
+              {form.formState.isSubmitting && (
+                <div className="w-4 h-4 border-2 border-white border-t-blue-600 rounded-full animate-spin" />
+              )}
               {form.formState.isSubmitting
                 ? 'Enviando...'
                 : 'Enviar enlace de recuperación'}
