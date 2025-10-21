@@ -115,7 +115,12 @@ const SignUpForm = () => {
           className="max-w-md w-full p-4 border border-gray-300 rounded-md"
         >
           <div className="flex items-center justify-center content-center top-2">
-            <Image src={'/next.svg'} height={120} width={120} alt="image" />
+            <Image
+              src={'/hotel madroño.png'}
+              height={120}
+              width={120}
+              alt="image"
+            />
           </div>
 
           <FormField
@@ -224,17 +229,6 @@ const SignUpForm = () => {
               Registrarse
             </Button>
           </div>
-
-          <button
-            type="button"
-            className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50"
-            onClick={() => signIn('google')}
-          >
-            <span>
-              <Image src="/google.svg" width={20} height={20} alt="Google" />
-            </span>
-            Iniciar sesión con Google
-          </button>
 
           <div className="flex items-center mt-4">
             <div className="flex-grow border-b border-gray-300"></div>
