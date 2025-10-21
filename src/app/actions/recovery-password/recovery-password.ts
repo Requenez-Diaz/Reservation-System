@@ -2,8 +2,9 @@
 
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { sendPasswordResetEmail } from '@/lib/email';
+import nodemailer from 'nodemailer';
 import prisma from '@/lib/db';
+import { randomUUID } from 'crypto';
 
 const ForgotPasswordSchema = z.object({
   email: z.string().email('Email inválido')
@@ -14,30 +15,83 @@ const ResetPasswordSchema = z.object({
   password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres')
 });
 
+// Configuración SMTP
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+});
+
+async function sendPasswordResetEmail({
+  to,
+  resetUrl,
+  userName
+}: {
+  to: string;
+  resetUrl: string;
+  userName?: string;
+}) {
+  const html = `
+    <h2>Hola ${userName || 'usuario'},</h2>
+    <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+    <a href="${resetUrl}" style="color: blue;">${resetUrl}</a>
+    <p>Este enlace expirará en 1 hora.</p>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to,
+      subject: 'Restablece tu contraseña',
+      html
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error al enviar el correo:', error);
+    return { success: false, error };
+  }
+}
+
 export async function requestPasswordReset(email: string) {
   try {
-    // Validar el email
     const validatedData = ForgotPasswordSchema.parse({ email });
 
     const user = await prisma.user.findUnique({
       where: { email: validatedData.email }
     });
 
-    console.log(user);
     if (!user) {
-      console.log(validatedData.email);
       return {
-        success: true,
-        message:
-          'Si el email existe en nuestro sistema, recibirás un enlace de recuperación.'
+        success: false,
+        message: 'Este correo no está registrado en el sistema.'
       };
     }
 
-    // Generar un token único
-    const token = crypto.randomUUID();
+    // Eliminar tokens anteriores usados
+    await prisma.passwordResetToken.deleteMany({
+      where: {
+        userId: user.id,
+        used: true
+      }
+    });
+
+    //Eliminar tokens no usados
+    await prisma.passwordResetToken.deleteMany({
+      where: {
+        userId: user.id,
+        used: false
+      }
+    });
+
+    // Generar nuevo token
+    const token = randomUUID();
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-    // Guardar el token en la base de datos
     await prisma.passwordResetToken.create({
       data: {
         token,
@@ -54,13 +108,10 @@ export async function requestPasswordReset(email: string) {
       userName: user.username || undefined
     });
 
-    console.log({ emailResult });
-
-    if (!emailResult.success) {
+    if (emailResult.success) {
       return {
         success: true,
-        message:
-          'Si el email existe en nuestro sistema, recibirás un enlace de recuperación.'
+        message: 'Te hemos enviado un enlace de recuperación a tu correo.'
       };
     } else {
       return {
@@ -85,13 +136,11 @@ export async function requestPasswordReset(email: string) {
 
 export async function resetPassword(token: string, newPassword: string) {
   try {
-    // Validar los datos
     const validatedData = ResetPasswordSchema.parse({
       token,
       password: newPassword
     });
 
-    // Buscar el token en la base de datos
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: { token: validatedData.token },
       include: { User: true }
@@ -104,7 +153,6 @@ export async function resetPassword(token: string, newPassword: string) {
       };
     }
 
-    // Verificar si el token ya fue usado
     if (resetToken.used) {
       return {
         success: false,
@@ -112,7 +160,6 @@ export async function resetPassword(token: string, newPassword: string) {
       };
     }
 
-    // Verificar si el token ha expirado
     if (new Date() > resetToken.expiresAt) {
       await prisma.passwordResetToken.delete({
         where: { id: resetToken.id }
@@ -130,13 +177,10 @@ export async function resetPassword(token: string, newPassword: string) {
       data: { password: hashedPassword }
     });
 
-    // Marcar el token como usado
     await prisma.passwordResetToken.update({
       where: { id: resetToken.id },
       data: { used: true }
     });
-
-    console.log(resetToken.User.email);
 
     return {
       success: true,
