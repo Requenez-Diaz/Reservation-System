@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { buttonVariants } from '@/components/ui/button';
 import { ActiveLink } from '@/components/active-link/ActiveLink';
 import UserAccountnav from '@/app/(site)/navbar/usersComponents/UserAccountnav';
@@ -23,15 +24,12 @@ export default function Navbar() {
     <nav className="bg-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="https://www.facebook.com/hotelito.madrono">
-          <p
-            className="text-black font-extrabold text-2xl md:text-3xl"
-            style={{
-              fontFamily: 'cursive',
-              textShadow: '2px 2px 4px #000000'
-            }}
-          >
-            Hotel Madroño
-          </p>
+          <Image
+            src="/hotel madroño.png"
+            alt="Hotel Madroño"
+            width={100}
+            height={100}
+          />
         </Link>
 
         <button
