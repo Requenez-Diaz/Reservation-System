@@ -24,10 +24,10 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
-
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Bedroom } from '../roomsType';
+import { useToast } from '@/components/ui/use-toast';
 
 interface BedroomSearchFormProps {
   onSearch: (results: Bedroom[]) => void;
@@ -49,6 +49,7 @@ export default function BedroomSearchForm({
   const [guests, setGuests] = React.useState(1);
   const [date, setDate] = React.useState<Date>();
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     const fetchBedrooms = async () => {
@@ -67,6 +68,15 @@ export default function BedroomSearchForm({
   }, []);
 
   const handleSearch = async () => {
+    if (date && date < new Date()) {
+      toast({
+        title: 'Fecha inválida',
+        description: 'No puedes buscar habitaciones en fechas anteriores.',
+        variant: 'destructive'
+      });
+      return onSearch([]);
+    }
+
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 800));
 
@@ -74,7 +84,6 @@ export default function BedroomSearchForm({
       const statusMatch =
         status === 'all' || (status === 'available' && bedroom.status === true);
 
-      // Filter by capacity
       const capacityMatch = bedroom.capacity >= guests;
 
       let dateMatch = true;
