@@ -1,12 +1,12 @@
 'use client';
 
 import type React from 'react';
-import { User, KeyRound, Bell, LogOut, ImageIcon } from 'lucide-react';
+import { User, KeyRound, Bell, LogOut, ImageIcon, Palette, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { signOut } from 'next-auth/react';
 
-export type SettingsTab = 'general' | 'security' | 'avatar' | 'notifications';
+export type SettingsTab = 'general' | 'security' | 'avatar' | 'notifications' | 'preferences' | 'support';
 
 interface ProfileNavigationProps {
   activeTab: SettingsTab;
@@ -30,11 +30,10 @@ export function ProfileNavigation({
   }> = ({ tab, icon, label }) => (
     <button
       type="button"
-      className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${
-        activeTab === tab
-          ? `${activeBg} font-semibold ${textActive} shadow-sm`
-          : `${textMuted}`
-      }`}
+      className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${activeTab === tab
+        ? `${activeBg} font-semibold ${textActive} shadow-sm`
+        : `${textMuted}`
+        }`}
       onClick={() => onTabChange(tab)}
     >
       {icon}
@@ -66,6 +65,21 @@ export function ProfileNavigation({
           tab="security"
           icon={<KeyRound className="h-5 w-5" />}
           label="Seguridad"
+        />
+        <NavLink
+          tab="notifications"
+          icon={<Bell className="h-5 w-5" />}
+          label="Notificaciones"
+        />
+        <NavLink
+          tab="preferences"
+          icon={<Palette className="h-5 w-5" />}
+          label="Preferencias"
+        />
+        <NavLink
+          tab="support"
+          icon={<HelpCircle className="h-5 w-5" />}
+          label="Soporte"
         />
 
         <Separator className="my-2 bg-gray-200" />
