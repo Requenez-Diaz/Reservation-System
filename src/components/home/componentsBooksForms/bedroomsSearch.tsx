@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -25,7 +24,16 @@ export default function BedroomSearch() {
         isLoading={isLoading}
         setIsLoading={setIsLoading}
       />
-      <SearchResults searchResults={searchResults} showResults={showResults} />
+      <SearchResults
+        searchResults={searchResults}
+        showResults={showResults}
+        typeBedroom={''}
+        description={''}
+        lowSeasonPrice={0}
+        status={false}
+        numberBedroom={0}
+        image={''}
+      /> 
       <LoadingOverlay isLoading={isLoading} />
     </div>
   );

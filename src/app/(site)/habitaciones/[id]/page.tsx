@@ -5,6 +5,12 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getBedroomsById } from '@/app/actions/get-bedrooms';
 
+interface BedroomImage {
+  id: number;
+  imageContent: string; // base64
+  url?: string; // opcional si usas URL directa
+}
+
 interface Bedroom {
   id: number;
   typeBedroom: string;
@@ -17,7 +23,9 @@ interface Bedroom {
   amenities: any[];
   capacity: number;
   bookingsDetails: any[];
+  BedroomImages: BedroomImage[];
 }
+
 export default function BedroomDetails() {
   const params = useParams();
   const id = typeof params.id === 'string' ? Number.parseInt(params.id) : 0;
@@ -30,7 +38,7 @@ export default function BedroomDetails() {
       if (id) {
         try {
           setIsLoading(true);
-          const data = (await getBedroomsById(id)) as Bedroom;
+          const data = await getBedroomsById(id);
           console.log('Datos de la habitación:', data);
           setBedroom(data);
         } catch (error) {
@@ -48,39 +56,98 @@ export default function BedroomDetails() {
   }, [id]);
 
   if (isLoading) {
-    return <div className="container mx-auto p-4">Cargando...</div>;
+    return (
+      <div className="container mx-auto p-4 text-center text-gray-500">
+        Cargando...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="container mx-auto p-4">Error: {error}</div>;
+    return (
+      <div className="container mx-auto p-4 text-center text-red-500">
+        Error: {error}
+      </div>
+    );
   }
 
   if (!bedroom) {
     return (
-      <div className="container mx-auto p-4">No se encontró la habitación</div>
+      <div className="container mx-auto p-4 text-center text-gray-500">
+        No se encontró la habitación
+      </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>{bedroom.typeBedroom}</CardTitle>
+    <div className="container mx-auto p-6">
+      <Card className="shadow-xl border border-gray-200 rounded-lg bg-white">
+        <CardHeader className="bg-blue-50 p-6 rounded-t-lg">
+          <CardTitle className="text-3xl font-bold text-blue-800">
+            {bedroom.typeBedroom}
+          </CardTitle>
+          <p className="text-sm text-gray-600 mt-1">
+            Número de Habitación: {bedroom.numberBedroom}
+          </p>
         </CardHeader>
-        <CardContent>
-          <p className="mb-4">{bedroom.description}</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {bedroom.BedroomImages && bedroom.BedroomImages.length > 0 && (
+          <div className="w-full h-64 overflow-hidden rounded-lg mb-4">
+            <img
+              src={
+                bedroom.BedroomImages[0].imageContent
+                  ? `data:image/jpeg;base64,${bedroom.BedroomImages[0].imageContent}`
+                  : (bedroom.BedroomImages[0].url ?? '')
+              }
+              alt={`Imagen de la habitación ${bedroom.numberBedroom}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        <CardContent className="p-6 space-y-6">
+          <p className="text-gray-700 text-lg">{bedroom.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-semibold mb-2">Detalles de la habitación</h3>
-              <p>Capacidad: {bedroom.capacity} personas</p>
-              <p>Precio temporada baja: ${bedroom.lowSeasonPrice}</p>
-              <p>Precio temporada alta: ${bedroom.highSeasonPrice}</p>
-              <p>Número de habitación: {bedroom.numberBedroom}</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Detalles de la habitación
+              </h3>
+              <ul className="space-y-2 text-gray-700">
+                <li>
+                  <strong>Capacidad:</strong> {bedroom.capacity} personas
+                </li>
+                <li>
+                  <strong>Precio temporada baja:</strong>{' '}
+                  <span className="text-green-600 font-semibold">
+                    ${bedroom.lowSeasonPrice}
+                  </span>
+                </li>
+                <li>
+                  <strong>Precio temporada alta:</strong>{' '}
+                  <span className="text-red-600 font-semibold">
+                    ${bedroom.highSeasonPrice}
+                  </span>
+                </li>
+                <li>
+                  <strong>Estado:</strong>{' '}
+                  <span
+                    className={
+                      bedroom.status
+                        ? 'text-green-500 font-semibold'
+                        : 'text-red-500 font-semibold'
+                    }
+                  >
+                    {bedroom.status ? 'Disponible' : 'Ocupado'}
+                  </span>
+                </li>
+              </ul>
             </div>
             {bedroom.amenities && bedroom.amenities.length > 0 && (
               <div>
-                <h3 className="font-semibold mb-2">Amenidades</h3>
-                <ul className="list-disc list-inside">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Amenidades
+                </h3>
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
                   {bedroom.amenities.map((amenity, index) => (
                     <li key={index}>{amenity}</li>
                   ))}
