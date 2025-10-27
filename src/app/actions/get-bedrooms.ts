@@ -2,7 +2,6 @@
 
 import prisma from '@/lib/db';
 
-
 export const getAllBedrooms = async () => {
   try {
     const bedrooms = await prisma.bedrooms.findMany({
@@ -34,6 +33,10 @@ export const getBedroomsById = async (id: number) => {
     const bedroom = await prisma.bedrooms.findUnique({
       where: {
         id
+      },
+      include: {
+        bookingsDetails: true,
+        BedroomImages: true
       }
     });
     console.log('Habitaciónes obtenidas por id', { bedroom });

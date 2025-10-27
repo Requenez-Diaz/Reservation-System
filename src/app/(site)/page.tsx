@@ -3,7 +3,7 @@ import NavbarTwoPass from './navbar/navbar-twoPass';
 
 const Dashboard = () => {
   return (
-    <div className="">npm r
+    <div className="">
       <ContainerHome />
     </div>
   );

@@ -9,15 +9,46 @@ import { Bedroom } from '../roomsType';
 interface SearchResultsProps {
   searchResults: Bedroom[];
   showResults: boolean;
+  typeBedroom: string;
+  description: string;
+  lowSeasonPrice: number;
+  status: boolean;
+  numberBedroom: number;
+  image: string;
+  slug?: string;
+}
+
+function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '_')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '_')
+    .replace(/^-+|-+$/g, '');
 }
 
 export default function SearchResults({
   searchResults,
-  showResults
+  showResults,
+  typeBedroom,
+  description,
+  lowSeasonPrice,
+  status,
+  numberBedroom,
+  image,
+  slug
 }: SearchResultsProps) {
   if (searchResults.length === 0) {
     return null; // No renderizar si no hay resultados
   }
+
+  const finalSlug = slug || generateSlug(typeBedroom);
+  console.log('Rendering SearchResults with', {
+    searchResults,
+    showResults,
+    slug: finalSlug
+  });
 
   return (
     <Card
@@ -47,7 +78,7 @@ export default function SearchResults({
               }}
             >
               <Link
-                href={`/habitaciones/${bedroom.id}`}
+                href={`/habitaciones-detail/${generateSlug(bedroom.typeBedroom)}`}
                 className="block hover:bg-accent/50 p-4 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md group"
               >
                 <h3 className="text-lg font-semibold group-hover:text-primary transition-colors duration-200">
