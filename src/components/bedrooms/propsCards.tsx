@@ -1,9 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-
 import Link from 'next/link';
-
 import { Wifi, Wind, MessageCircleMore, Bed } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,8 +15,9 @@ interface PropsCardsProps {
   lowSeasonPrice: number;
   status: boolean;
   numberBedroom: number;
-  image: string;
   slug?: string;
+  imageUrl: string;
+  imageContent: string;
 }
 
 function generateSlug(text: string): string {
@@ -37,45 +36,40 @@ export default function PropsCards({
   lowSeasonPrice,
   status,
   numberBedroom,
-  image,
-  slug
+  imageUrl,
+  slug,
+  imageContent
 }: PropsCardsProps) {
   const [imageError, setImageError] = useState(false);
-
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
-  const isBase64Image = (str: string) => {
-    return str.startsWith('data:image/');
-  };
-
   const finalSlug = slug || generateSlug(typeBedroom);
+
+  let validImageUrl: string;
+
+  if (imageUrl?.startsWith('http')) {
+    validImageUrl = imageUrl;
+  } else if (imageUrl) {
+  
+    const fileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+
+    validImageUrl = `/api-imagenes/${fileName}`;
+  } else {
+    validImageUrl = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+  }
 
   return (
     <Card className="w-screen max-w-md mt-3 mx-3 overflow-hidden transition-all duration-300 hover:shadow-xl">
       <Link href={`/habitaciones-detail/${finalSlug}`} passHref>
         <div className="relative h-48 overflow-hidden group">
-          {image && !imageError ? (
-            isBase64Image(image) ? (
-              <Image
-                src={image || '/placeholder.svg'}
-                alt={`Habitación ${typeBedroom}`}
-                fill
-                className="object-cover transition-transform duration-500 hover:scale-110"
-                onError={handleImageError}
-                priority={false}
-              />
-            ) : (
-              <Image
-                src={image || '/placeholder.svg'}
-                alt={`Habitación ${typeBedroom}`}
-                fill
-                className="object-cover transition-transform duration-500 hover:scale-110"
-                onError={handleImageError}
-                priority={false}
-              />
-            )
+          {!imageError ? (
+            <Image
+              src={validImageUrl || '/placeholder.svg'}
+              alt={`Habitación ${typeBedroom}`}
+              fill
+              unoptimized
+              className="object-cover transition-transform duration-500 hover:scale-110"
+              onError={() => setImageError(true)}
+              priority={false}
+            />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
               <div className="text-center text-gray-500">
@@ -98,21 +92,11 @@ export default function PropsCards({
               </div>
             </div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
-            <h3 className="text-xl font-bold text-white leading-none">
-              {typeBedroom}
-            </h3>
-            <p className="text-sm text-gray-200 mt-1">{description}</p>
-          </div>
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-500 flex items-center justify-center">
-            <span className="text-white text-base font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/60 px-4 py-2 rounded-full">
-              Ver detalles
-            </span>
-          </div>
         </div>
       </Link>
+
       <div className="p-4">
-        <CardContent className="p-0 space-y-3">
+        <CardContent className="p-0 space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <span className="text-2xl font-bold text-gray-900">
@@ -143,12 +127,12 @@ export default function PropsCards({
             </div>
           </div>
         </CardContent>
+
         <div className="mt-4 border-t pt-4">
           <CardFooter className="p-0 flex flex-col sm:flex-row gap-2">
             <div className="flex-1">
               <AddReservation selectedBedroomType={typeBedroom} />
             </div>
-
             <a
               href={generateWhatsappUrl(
                 typeBedroom,

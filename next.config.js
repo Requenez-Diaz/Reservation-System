@@ -25,8 +25,29 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'josecamachofotografia.com'
+      },
+
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/uploads/bedrooms/**'
       }
     ]
+  },
+  async rewrites() {
+    return [
+      {
+        // 1. Solicitud Interna (Frontend 3001):
+        // Solo capturamos el nombre del archivo. Ejemplo: /api-imagenes/bedroom_176...jpg
+        source: '/api-imagenes/:fileName',
+
+        // 2. Destino (Servidor de Recursos 3000):
+        // Reconstruimos la ruta completa que sabemos que el servidor 3000
+        // debe servir, usando la subcarpeta DENTRO de public.
+        destination: 'http://localhost:3000/uploads/bedrooms/:fileName'
+      }
+    ];
   }
 };
 

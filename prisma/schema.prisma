@@ -236,7 +236,9 @@ model BedroomImages {
   bedroomId    Int
   createdAt    DateTime @default(now())
   updatedAt    DateTime
-  imageContent String
+  fileName     String
+  mimeType     String
+  imageContent String?
   Bedrooms     Bedrooms @relation(fields: [bedroomId], references: [id])
 }
 
