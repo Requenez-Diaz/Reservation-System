@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/lib/db';
-import { BedroomImages } from '@prisma/client';
+import type { BedroomImages } from '@prisma/client';
 
 interface GetGalleryImagesResponse {
   success: boolean;

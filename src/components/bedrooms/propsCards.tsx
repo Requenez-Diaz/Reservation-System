@@ -48,7 +48,6 @@ export default function PropsCards({
   if (imageUrl?.startsWith('http')) {
     validImageUrl = imageUrl;
   } else if (imageUrl) {
-  
     const fileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
 
     validImageUrl = `/api-imagenes/${fileName}`;
