@@ -9,6 +9,10 @@ interface Item {
   numberBedroom: number;
   image: string;
   slug: string;
+  fileName: string;
+  mimeType: string;
+  imageUrl: string;
+  imageContent: string;
 }
 
 interface ParentComponents {
@@ -19,7 +23,11 @@ const ParentCards = ({ items }: ParentComponents) => {
   return (
     <div className="flex flex-wrap content-center mt-5 justify-center">
       {items.map((item) => (
-        <PropsCards key={item.numberBedroom} {...item} />
+        <PropsCards
+          key={item.numberBedroom}
+          {...item}
+          imageUrl={item.image || '/placeholder.svg'}
+        />
       ))}
     </div>
   );
