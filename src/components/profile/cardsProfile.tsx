@@ -99,10 +99,10 @@ export function GeneralTab({
             </div>
           </div>
 
-          <div className="flex justify-between pt-4 mt-4 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between pt-4 mt-4 border-t border-gray-200 gap-2">
             <Button
               type="button"
-              className={editCancelEditButtonClass}
+              className={`${editCancelEditButtonClass} w-full sm:w-auto`}
               onClick={onEditToggle}
               disabled={isSubmitting}
             >
@@ -111,10 +111,10 @@ export function GeneralTab({
             </Button>
 
             {isEditing && (
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   type="button"
-                  className={discardButtonClass}
+                  className={`${discardButtonClass} w-full sm:w-auto`}
                   onClick={onCancel}
                   disabled={isSubmitting}
                 >
@@ -123,12 +123,12 @@ export function GeneralTab({
 
                 <Button
                   type="submit"
-                  className={saveButtonClass}
+                  className={`${saveButtonClass} w-full sm:w-auto`}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-green-700 rounded-full animate-spin mr-2"></div>
-                  ) : null}
+                  {isSubmitting && (
+                    <div className="w-4 h-4 border-2 border-white border-t-green-700 rounded-full animate-spin mr-2 inline-block"></div>
+                  )}
                   Guardar Cambios
                 </Button>
               </div>
