@@ -13,7 +13,7 @@ const ContainerHome = () => {
     <div>
       <BedroomSearch />
       <BannerHome />
-      <CarouselDescriptions />
+      {/* <CarouselDescriptions /> */}
       <ContainerAboutHotels />
       <GalleryBedrooms />
       <CardDescriptions />
