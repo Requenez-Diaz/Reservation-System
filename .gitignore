@@ -42,3 +42,5 @@ next-env.d.ts
 
 //ignorando el env
 
+/public/*.{jpg,jpeg,png,gif,svg}
+/public/**/*.{jpg,jpeg,png,gif,svg}
