@@ -183,8 +183,11 @@ export default async function BedroomDetailPage(props: PageProps) {
 
                 <Separator />
 
-                <div className="space-y-4">
-                  <AddReservation selectedBedroomType={selectedBedroomType} />
+                <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+                  <div className="w-full sm:w-auto">
+                    <AddReservation selectedBedroomType={selectedBedroomType} />
+                  </div>
+
                   <a
                     href={generateWhatsappUrl(
                       bedroom.typeBedroom,
@@ -193,8 +196,9 @@ export default async function BedroomDetailPage(props: PageProps) {
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="w-full sm:w-auto"
                   >
-                    <Button className="w-full bg-green-500 hover:bg-green-600">
+                    <Button className="w-full bg-green-500 hover:bg-green-600 flex items-center justify-center">
                       <Phone className="w-4 h-4 mr-2" />
                       Consultar por WhatsApp
                     </Button>
