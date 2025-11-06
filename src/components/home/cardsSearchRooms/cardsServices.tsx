@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import {
   Card,
   CardHeader,
@@ -11,7 +11,6 @@ interface CardData {
   title: string;
   subtitle: string;
   description: string;
-  bgColor: string;
   icon: React.ReactNode;
 }
 
@@ -19,56 +18,51 @@ const cardData: CardData[] = [
   {
     title: 'Horarios Flexibles',
     subtitle: 'Horarios de 8:00 am a 8:00 pm',
-    description: 'La estadia depende de ti y las ganas de triunfar',
-    bgColor: 'bg-gray-200 bg-opacity-45',
-    icon: <Calendar size={48} />
+    description: 'La estadía depende de ti y las ganas de disfrutar',
+    icon: <Calendar className="w-12 h-12" />
   },
   {
     title: 'Comodidad',
-    subtitle: 'La comodiad es lo primero',
-    description: 'La comodidad es lo primero',
-    bgColor: 'bg-gray-200 bg-opacity-45',
-    icon: <Sofa size={48} />
+    subtitle: 'La comodidad es lo primero',
+    description: 'Espacios diseñados para tu máximo confort y relajación',
+    icon: <Sofa className="w-12 h-12" />
   },
   {
     title: 'Wifi Gratis',
     subtitle: 'Wifi de alta velocidad',
-    description:
-      'Wifi de alta velocidad para que puedas trabajar sin problemas',
-    bgColor: 'bg-gray-200 bg-opacity-45',
-    icon: <Wifi size={48} />
+    description: 'Conexión de alta velocidad para que estés siempre conectado',
+    icon: <Wifi className="w-12 h-12" />
   },
   {
-    title: 'Atencion 24-7',
-    subtitle: 'La atencion es lo primero',
+    title: 'Atención 24/7',
+    subtitle: 'La atención es lo primero',
     description:
-      'Atencion 24-7 para que puedas resolver tus dudas en cualquier momento',
-    bgColor: 'bg-gray-200 bg-opacity-45',
-    icon: <MessageCircle size={48} />
+      'Servicio disponible las 24 horas para resolver tus necesidades',
+    icon: <MessageCircle className="w-12 h-12" />
   }
 ];
 
 const CardService = () => {
   return (
-    <div>
-      <div className="flex justify-center items-center p-4">
-        <div className="bg-white w-3/3 p-4 flex flex-col items-center rounded-xl ">
-          <div className="mt-4 w-full flex flex-col md:flex-row md:justify-between">
-            {cardData.map((card, index) => (
-              <Card
-                key={index}
-                className={`w-full md:w-1/3 mb-4 md:mb-0 flex flex-col items-center p-4 rounded-lg ${card.bgColor} ${
-                  index < cardData.length - 1 ? 'md:mr-4' : ''
-                }`}
-              >
-                <CardHeader>{card.icon}</CardHeader>
-                <CardTitle>{card.title}</CardTitle>
-                <CardDescription>{card.description}</CardDescription>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+      {cardData.map((card, index) => (
+        <Card
+          key={index}
+          className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 hover:border-amber-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        >
+          <CardHeader className="flex flex-col items-center text-center space-y-4 p-6">
+            <div className="p-4 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+              {card.icon}
+            </div>
+            <CardTitle className="text-xl font-bold text-amber-900">
+              {card.title}
+            </CardTitle>
+            <CardDescription className="text-amber-700 leading-relaxed">
+              {card.description}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      ))}
     </div>
   );
 };

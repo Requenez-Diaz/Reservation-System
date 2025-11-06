@@ -11,8 +11,8 @@ import { BannerHome } from './bannerHome';
 const ContainerHome = () => {
   return (
     <div>
-      <BedroomSearch />
       <BannerHome />
+      <BedroomSearch />
       {/* <CarouselDescriptions /> */}
       <ContainerAboutHotels />
       <GalleryBedrooms />
