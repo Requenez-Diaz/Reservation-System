@@ -155,66 +155,79 @@ export function ReserveRoomDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={'save'} className="w-full md:w-auto">
+        <Button variant={'save'} className="w-full sm:w-auto">
           Reservar habitación
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Reservar habitación con oferta</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[425px] md:max-w-[500px] max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-lg sm:text-xl">
+            Reservar habitación con oferta
+          </DialogTitle>
+          <DialogDescription className="text-sm">
             Completa los datos para confirmar tu reserva.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           <div className="p-3 rounded-lg border bg-muted/40">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-blue-600" />
-              <span className="font-medium">
-                {bedroom.name} - {bedroom.type} #{bedroom.number}
-              </span>
-              <Badge variant="info" className="ml-auto">
-                ID: {bedroom.id}
-              </Badge>
-            </div>
-            {bedroom.typeBedroom && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {bedroom.typeBedroom}
-              </p>
-            )}
-            <div className="flex items-center gap-2 mt-2 text-green-700">
-              <CreditCard className="h-4 w-4" />
-              <span className="text-sm">
-                Precio por noche con descuento:{' '}
-                <strong>${pricePerNight.toFixed(2)}</strong>
-              </span>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start gap-2">
+                <MapPin className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className="font-medium text-sm break-words">
+                    {bedroom.name} - {bedroom.type} #{bedroom.number}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {bedroom.typeBedroom && (
+                  <p className="text-xs text-muted-foreground">
+                    {bedroom.typeBedroom}
+                  </p>
+                )}
+                <Badge variant="info" className="ml-0 text-xs">
+                  ID: {bedroom.id}
+                </Badge>
+              </div>
+
+              <div className="flex items-center gap-2 text-green-700 mt-1">
+                <CreditCard className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">
+                  Precio por noche: <strong>${pricePerNight.toFixed(2)}</strong>
+                </span>
+              </div>
             </div>
           </div>
 
           {isLoadingUser ? (
             <div className="p-3 rounded-lg border bg-blue-50">
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-blue-700 text-center">
                 Cargando datos del usuario...
               </p>
             </div>
           ) : currentUser ? (
             <div className="p-3 rounded-lg border bg-green-50">
-              <div className="flex items-center gap-2">
-                <User2 className="h-4 w-4 text-green-600" />
-                <span className="font-medium text-green-800">
-                  Usuario autenticado:
-                </span>
+              <div className="flex items-start gap-2">
+                <User2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className="font-medium text-green-800 text-sm block mb-1">
+                    Usuario autenticado:
+                  </span>
+                  <p className="text-sm text-green-700 break-words">
+                    {currentUser.username}
+                  </p>
+                  <p className="text-sm text-green-700 break-words">
+                    {currentUser.email}
+                  </p>
+                </div>
               </div>
-              <p className="text-sm text-green-700 mt-1">
-                {currentUser.username} ({currentUser.email})
-              </p>
             </div>
           ) : (
             <div className="p-3 rounded-lg border bg-red-50">
-              <p className="text-sm text-red-700">
-                No se pudo cargar el usuario. Por favor, inicia sesión para
-                reservar.
+              <p className="text-sm text-red-700 text-center">
+                No se pudo cargar el usuario. Por favor, inicia sesión para reservar.
               </p>
             </div>
           )}
@@ -227,10 +240,13 @@ export function ReserveRoomDialog({
               <input type="hidden" name="userId" value={currentUser.id} />
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="guestName" className="flex items-center gap-2">
-                  <User2 className="h-4 w-4" /> Nombre completo
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="guestName" className="text-sm font-medium">
+                  <span className="flex items-center gap-2">
+                    <User2 className="h-4 w-4" />
+                    Nombre completo
+                  </span>
                 </Label>
                 <Input
                   name="guestName"
@@ -238,10 +254,14 @@ export function ReserveRoomDialog({
                   placeholder="Juan Pérez"
                   defaultValue={currentUser?.username || ''}
                   required
+                  className="w-full"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="guestEmail">Email</Label>
+
+              <div className="space-y-2">
+                <Label htmlFor="guestEmail" className="text-sm font-medium">
+                  Email
+                </Label>
                 <Input
                   type="email"
                   name="guestEmail"
@@ -249,13 +269,16 @@ export function ReserveRoomDialog({
                   placeholder="juan@example.com"
                   defaultValue={currentUser?.email || ''}
                   required
+                  className="w-full"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="guests">Número de huéspedes</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="guests" className="text-sm font-medium">
+                  Huéspedes
+                </Label>
                 <Input
                   type="number"
                   name="guests"
@@ -264,10 +287,13 @@ export function ReserveRoomDialog({
                   max="10"
                   defaultValue="2"
                   required
+                  className="w-full"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="rooms">Número de habitaciones</Label>
+              <div className="space-y-2">
+                <Label htmlFor="rooms" className="text-sm font-medium">
+                  Habitaciones
+                </Label>
                 <Input
                   type="number"
                   name="rooms"
@@ -276,14 +302,18 @@ export function ReserveRoomDialog({
                   max="5"
                   defaultValue="1"
                   required
+                  className="w-full"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="checkIn" className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" /> Check-in
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="checkIn" className="text-sm font-medium">
+                  <span className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    Check-in
+                  </span>
                 </Label>
                 <Input
                   type="date"
@@ -293,11 +323,15 @@ export function ReserveRoomDialog({
                   min={toInputDate(defaultCheckIn)}
                   max={toInputDate(defaultCheckOut)}
                   required
+                  className="w-full"
                 />
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="checkOut" className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" /> Check-out
+              <div className="space-y-2">
+                <Label htmlFor="checkOut" className="text-sm font-medium">
+                  <span className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    Check-out
+                  </span>
                 </Label>
                 <Input
                   type="date"
@@ -307,15 +341,16 @@ export function ReserveRoomDialog({
                   min={toInputDate(defaultCheckIn)}
                   max={toInputDate(defaultCheckOut)}
                   required
+                  className="w-full"
                 />
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="pt-4">
               <Button
                 type="submit"
                 disabled={isSubmitting || !currentUser}
-                className="w-full"
+                className="w-full sm:w-auto min-w-32"
                 variant={'save'}
               >
                 {isSubmitting ? 'Creando reserva...' : 'Confirmar reserva'}
