@@ -97,7 +97,6 @@ export const saveReservation = async (
       };
     }
 
-    // Función para obtener información detallada de disponibilidad
     const getAvailabilityInfo = async (startDate: Date, endDate: Date) => {
       const conflictingReservations = await prisma.reservation.findMany({
         where: {
@@ -185,6 +184,20 @@ export const saveReservation = async (
         availabilityInfo
       };
     }
+
+    // 🔹 NUEVO: se obtiene el usuario autenticado desde la BD
+    const userRecord = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!userRecord) {
+      return {
+        success: false,
+        message: 'El usuario no existe en la base de datos.'
+      };
+    }
+
+    // 🔹 NUEVO: se crea la reserva y se asocia al usuario
     const newReservation = await prisma.reservation.create({
       data: {
         name,
@@ -193,17 +206,24 @@ export const saveReservation = async (
         bedroomsType,
         guests,
         rooms,
-        arrivalDate: arrivalDate,
-        departureDate: departureDate,
+        arrivalDate,
+        departureDate,
         status: Status.PENDING,
-        User: {
-          connect: {
-            email: email
-          }
-        }
+        userId: userRecord.id //  relación directa
       }
     });
 
+    // 🔹 NUEVO: se crea una notificación asociada a la reserva
+    await prisma.notification.create({
+      data: {
+        title: 'Nueva reserva creada',
+        message: `Has reservado una habitación tipo ${bedroomsType} del ${arrivalDate.toLocaleDateString()} al ${departureDate.toLocaleDateString()}.`,
+        userId: userRecord.id,
+        reservationId: newReservation.id
+      }
+    });
+
+    // 🔹 NUEVO: revalidar la página donde se muestran las reservas
     revalidatePath('/dashboard/bookings');
 
     return {
@@ -211,7 +231,7 @@ export const saveReservation = async (
       message: `La reserva se registró correctamente. ID de reservación: ${newReservation.id}`
     };
   } catch (error) {
-    console.error('💥 Error al guardar la reserva:', error);
+    console.error('Error al guardar la reserva:', error);
     return {
       success: false,
       message: 'Error al guardar la reserva.'
