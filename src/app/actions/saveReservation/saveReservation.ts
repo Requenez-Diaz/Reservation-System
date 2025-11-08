@@ -216,10 +216,12 @@ export const saveReservation = async (
     // 🔹 NUEVO: se crea una notificación asociada a la reserva
     await prisma.notification.create({
       data: {
+        email: userRecord.email,
+        userImage: userRecord.image || null,
         title: 'Nueva reserva creada',
         message: `Has reservado una habitación tipo ${bedroomsType} del ${arrivalDate.toLocaleDateString()} al ${departureDate.toLocaleDateString()}.`,
         userId: userRecord.id,
-        reservationId: newReservation.id
+        reservationId: newReservation.id,
       }
     });
 
