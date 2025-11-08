@@ -1,10 +1,11 @@
+'use client';
+
 // components/SearchResults.tsx
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users } from 'lucide-react';
 import Link from 'next/link';
-import * as React from 'react';
-import { Bedroom } from '../roomsType';
+import type { Bedroom } from '../roomsType';
 
 interface SearchResultsProps {
   searchResults: Bedroom[];
@@ -50,6 +51,10 @@ export default function SearchResults({
     slug: finalSlug
   });
 
+  const handleRoomClick = () => {
+    localStorage.setItem('fromSearch', 'true');
+  };
+
   return (
     <Card
       className={`mx-auto max-w-4xl mt-8 transition-all duration-500 ${
@@ -80,6 +85,7 @@ export default function SearchResults({
               <Link
                 href={`/habitaciones-detail/${generateSlug(bedroom.typeBedroom)}`}
                 className="block hover:bg-accent/50 p-4 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md group"
+                onClick={handleRoomClick}
               >
                 <h3 className="text-lg font-semibold group-hover:text-primary transition-colors duration-200">
                   {bedroom.typeBedroom}
