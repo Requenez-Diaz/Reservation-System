@@ -26,8 +26,9 @@ import {
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Bedroom } from '../roomsType';
+import type { Bedroom } from '../roomsType';
 import { useToast } from '@/components/ui/use-toast';
+import type { DateRange } from 'react-day-picker';
 
 interface BedroomSearchFormProps {
   onSearch: (results: Bedroom[]) => void;
@@ -47,7 +48,7 @@ export default function BedroomSearchForm({
 }: BedroomSearchFormProps) {
   const [status, setStatus] = React.useState('all');
   const [guests, setGuests] = React.useState(1);
-  const [date, setDate] = React.useState<Date>();
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
   const { toast } = useToast();
 
@@ -67,8 +68,23 @@ export default function BedroomSearchForm({
     fetchBedrooms();
   }, []);
 
+  React.useEffect(() => {
+    if (dateRange?.from) {
+      const dateData = {
+        from: dateRange.from.toISOString(),
+        to: dateRange.to?.toISOString() || dateRange.from.toISOString()
+      };
+      localStorage.setItem('selectedDates', JSON.stringify(dateData));
+      localStorage.setItem('selectedGuests', guests.toString());
+      localStorage.setItem('fromSearch', 'true');
+      console.log('[v0] Fechas guardadas en localStorage:', dateData);
+      console.log('[v0] Personas guardadas en localStorage:', guests);
+      console.log('[v0] Flag fromSearch guardada en localStorage');
+    }
+  }, [dateRange, guests]);
+
   const handleSearch = async () => {
-    if (date && date < new Date()) {
+    if (dateRange?.from && dateRange.from < new Date()) {
       toast({
         title: 'Fecha inválida',
         description: 'No puedes buscar habitaciones en fechas anteriores.',
@@ -88,16 +104,25 @@ export default function BedroomSearchForm({
 
       let dateMatch = true;
       if (
-        date &&
+        dateRange?.from &&
         bedroom.bookingsDetails &&
         bedroom.bookingsDetails.length > 0
       ) {
+        const searchStart = dateRange.from;
+        const searchEnd = dateRange.to || dateRange.from;
+
         const hasConflict = bedroom.bookingsDetails.some((booking) => {
           const bookingStart = new Date(booking.dateStart);
           const bookingEnd = booking.dateEnd
             ? new Date(booking.dateEnd)
             : bookingStart;
-          return date >= bookingStart && date <= bookingEnd;
+
+          // Verificar si hay solapamiento entre el rango buscado y las reservas existentes
+          return (
+            (searchStart >= bookingStart && searchStart <= bookingEnd) ||
+            (searchEnd >= bookingStart && searchEnd <= bookingEnd) ||
+            (searchStart <= bookingStart && searchEnd >= bookingEnd)
+          );
         });
         dateMatch = !hasConflict;
       }
@@ -170,11 +195,18 @@ export default function BedroomSearchForm({
                 className="pl-9 justify-start text-left font-normal transition-all duration-200 hover:scale-[1.02] hover:shadow-md relative bg-transparent"
               >
                 <Calendar className="absolute left-3 h-4 w-4 text-muted-foreground" />
-                {date ? (
-                  format(date, 'PPP', { locale: es })
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, 'dd/MM/yyyy', { locale: es })} -{' '}
+                      {format(dateRange.to, 'dd/MM/yyyy', { locale: es })}
+                    </>
+                  ) : (
+                    format(dateRange.from, 'dd/MM/yyyy', { locale: es })
+                  )
                 ) : (
                   <span className="text-muted-foreground">
-                    Fecha disponibilidad
+                    Selecciona rango de fechas
                   </span>
                 )}
               </Button>
@@ -184,11 +216,12 @@ export default function BedroomSearchForm({
               align="start"
             >
               <CalendarComponent
-                mode="single"
-                selected={date}
-                onSelect={setDate}
+                mode="range"
+                selected={dateRange}
+                onSelect={setDateRange}
                 initialFocus
                 locale={es}
+                numberOfMonths={2}
               />
             </PopoverContent>
           </Popover>
