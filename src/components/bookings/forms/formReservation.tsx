@@ -62,19 +62,76 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   });
 
   useEffect(() => {
+    const loadDatesFromStorage = () => {
+      try {
+        const fromSearch = localStorage.getItem('fromSearch');
+        console.log('[v0] Flag fromSearch en localStorage:', fromSearch);
+
+        if (fromSearch === 'true') {
+          const storedDates = localStorage.getItem('selectedDates');
+          const storedGuests = localStorage.getItem('selectedGuests');
+
+          console.log('[v0] Datos en localStorage:', {
+            storedDates,
+            storedGuests,
+            fromSearch
+          });
+
+          if (storedDates) {
+            const { from, to } = JSON.parse(storedDates);
+            const arrivalDate = new Date(from).toISOString().split('T')[0];
+            const departureDate = new Date(to).toISOString().split('T')[0];
+
+            console.log('[v0] Cargando fechas del localStorage:', {
+              arrivalDate,
+              departureDate
+            });
+
+            form.setValue('arrivalDate', arrivalDate);
+            form.setValue('departureDate', departureDate);
+          }
+
+          if (storedGuests) {
+            const guests = Number.parseInt(storedGuests, 10);
+            console.log('[v0] Cargando huéspedes del localStorage:', guests);
+            form.setValue('guests', guests);
+          }
+
+          toast({
+            title: 'Información cargada',
+            description:
+              'Las fechas y número de huéspedes se han cargado automáticamente.'
+          });
+        } else {
+          console.log(
+            '[v0] No se encontró la flag fromSearch, no se cargan fechas automáticamente'
+          );
+        }
+      } catch (error) {
+        console.error('[v0] Error al cargar datos del localStorage:', error);
+      }
+    };
+
+    loadDatesFromStorage();
+  }, [form, toast]);
+
+  useEffect(() => {
     if (selectedBedroomType) {
       console.log(
         '[v0] Resetting form with bedroomsType:',
         selectedBedroomType
       );
+      const currentArrivalDate = form.getValues('arrivalDate');
+      const currentDepartureDate = form.getValues('departureDate');
+
       form.reset({
         name: '',
         lastName: '',
         guests: undefined,
         rooms: undefined,
         bedroomsType: selectedBedroomType,
-        arrivalDate: '',
-        departureDate: ''
+        arrivalDate: currentArrivalDate,
+        departureDate: currentDepartureDate
       });
     }
   }, [selectedBedroomType, form]);
@@ -110,6 +167,9 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
       if (response.success) {
         toast({ title: 'Reserva realizada', description: response.message });
         form.reset();
+        localStorage.removeItem('selectedDates');
+        localStorage.removeItem('selectedGuests');
+        localStorage.removeItem('fromSearch');
         setShowConflictAlert(false);
         setAvailabilityInfo(null);
         setOriginalFormData(null);

@@ -10,6 +10,7 @@ import prisma from '@/lib/db';
 import { getGalleryImages } from '@/app/actions/upload/get-images-gallery';
 import { AddReservation } from '@/components/bookings/components/addReservation';
 import { generateWhatsappUrl } from '@/components/bedrooms/messages/message-encode';
+import { SelectedDatesDisplay } from '@/components/home/componentsBooksForms/selected-day-display';
 
 interface PageProps {
   params: Promise<{
@@ -113,6 +114,7 @@ export default async function BedroomDetailPage(props: PageProps) {
                           <Image
                             src={
                               getValidImageUrl(image.imageContent) ||
+                              '/placeholder.svg' ||
                               '/placeholder.svg'
                             }
                             alt={`${bedroom.typeBedroom} - Vista ${index + 2}`}
@@ -182,6 +184,8 @@ export default async function BedroomDetailPage(props: PageProps) {
                 </div>
 
                 <Separator />
+
+                <SelectedDatesDisplay />
 
                 <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
                   <div className="w-full sm:w-auto">
