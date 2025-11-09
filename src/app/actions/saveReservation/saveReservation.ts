@@ -222,10 +222,10 @@ export const saveReservation = async (
         message: `Has reservado una habitación tipo ${bedroomsType} del ${arrivalDate.toLocaleDateString()} al ${departureDate.toLocaleDateString()}.`,
         userId: userRecord.id,
         reservationId: newReservation.id,
+        type: 'CREATED' // nuevo campo tipo
       }
     });
 
-    // 🔹 NUEVO: revalidar la página donde se muestran las reservas
     revalidatePath('/dashboard/bookings');
 
     return {
