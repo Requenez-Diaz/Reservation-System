@@ -32,10 +32,13 @@ export function NotificationsTab() {
           reservation: n.reservation
             ? {
               ...n.reservation,
-              arrivalDate: new Date(n.reservation.arrivalDate).toLocaleDateString("es-NI"),
-              departureDate: new Date(n.reservation.departureDate).toLocaleDateString("es-NI"),
+              arrivalDate: n.reservation.arrivalDate,
+              departureDate: n.reservation.departureDate,
+              formattedArrivalDate: new Date(n.reservation.arrivalDate).toLocaleDateString("es-NI"),
+              formattedDepartureDate: new Date(n.reservation.departureDate).toLocaleDateString("es-NI"),
             }
             : null,
+
           createdAt: new Date(n.createdAt).toLocaleString("es-NI", {
             day: "2-digit",
             month: "long",
