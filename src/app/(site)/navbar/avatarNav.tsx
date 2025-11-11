@@ -53,7 +53,7 @@ export default function UserAvatarClient() {
 
   return (
     <Avatar>
-      {userImage ? <AvatarImage src={userImage} alt={userName} /> : null}
+      {userImage ? <AvatarImage alt={userName} src={userImage} /> : null}
 
       <AvatarFallback>
         {isLoading ? (

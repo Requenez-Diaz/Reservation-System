@@ -35,10 +35,13 @@ export async function generateMetadata(props: PageProps) {
 }
 
 const getValidImageUrl = (imageContent: string | null) => {
-  if (!imageContent) return '/placeholder.svg';
+  if (!imageContent) {
+    return '/placeholder.svg';
+  }
 
-  // Si ya es una URL completa, usarla directamente
-  if (imageContent.startsWith('http')) return imageContent;
+  if (imageContent.startsWith('http')) {
+    return imageContent;
+  }
 
   // Extraer solo el nombre del archivo
   const fileName = imageContent.split('/').pop() || '';
@@ -49,13 +52,17 @@ export default async function BedroomDetailPage(props: PageProps) {
   const params = await props.params;
   const bedroomSlug = params.slug;
 
-  if (!bedroomSlug) notFound();
+  if (!bedroomSlug) {
+    notFound();
+  }
 
   const bedroom = await prisma.bedrooms.findUnique({
     where: { slug: bedroomSlug }
   });
 
-  if (!bedroom) notFound();
+  if (!bedroom) {
+    notFound();
+  }
 
   const imagesResult = await getGalleryImages(bedroom.id);
   const galleryImages =
@@ -96,10 +103,10 @@ export default async function BedroomDetailPage(props: PageProps) {
                   {/* Imagen principal */}
                   <div className="relative h-96 overflow-hidden rounded-lg">
                     <Image
-                      src={mainImage || '/placeholder.svg'}
                       alt={`${bedroom.typeBedroom} - Vista principal`}
-                      fill
                       className="object-cover transition-transform duration-300 hover:scale-105"
+                      fill
+                      src={mainImage || '/placeholder.svg'}
                     />
                   </div>
 
@@ -108,18 +115,18 @@ export default async function BedroomDetailPage(props: PageProps) {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {galleryImages.slice(1).map((image, index) => (
                         <div
-                          key={image.id}
                           className="relative h-32 overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500 transition-colors"
+                          key={image.id} // CORREGIDO: key ordenado alfabéticamente (Línea 119)
                         >
                           <Image
+                            alt={`${bedroom.typeBedroom} - Vista ${index + 2}`}
+                            className="object-cover transition-transform duration-300 hover:scale-105"
+                            fill
                             src={
                               getValidImageUrl(image.imageContent) ||
                               '/placeholder.svg' ||
                               '/placeholder.svg'
                             }
-                            alt={`${bedroom.typeBedroom} - Vista ${index + 2}`}
-                            fill
-                            className="object-cover transition-transform duration-300 hover:scale-105"
                           />
                         </div>
                       ))}
@@ -193,14 +200,14 @@ export default async function BedroomDetailPage(props: PageProps) {
                   </div>
 
                   <a
+                    className="w-full sm:w-auto"
                     href={generateWhatsappUrl(
                       bedroom.typeBedroom,
                       bedroom.numberBedroom,
                       bedroom.lowSeasonPrice
                     )}
-                    target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto"
+                    target="_blank"
                   >
                     <Button className="w-full bg-green-500 hover:bg-green-600 flex items-center justify-center">
                       <Phone className="w-4 h-4 mr-2" />
