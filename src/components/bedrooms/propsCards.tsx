@@ -99,7 +99,7 @@ export default function PropsCards({
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <span className="text-2xl font-bold text-gray-900">
-                ${lowSeasonPrice}
+                C$ {lowSeasonPrice}
               </span>
               <span className="text-sm text-gray-500">/noche</span>
             </div>
