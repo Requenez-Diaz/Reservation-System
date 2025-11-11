@@ -113,12 +113,12 @@ export async function requestPasswordReset(email: string) {
         success: true,
         message: 'Te hemos enviado un enlace de recuperación a tu correo.'
       };
-    } else {
-      return {
-        success: false,
-        message: 'Hubo un error al enviar el email. Intenta de nuevo más tarde.'
-      };
     }
+
+    return {
+      success: false,
+      message: 'Hubo un error al enviar el email. Intenta de nuevo más tarde.'
+    };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {

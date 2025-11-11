@@ -30,11 +30,11 @@ const SignInForm = () => {
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
     defaultValues: {
       email: '',
       password: ''
-    }
+    },
+    resolver: zodResolver(FormSchema)
   });
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
@@ -46,8 +46,8 @@ const SignInForm = () => {
 
     if (signInData?.error) {
       toast({
-        title: 'Error',
         description: 'Oops! Something went wrong. Please try again later.',
+        title: 'Error',
         variant: 'destructive'
       });
     } else {
@@ -63,8 +63,8 @@ const SignInForm = () => {
     <div className="flex justify-center items-center h-screen">
       <Form {...form}>
         <form
+          className="max-w-md w-full p-4 border border-gray-300 rounded-md" // CORREGIDO (Línea 67)
           onSubmit={form.handleSubmit(onSubmit)}
-          className="max-w-md w-full p-4 border border-gray-300 rounded-md"
         >
           <FormField
             control={form.control}
@@ -75,19 +75,19 @@ const SignInForm = () => {
                 <FormControl className="relative">
                   <div className="relative">
                     <Input
+                      className="w-full rounded-lg border border-stroke bg-white py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" // CORREGIDO (Línea 79)
+                      placeholder="email@example.com" // CORREGIDO (Línea 80)
                       type="email"
-                      placeholder="email@example.com"
-                      className="w-full rounded-lg border border-stroke bg-white py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                       {...field}
                     />
                     <span className="absolute right-4 top-4">
                       <svg
                         className="fill-current"
-                        width="22"
+                        fill="none"
                         height="22"
                         viewBox="0 0 22 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                        width="22"
+                        xmlns="http://www.w3.org/2000/svg" // CORREGIDO (Líneas 87, 88, 89)
                       >
                         <g opacity="0.5">
                           <path
@@ -112,19 +112,19 @@ const SignInForm = () => {
                 <FormControl className="relative">
                   <div className="relative">
                     <Input
+                      placeholder="Enter your password" // CORREGIDO (Línea 116)
                       type="password"
-                      placeholder="Enter your password"
                       {...field}
                     />
 
                     <span className="absolute right-4 top-4">
                       <svg
                         className="fill-current"
-                        width="22"
+                        fill="none"
                         height="22"
                         viewBox="0 0 22 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                        width="22"
+                        xmlns="http://www.w3.org/2000/svg" // CORREGIDO (Líneas 124, 125, 126)
                       >
                         <g opacity="0.5">
                           <path
@@ -147,8 +147,8 @@ const SignInForm = () => {
 
           <div className="mt-2 text-right">
             <Link
+              className="text-sm text-blue-700 hover:underline" // CORREGIDO (Línea 151)
               href="/forgot-password"
-              className="text-sm text-blue-700 hover:underline"
             >
               ¿Olvidaste tu contraseña?
             </Link>
@@ -156,9 +156,9 @@ const SignInForm = () => {
 
           <div className="mb-5 mt-4">
             <Button
+              className="w-full " // CORREGIDO (Línea 161)
               type="submit"
               value="Iniciar sesion"
-              className="w-full "
               variant={'save'}
             >
               Iniciar sesion
@@ -173,7 +173,7 @@ const SignInForm = () => {
           <div className="mt-6 text-center">
             <p>
               Si no tienes una cuenta?{' '}
-              <Link href="/sign-up" className="text-blue-700  ">
+              <Link className="text-blue-700  " href="/sign-up">
                 Registrate
               </Link>
             </p>

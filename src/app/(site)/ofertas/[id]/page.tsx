@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, MapPin, Percent, Tag, Clock } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Tag, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { getPromotion } from '@/app/actions/getOfferts/get-offerts';
 import { ReserveRoomDialog } from '@/components/offers/components/reserv-form-dialog';
@@ -55,7 +55,7 @@ export default async function PromotionPage(props: PromotionPageProps) {
     <div className="container mx-auto py-8 space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/ofertas">
-          <Button variant="outline" size="sm">
+          <Button size="sm" variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver a ofertas
           </Button>
@@ -129,7 +129,7 @@ export default async function PromotionPage(props: PromotionPageProps) {
                   {bedroom.typeBedroom} - {bedroom.description}, Habitación #
                   {bedroom.numberBedroom}
                 </h3>
-                <Badge variant="success" className="text-xs">
+                <Badge className="text-xs" variant="success">
                   ID: {bedroom.id}
                 </Badge>
               </div>
@@ -161,7 +161,6 @@ export default async function PromotionPage(props: PromotionPageProps) {
             </div>
 
             <ReserveRoomDialog
-              promotionId={promotion.id}
               bedroom={{
                 id: bedroom.id,
                 name: bedroom.typeBedroom,
@@ -170,8 +169,9 @@ export default async function PromotionPage(props: PromotionPageProps) {
                 typeBedroom: bedroom.typeBedroom
               }}
               pricePerNight={finalPrice}
-              promotionDateStart={promotion.dateStart}
               promotionDateEnd={promotion.dateEnd}
+              promotionDateStart={promotion.dateStart}
+              promotionId={promotion.id}
             />
           </CardContent>
         </Card>

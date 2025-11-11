@@ -1,6 +1,8 @@
-'use server'
+'use server';
 
-import prisma from '@/lib/db'
-
-
-export const getAllBedroomsByType = async (type: string, dateStart?: Date, dateEnd?: Date, guest?: string) => {}
+export const getAllBedroomsByType = async (
+  _type: string,
+  _dateStart?: Date,
+  _dateEnd?: Date,
+  _guest?: string
+) => {};
