@@ -41,14 +41,14 @@ export function ProfileNavigation({
     _tab: SettingsTab;
     icon: React.ReactNode;
     label: string;
-  }> = ({ _tab: tab, icon, label }) => (
+  }> = ({ _tab, icon, label }) => (
     <button
       className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${
-        activeTab === tab
+        activeTab === _tab // Usamos _tab
           ? `${activeBg} font-semibold ${textActive} shadow-sm`
           : `${textMuted}`
       }`}
-      onClick={() => onTabChange(tab)}
+      onClick={() => onTabChange(_tab)} // Usamos _tab
       type="button"
     >
       {icon}
@@ -67,40 +67,40 @@ export function ProfileNavigation({
 
       <nav className="flex flex-col gap-1 p-3 rounded-xl bg-white shadow-md">
         <NavLink
+          _tab="general" // CORREGIDO (Línea 72)
           icon={<User className="h-5 w-5" />}
           label="General"
-          _tab="general"
         />
         <NavLink
+          _tab="avatar" // CORREGIDO (Línea 77)
           icon={<ImageIcon className="h-5 w-5" />}
           label="Foto de Perfil"
-          _tab="avatar"
         />
         <NavLink
+          _tab="security" // CORREGIDO (Línea 82)
           icon={<KeyRound className="h-5 w-5" />}
           label="Seguridad"
-          _tab="security"
         />
         <NavLink
+          _tab="notifications" // CORREGIDO (Línea 87)
           icon={<Bell className="h-5 w-5" />}
           label="Notificaciones"
-          _tab="notifications"
         />
         <NavLink
+          _tab="preferences" // CORREGIDO (Línea 92)
           icon={<Palette className="h-5 w-5" />}
           label="Preferencias"
-          _tab="preferences"
         />
         <NavLink
+          _tab="support" // CORREGIDO (Línea 97)
           icon={<HelpCircle className="h-5 w-5" />}
           label="Soporte"
-          _tab="support"
         />
 
         <Separator className="my-2 bg-gray-200" />
 
         <Button
-          className="justify-start text-gray-600 hover:text-white hover:bg-red-500/90 rounded-lg transition-colors duration-200" // CORREGIDO (Línea 89)
+          className="justify-start text-gray-600 hover:text-white hover:bg-red-500/90 rounded-lg transition-colors duration-200"
           onClick={() => signOut()}
           variant="ghost"
         >
