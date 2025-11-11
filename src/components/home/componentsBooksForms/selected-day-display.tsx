@@ -19,15 +19,14 @@ export function SelectedDatesDisplay() {
     if (searchFlag === 'true') {
       setFromSearch(true);
 
-      // Leer las fechas guardadas del localStorage
       const savedDates = localStorage.getItem('selectedDates');
       if (savedDates) {
         try {
           const { from, to } = JSON.parse(savedDates);
-          if (from && to) {
+          if (from) {
             setDateRange({
               from: new Date(from),
-              to: new Date(to)
+              to: to ? new Date(to) : new Date(from)
             });
           }
         } catch (error) {
@@ -39,8 +38,6 @@ export function SelectedDatesDisplay() {
       if (savedGuests) {
         setGuests(Number.parseInt(savedGuests, 10));
       }
-
-      localStorage.removeItem('fromSearch');
     }
   }, []);
 
@@ -62,7 +59,7 @@ export function SelectedDatesDisplay() {
               {' - '}
               {format(dateRange.to, "d 'de' MMMM, yyyy", { locale: es })}
             </div>
-            {guests && (
+            {guests !== null && guests >= 1 && (
               <div className="flex items-center gap-2 mt-2 text-blue-700">
                 <Users className="h-4 w-4" />
                 <span>

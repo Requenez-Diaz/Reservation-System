@@ -76,10 +76,12 @@ export default function FormFields({
               <FormControl>
                 <Input
                   {...field}
+                  value={field.value ?? ''}
                   type="number"
                   min="1"
                   placeholder="Número de huéspedes"
                   disabled={isSubmitting}
+                  // Convierte el valor a número para react-hook-form
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
@@ -96,10 +98,12 @@ export default function FormFields({
               <FormControl>
                 <Input
                   {...field}
+                  value={field.value ?? ''}
                   type="number"
                   min="1"
                   placeholder="Cantidad de habitaciones"
                   disabled={isSubmitting}
+                  // Convierte el valor a número para react-hook-form
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
