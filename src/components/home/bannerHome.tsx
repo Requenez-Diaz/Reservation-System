@@ -53,7 +53,9 @@ export function BannerHome() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying) {
+      return;
+    }
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -89,9 +91,9 @@ export function BannerHome() {
           {/* Background Image with Overlay */}
           <div className="absolute inset-0">
             <img
-              src={slide.bgImage || '/placeholder.svg'}
               alt={slide.title}
               className="w-full h-full object-cover"
+              src={slide.bgImage || '/placeholder.svg'}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/60" />
           </div>
@@ -154,8 +156,8 @@ export function BannerHome() {
 
                       <div className="flex flex-col sm:flex-row gap-4">
                         <a
+                          className="flex items-center gap-3 bg-accent hover:bg-accent/90 text-accent-foreground px-6 py-4 rounded-lg transition-colors" // Línea 158 corregida
                           href="tel:084383204"
-                          className="flex items-center gap-3 bg-accent hover:bg-accent/90 text-accent-foreground px-6 py-4 rounded-lg transition-colors"
                         >
                           <Phone className="w-5 h-5" />
                           <span className="text-lg font-semibold">
@@ -164,8 +166,8 @@ export function BannerHome() {
                         </a>
 
                         <a
+                          className="flex items-center gap-3 bg-accent hover:bg-accent/90 text-accent-foreground px-6 py-4 rounded-lg transition-colors" // Línea 168 corregida
                           href="tel:086477819"
-                          className="flex items-center gap-3 bg-accent hover:bg-accent/90 text-accent-foreground px-6 py-4 rounded-lg transition-colors"
                         >
                           <Phone className="w-5 h-5" />
                           <span className="text-lg font-semibold">
@@ -184,17 +186,17 @@ export function BannerHome() {
 
       {/* Navigation Arrows */}
       <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground p-3 rounded-full transition-colors z-10"
         aria-label="Previous slide"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground p-3 rounded-full transition-colors z-10"
+        onClick={prevSlide}
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
 
       <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground p-3 rounded-full transition-colors z-10"
         aria-label="Next slide"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground p-3 rounded-full transition-colors z-10"
+        onClick={nextSlide}
       >
         <ChevronRight className="w-6 h-6" />
       </button>
@@ -203,14 +205,14 @@ export function BannerHome() {
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
         {slides.map((_, index) => (
           <button
-            key={index}
-            onClick={() => goToSlide(index)}
+            aria-label={`Go to slide ${index + 1}`}
             className={`transition-all ${
               index === currentSlide
                 ? 'w-12 h-3 bg-accent'
                 : 'w-3 h-3 bg-primary-foreground/40 hover:bg-primary-foreground/60'
             } rounded-full`}
-            aria-label={`Go to slide ${index + 1}`}
+            key={index}
+            onClick={() => goToSlide(index)}
           />
         ))}
       </div>
@@ -218,11 +220,11 @@ export function BannerHome() {
       {/* Hotel Logo/Name */}
       <div className="absolute top-8 left-4 md:left-8 z-10">
         <Image
-          src="/hotel madroño.png"
           alt="Hotel Madroño"
-          width={150}
-          height={50}
           className="object-contain"
+          height={50}
+          src="/hotel madroño.png"
+          width={150}
         />
       </div>
     </div>
