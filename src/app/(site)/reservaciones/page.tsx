@@ -8,32 +8,32 @@ const Bookings = () => {
       <Head>
         <title>Reservas - Mi Sitio Web</title>
         <meta
+          content="Gestiona tus reservas y encuentra disponibilidad en tiempo real."
           name="description"
-          content="Gestiona tus reservas y encuentra disponibilidad en tiempo real."
         />
         <meta
-          name="keywords"
           content="reservas, hotel, disponibilidad, gestión, tiempo real"
+          name="keywords"
         />
-        <meta property="og:title" content="Reservas - Mi Sitio Web" />
+        <meta content="Reservas - Mi Sitio Web" property="og:title" />
         <meta
+          content="Gestiona tus reservas y encuentra disponibilidad en tiempo real."
           property="og:description"
-          content="Gestiona tus reservas y encuentra disponibilidad en tiempo real."
         />
         <meta
-          property="og:image"
           content="https://www.misito.com/imagen-og.jpg"
+          property="og:image"
         />
-        <meta property="og:url" content="https://www.misito.com/bookings" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Reservas - Mi Sitio Web" />
+        <meta content="https://www.misito.com/bookings" property="og:url" />
+        <meta content="summary_large_image" name="twitter:card" />
+        <meta content="Reservas - Mi Sitio Web" name="twitter:title" />
         <meta
-          name="twitter:description"
           content="Gestiona tus reservas y encuentra disponibilidad en tiempo real."
+          name="twitter:description"
         />
         <meta
-          name="twitter:image"
           content="https://www.misito.com/imagen-twitter.jpg"
+          name="twitter:image"
         />
       </Head>
       <ReservationsPage />

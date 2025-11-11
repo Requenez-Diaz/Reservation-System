@@ -17,11 +17,11 @@ const navItems = [
   { path: '/reservaciones', text: 'Reservaciones' }
 ];
 
-interface NavbarTwoPass {
+interface NavbarTwoPassProps {
   session: Session | null;
 }
 
-export default function NavbarTwoPass({ session }: NavbarTwoPass) {
+export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -29,10 +29,10 @@ export default function NavbarTwoPass({ session }: NavbarTwoPass) {
       <div className="container mx-auto flex justify-between items-center">
         <Link href="https://www.facebook.com/hotelito.madrono">
           <Image
+            alt="Hotel Madroño" // CORREGIDO (Línea 33)
+            height={55} // CORREGIDO (Línea 35)
             src="/hotel madroño.png"
-            alt="Hotel Madroño"
             width={55}
-            height={55}
           />
         </Link>
 

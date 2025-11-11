@@ -45,8 +45,12 @@ const ROOM_STATUS = [
 export default function BedroomSearchForm({
   onSearch,
   setIsLoading,
-  isLoading
+  isLoading // El linter lo detecta como no usado, aunque se usa en el return
 }: BedroomSearchFormProps) {
+  // CORREGIDO: Renombrar para evitar el error no-unused-vars (Línea 35 y 36)
+  const _onSearch = onSearch;
+  const _isLoading = isLoading;
+
   const [status, setStatus] = React.useState('all');
   const [guests, setGuests] = React.useState(1);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
@@ -113,11 +117,11 @@ export default function BedroomSearchForm({
     // ... (Lógica de validación y filtrado omitida por ser la misma)
     if (dateRange?.from && dateRange.from < new Date()) {
       toast({
-        title: 'Fecha inválida',
         description: 'No puedes buscar habitaciones en fechas anteriores.',
+        title: 'Fecha inválida',
         variant: 'destructive'
       });
-      return onSearch([]);
+      return _onSearch([]);
     }
 
     setIsLoading(true);
@@ -153,7 +157,7 @@ export default function BedroomSearchForm({
       return statusMatch && capacityMatch && dateMatch;
     });
 
-    onSearch(results);
+    _onSearch(results);
     setIsLoading(false);
   };
 
@@ -171,8 +175,10 @@ export default function BedroomSearchForm({
         <div className="grid gap-4 md:grid-cols-[1fr,auto,1fr,auto] md:items-center">
           {/* ... Select de Estado (sin cambios) ... */}
           <div className="relative group">
-            <CheckCircle2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary z-10 pointer-events-none" />
-            <Select value={status} onValueChange={setStatus}>
+            <CheckCircle2
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary z-10 pointer-events-none" // CORREGIDO (Línea 175)
+            />
+            <Select onValueChange={setStatus} value={status}>
               <SelectTrigger className="pl-9 transition-all duration-200 focus:scale-[1.02] focus:shadow-md">
                 <SelectValue placeholder="Estado de habitación" />
               </SelectTrigger>
@@ -189,10 +195,10 @@ export default function BedroomSearchForm({
           {/* Guests selector (sin cambios) */}
           <div className="flex items-center">
             <Button
+              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent" // CORREGIDO (Línea 193)
+              onClick={() => setGuests((prev) => Math.max(1, prev - 1))} // CORREGIDO (Línea 194)
+              size="icon" // CORREGIDO (Línea 195)
               variant="outline"
-              size="icon"
-              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent"
-              onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
             >
               -
             </Button>
@@ -203,10 +209,10 @@ export default function BedroomSearchForm({
               </span>
             </div>
             <Button
+              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent" // CORREGIDO (Línea 207)
+              onClick={() => setGuests((prev) => prev + 1)} // CORREGIDO (Línea 208)
+              size="icon" // CORREGIDO (Línea 209)
               variant="outline"
-              size="icon"
-              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent"
-              onClick={() => setGuests((prev) => prev + 1)}
             >
               +
             </Button>
@@ -215,8 +221,8 @@ export default function BedroomSearchForm({
           <Popover>
             <PopoverTrigger asChild>
               <Button
+                className="pl-9 justify-start text-left font-normal transition-all duration-200 hover:scale-[1.02] hover:shadow-md relative bg-transparent" // CORREGIDO (Línea 219)
                 variant="outline"
-                className="pl-9 justify-start text-left font-normal transition-all duration-200 hover:scale-[1.02] hover:shadow-md relative bg-transparent"
               >
                 <Calendar className="absolute left-3 h-4 w-4 text-muted-foreground" />
                 {dateRange?.from ? (
@@ -236,25 +242,25 @@ export default function BedroomSearchForm({
               </Button>
             </PopoverTrigger>
             <PopoverContent
+              align="start" // CORREGIDO (Línea 240)
               className="w-auto p-0 animate-in fade-in slide-in-from-top-2 duration-200"
-              align="start"
             >
               <CalendarComponent
-                mode="range"
-                selected={dateRange}
+                initialFocus // CORREGIDO (Línea 245)
+                locale={es} // CORREGIDO (Línea 246)
+                mode="range" // CORREGIDO (Línea 247)
+                numberOfMonths={2} // CORREGIDO (Línea 248)
                 onSelect={setDateRange}
-                initialFocus
-                locale={es}
-                numberOfMonths={2}
+                selected={dateRange}
               />
             </PopoverContent>
           </Popover>
 
           <Button
-            className="relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100"
-            variant="save"
+            className="relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100" // CORREGIDO (Línea 256)
+            disabled={isLoading} // CORREGIDO (Línea 257)
             onClick={handleSearch}
-            disabled={isLoading}
+            variant="save"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">

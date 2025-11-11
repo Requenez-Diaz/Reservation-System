@@ -1,9 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+'use client';
+
 import { useSession } from 'next-auth/react';
 import { MenuDrop } from '../menuProfile';
 
 export default function AvatarNavigations() {
-  const { data: session } = useSession();
+  const { data: _session } = useSession();
 
   return (
     <div className="relative group">

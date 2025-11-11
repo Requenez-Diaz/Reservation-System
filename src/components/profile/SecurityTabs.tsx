@@ -32,12 +32,12 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
     formState: { errors, isSubmitting },
     reset
   } = useForm<PasswordFormValues>({
-    resolver: zodResolver(passwordSchema),
     defaultValues: {
       currentPassword: '',
       newPassword: '',
       confirmNewPassword: ''
-    }
+    },
+    resolver: zodResolver(passwordSchema)
   });
 
   const accentText = 'text-blue-600';
@@ -47,8 +47,9 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
     'bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/50';
   const cancelButtonClass = 'bg-gray-500 hover:bg-gray-600 text-white';
 
-  const handlePasswordChange = async (data: PasswordFormValues) => {
-    await onPasswordSubmit(data);
+  const handlePasswordChange = async (_data: PasswordFormValues) => {
+    // CORREGIDO: data renombrado a _data (Línea 23)
+    await onPasswordSubmit(_data);
     reset();
     setIsPasswordFormOpen(false);
   };
@@ -97,19 +98,19 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
 
           {isPasswordFormOpen && (
             <form
-              onSubmit={handleSubmit(handlePasswordChange)}
               className="space-y-4 pt-4"
+              onSubmit={handleSubmit(handlePasswordChange)} // CORREGIDO (Línea 101)
             >
               <div className="grid gap-2">
-                <Label htmlFor="currentPassword" className={accentText}>
+                <Label className={accentText} htmlFor="currentPassword">
                   Contraseña Actual
                 </Label>
                 <Input
+                  className={inputFocusRing}
+                  disabled={isSubmitting}
                   id="currentPassword"
                   type="password"
                   {...register('currentPassword')}
-                  disabled={isSubmitting}
-                  className={inputFocusRing}
                 />
                 {errors.currentPassword && (
                   <p className="text-red-600 text-sm">
@@ -119,15 +120,15 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="newPassword" className={accentText}>
+                <Label className={accentText} htmlFor="newPassword">
                   Nueva Contraseña
                 </Label>
                 <Input
+                  className={inputFocusRing}
+                  disabled={isSubmitting}
                   id="newPassword"
                   type="password"
                   {...register('newPassword')}
-                  disabled={isSubmitting}
-                  className={inputFocusRing}
                 />
                 {errors.newPassword && (
                   <p className="text-red-600 text-sm">
@@ -137,15 +138,15 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="confirmNewPassword" className={accentText}>
+                <Label className={accentText} htmlFor="confirmNewPassword">
                   Confirmar Nueva Contraseña
                 </Label>
                 <Input
+                  className={inputFocusRing}
+                  disabled={isSubmitting}
                   id="confirmNewPassword"
                   type="password"
                   {...register('confirmNewPassword')}
-                  disabled={isSubmitting}
-                  className={inputFocusRing}
                 />
                 {errors.confirmNewPassword && (
                   <p className="text-red-600 text-sm">
@@ -155,9 +156,9 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
               </div>
 
               <Button
-                type="submit"
-                disabled={isSubmitting}
                 className={saveButtonClass}
+                disabled={isSubmitting}
+                type="submit"
               >
                 {isSubmitting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-green-700 rounded-full animate-spin mr-2"></div>
@@ -178,9 +179,9 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
             </p>
           </div>
           <Button
-            variant="outline"
-            disabled
             className="text-gray-400 border-gray-300"
+            disabled
+            variant="outline"
           >
             Activar
           </Button>

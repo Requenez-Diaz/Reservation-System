@@ -19,7 +19,7 @@ import Image from 'next/image';
 import { useToast } from '../ui/use-toast';
 import { saveUsers } from '@/app/actions/users/saveUsers';
 import { signIn } from 'next-auth/react';
-import { Mail, UserIcon, Eye, Lock, EyeOff, KeyRound } from 'lucide-react';
+import { Mail, UserIcon, Eye, EyeOff, KeyRound } from 'lucide-react'; // 'Lock' eliminado (Línea 22)
 import { useState } from 'react';
 
 const FormSchema = z
@@ -48,13 +48,13 @@ const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
     defaultValues: {
       username: '',
       email: '',
       password: '',
       confirmPassword: ''
-    }
+    },
+    resolver: zodResolver(FormSchema)
   });
 
   const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
@@ -69,38 +69,39 @@ const SignUpForm = () => {
 
       if (user) {
         const signInResult = await signIn('credentials', {
-          redirect: false,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          redirect: false
         });
 
         if (signInResult?.error) {
           toast({
-            title: 'Error de autenticación',
             description:
               'No se pudo iniciar sesión automáticamente. Por favor, inténtelo manualmente.',
+            title: 'Error de autenticación',
             variant: 'destructive'
           });
         } else {
           toast({
-            title: 'Usuario registrado con éxito',
             description: 'Será redirigido al panel de control.',
+            title: 'Usuario registrado con éxito',
             variant: 'default'
           });
           router.push('/');
         }
       }
-    } catch (error: any) {
-      if (error.message === 'Email already exists') {
+    } catch (error: unknown) {
+      // CORREGIDO: Usar unknown en lugar de any
+      if (error instanceof Error && error.message === 'Email already exists') {
         toast({
-          title: 'Error de registro',
           description: 'Este correo electrónico ya está registrado.',
+          title: 'Error de registro',
           variant: 'destructive'
         });
       } else {
         toast({
-          title: 'Error de registro',
           description: 'Ocurrió un error inesperado al registrar el usuario.',
+          title: 'Error de registro',
           variant: 'destructive'
         });
       }
@@ -111,15 +112,15 @@ const SignUpForm = () => {
     <div className="flex justify-center items-center h-screen">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
           className="max-w-md w-full p-4 border border-gray-300 rounded-md"
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="flex items-center justify-center content-center top-2">
             <Image
-              src={'/hotel madroño.png'}
+              alt="image" // CORREGIDO (Línea 115)
               height={120}
+              src={'/hotel madroño.png'}
               width={120}
-              alt="image"
             />
           </div>
 
@@ -132,13 +133,13 @@ const SignUpForm = () => {
                 <FormControl>
                   <div className="relative flex items-center">
                     <Input
+                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" // CORREGIDO (Línea 120)
                       placeholder="Ingrese su nombre de usuario"
                       {...field}
-                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
                     <UserIcon
                       className="absolute right-4 text-gray-500"
-                      size={20}
+                      size={20} // CORREGIDO (Línea 122)
                     />
                   </div>
                 </FormControl>
@@ -156,9 +157,9 @@ const SignUpForm = () => {
                 <FormControl>
                   <div className="relative flex items-center">
                     <Input
+                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                       placeholder="Ingrese su correo electrónico"
                       {...field}
-                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
                     <Mail
                       className="absolute right-4 text-gray-500"
@@ -180,15 +181,15 @@ const SignUpForm = () => {
                 <FormControl>
                   <div className="relative flex items-center">
                     <Input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Ingrese su contraseña"
-                      {...field}
                       className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      placeholder="Ingrese su contraseña"
+                      type={showPassword ? 'text' : 'password'}
+                      {...field}
                     />
                     <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 text-gray-500"
+                      onClick={() => setShowPassword(!showPassword)}
+                      type="button"
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -208,10 +209,10 @@ const SignUpForm = () => {
                 <FormControl>
                   <div className="relative flex items-center">
                     <Input
+                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" // CORREGIDO (Línea 228)
                       placeholder="Repite tu contraseña"
                       type={showPassword ? 'text' : 'password'}
                       {...field}
-                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
                     <KeyRound
                       className="absolute right-4 text-gray-500"
@@ -225,7 +226,7 @@ const SignUpForm = () => {
           />
 
           <div className="mb-5 mt-4">
-            <Button type="submit" className="w-full" variant="save">
+            <Button className="w-full" type="submit" variant="save">
               Registrarse
             </Button>
           </div>
@@ -239,7 +240,7 @@ const SignUpForm = () => {
           <div className="mt-6 text-center">
             <p>
               ¿Ya tienes una cuenta?{' '}
-              <Link href="/sign-in" className="text-blue-400">
+              <Link className="text-blue-400" href="/sign-in">
                 Inicia sesión
               </Link>
             </p>
