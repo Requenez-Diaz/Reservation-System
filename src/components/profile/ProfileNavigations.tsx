@@ -1,12 +1,26 @@
 'use client';
 
 import type React from 'react';
-import { User, KeyRound, Bell, LogOut, ImageIcon, Palette, HelpCircle } from 'lucide-react';
+import {
+  User,
+  KeyRound,
+  Bell,
+  LogOut,
+  ImageIcon,
+  Palette,
+  HelpCircle
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { signOut } from 'next-auth/react';
 
-export type SettingsTab = 'general' | 'security' | 'avatar' | 'notifications' | 'preferences' | 'support';
+export type SettingsTab =
+  | 'general'
+  | 'security'
+  | 'avatar'
+  | 'notifications'
+  | 'preferences'
+  | 'support';
 
 interface ProfileNavigationProps {
   activeTab: SettingsTab;
@@ -24,17 +38,18 @@ export function ProfileNavigation({
   const textActive = 'text-blue-800';
 
   const NavLink: React.FC<{
-    tab: SettingsTab;
+    _tab: SettingsTab;
     icon: React.ReactNode;
     label: string;
-  }> = ({ tab, icon, label }) => (
+  }> = ({ _tab: tab, icon, label }) => (
     <button
-      type="button"
-      className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${activeTab === tab
-        ? `${activeBg} font-semibold ${textActive} shadow-sm`
-        : `${textMuted}`
-        }`}
+      className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${
+        activeTab === tab
+          ? `${activeBg} font-semibold ${textActive} shadow-sm`
+          : `${textMuted}`
+      }`}
       onClick={() => onTabChange(tab)}
+      type="button"
     >
       {icon}
       {label}
@@ -52,42 +67,42 @@ export function ProfileNavigation({
 
       <nav className="flex flex-col gap-1 p-3 rounded-xl bg-white shadow-md">
         <NavLink
-          tab="general"
           icon={<User className="h-5 w-5" />}
           label="General"
+          _tab="general"
         />
         <NavLink
-          tab="avatar"
           icon={<ImageIcon className="h-5 w-5" />}
           label="Foto de Perfil"
+          _tab="avatar"
         />
         <NavLink
-          tab="security"
           icon={<KeyRound className="h-5 w-5" />}
           label="Seguridad"
+          _tab="security"
         />
         <NavLink
-          tab="notifications"
           icon={<Bell className="h-5 w-5" />}
           label="Notificaciones"
+          _tab="notifications"
         />
         <NavLink
-          tab="preferences"
           icon={<Palette className="h-5 w-5" />}
           label="Preferencias"
+          _tab="preferences"
         />
         <NavLink
-          tab="support"
           icon={<HelpCircle className="h-5 w-5" />}
           label="Soporte"
+          _tab="support"
         />
 
         <Separator className="my-2 bg-gray-200" />
 
         <Button
-          variant="ghost"
-          className="justify-start text-gray-600 hover:text-white hover:bg-red-500/90 rounded-lg transition-colors duration-200"
+          className="justify-start text-gray-600 hover:text-white hover:bg-red-500/90 rounded-lg transition-colors duration-200" // CORREGIDO (Línea 89)
           onClick={() => signOut()}
+          variant="ghost"
         >
           <LogOut className="h-5 w-5 mr-3" />
           Cerrar Sesión

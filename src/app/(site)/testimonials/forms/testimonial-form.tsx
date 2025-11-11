@@ -1,5 +1,3 @@
-// components/forms/create-testimonial-form.tsx
-
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
@@ -8,13 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 
 import {
   AlertDialog,
@@ -24,8 +15,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 
 import { useToast } from '@/components/ui/use-toast';
@@ -66,7 +56,7 @@ export function CreateTestimonialForm({
   const [_bedrooms, setBedrooms] = useState<Bedroom[]>([]);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [_selectedRoom, setSelectedRoom] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState('');
   const { toast } = useToast();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [formDataState, setFormDataState] = useState<FormData | null>(null);
@@ -94,16 +84,16 @@ export function CreateTestimonialForm({
           setCurrentUser(userResult.user);
         } else {
           toast({
-            title: 'Error de autenticación',
             description: 'Debes iniciar sesión para crear un testimonial',
+            title: 'Error de autenticación',
             variant: 'destructive'
           });
         }
       } catch (error) {
         console.error('Error loading initial data:', error);
         toast({
-          title: 'Error',
           description: 'Error al cargar los datos del formulario',
+          title: 'Error',
           variant: 'destructive'
         });
       } finally {
@@ -124,7 +114,9 @@ export function CreateTestimonialForm({
   };
 
   const handleSubmit = async () => {
-    if (!formDataState) return;
+    if (!formDataState) {
+      return;
+    }
 
     startTransition(async () => {
       try {
@@ -132,9 +124,9 @@ export function CreateTestimonialForm({
 
         if (result.success) {
           toast({
-            title: '¡Testimonial enviado!',
             description:
-              'Tu experiencia está siendo revisada y se publicará pronto.'
+              'Tu experiencia está siendo revisada y se publicará pronto.',
+            title: '¡Testimonial enviado!'
           });
 
           const form = document.getElementById(
@@ -147,16 +139,16 @@ export function CreateTestimonialForm({
           onSuccess?.();
         } else {
           toast({
-            title: 'Error al crear testimonial',
             description: result.error,
+            title: 'Error al crear testimonial',
             variant: 'destructive'
           });
         }
       } catch (error) {
         console.error('Error in form submission:', error);
         toast({
-          title: 'Error inesperado',
           description: 'Ocurrió un error al procesar tu solicitud',
+          title: 'Error inesperado',
           variant: 'destructive'
         });
       } finally {
@@ -222,36 +214,36 @@ export function CreateTestimonialForm({
 
         <CardContent className="pt-0">
           <form
+            className="space-y-6"
             id="create-testimonial-form"
             onSubmit={handlePreSubmit}
-            className="space-y-6"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium">
+                <Label className="text-sm font-medium" htmlFor="name">
                   Nombre completo
                 </Label>
                 <Input
+                  className="transition-colors"
+                  defaultValue={currentUser.name || currentUser.username || ''}
+                  disabled={isPending}
                   id="name"
                   name="name"
-                  defaultValue={currentUser.name || currentUser.username || ''}
                   required
-                  disabled={isPending}
-                  className="transition-colors"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location" className="text-sm font-medium">
+                <Label className="text-sm font-medium" htmlFor="location">
                   <MapPin className="inline h-4 w-4 mr-1" />
                   Ubicación
                 </Label>
                 <Input
+                  className="transition-colors"
+                  disabled={isPending}
                   id="location"
                   name="location"
                   placeholder="Ciudad, País"
                   required
-                  disabled={isPending}
-                  className="transition-colors"
                 />
               </div>
             </div>
@@ -262,27 +254,27 @@ export function CreateTestimonialForm({
               </Label>
               <div className="flex items-center space-x-2">
                 <RatingStars
-                  rating={rating}
                   interactive={true}
-                  size="md"
                   onRatingChange={setRating}
+                  rating={rating}
+                  size="md"
                 />
                 <span className="text-sm text-gray-600 ml-2">({rating}/5)</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="comment" className="text-sm font-medium">
+              <Label className="text-sm font-medium" htmlFor="comment">
                 Tu experiencia
               </Label>
               <Textarea
+                className="transition-colors resize-none"
+                disabled={isPending}
                 id="comment"
                 name="comment"
                 placeholder="Cuéntanos sobre tu estancia: ¿qué te gustó más? ¿Recomendarías este lugar?"
-                rows={4}
                 required
-                disabled={isPending}
-                className="transition-colors resize-none"
+                rows={4}
               />
               <p className="text-xs text-gray-500">
                 Comparte detalles específicos que puedan ayudar a otros
@@ -291,9 +283,9 @@ export function CreateTestimonialForm({
             </div>
 
             <Button
-              type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
               disabled={isPending}
+              type="submit"
             >
               {isPending ? (
                 <>
@@ -319,15 +311,15 @@ export function CreateTestimonialForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              disabled={isPending}
               className="bg-red-500 text-white *:hover:bg-red-600 transition-colors"
+              disabled={isPending}
             >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleSubmit}
-              disabled={isPending}
               className="bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              disabled={isPending}
+              onClick={handleSubmit}
             >
               {isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

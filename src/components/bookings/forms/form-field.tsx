@@ -25,6 +25,8 @@ export default function FormFields({
   isSubmitting,
   selectedBedroomType
 }: FormFieldsProps) {
+  const _selectedBedroomType = selectedBedroomType;
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
@@ -37,9 +39,9 @@ export default function FormFields({
               <FormControl>
                 <Input
                   {...field}
-                  type="text"
-                  placeholder="Escribe tu nombre"
                   disabled={isSubmitting}
+                  placeholder="Escribe tu nombre"
+                  type="text"
                 />
               </FormControl>
               <FormMessage />
@@ -55,9 +57,9 @@ export default function FormFields({
               <FormControl>
                 <Input
                   {...field}
-                  type="text"
-                  placeholder="Escribe tu apellido"
                   disabled={isSubmitting}
+                  placeholder="Escribe tu apellido"
+                  type="text"
                 />
               </FormControl>
               <FormMessage />
@@ -76,13 +78,12 @@ export default function FormFields({
               <FormControl>
                 <Input
                   {...field}
-                  value={field.value ?? ''}
-                  type="number"
-                  min="1"
-                  placeholder="Número de huéspedes"
                   disabled={isSubmitting}
-                  // Convierte el valor a número para react-hook-form
+                  min="1"
                   onChange={(e) => field.onChange(Number(e.target.value))}
+                  placeholder="Número de huéspedes"
+                  type="number"
+                  value={field.value ?? ''}
                 />
               </FormControl>
               <FormMessage />
@@ -98,13 +99,12 @@ export default function FormFields({
               <FormControl>
                 <Input
                   {...field}
-                  value={field.value ?? ''}
-                  type="number"
-                  min="1"
-                  placeholder="Cantidad de habitaciones"
                   disabled={isSubmitting}
-                  // Convierte el valor a número para react-hook-form
+                  min="1"
                   onChange={(e) => field.onChange(Number(e.target.value))}
+                  placeholder="Cantidad de habitaciones"
+                  type="number"
+                  value={field.value ?? ''}
                 />
               </FormControl>
               <FormMessage />
@@ -123,10 +123,10 @@ export default function FormFields({
               <FormControl>
                 <Input
                   {...field}
-                  type="text"
+                  className="bg-muted cursor-not-allowed"
                   disabled={true}
                   readOnly
-                  className="bg-muted cursor-not-allowed"
+                  type="text"
                 />
               </FormControl>
               <FormMessage />
@@ -143,7 +143,7 @@ export default function FormFields({
             <FormItem>
               <FormLabel>Fecha de llegada</FormLabel>
               <FormControl>
-                <Input {...field} type="date" disabled={isSubmitting} />
+                <Input {...field} disabled={isSubmitting} type="date" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -156,7 +156,7 @@ export default function FormFields({
             <FormItem>
               <FormLabel>Fecha de salida</FormLabel>
               <FormControl>
-                <Input {...field} type="date" disabled={isSubmitting} />
+                <Input {...field} disabled={isSubmitting} type="date" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -166,13 +166,20 @@ export default function FormFields({
 
       <DialogFooter className="flex justify-end gap-4">
         <DialogClose asChild>
-          <Button type="button" variant="destructive" disabled={isSubmitting}>
-            <UndoIcon className="mr-2 size-4" />
-            Cancelar
+          <Button
+            asChild
+            disabled={isSubmitting}
+            type="button"
+            variant="destructive"
+          >
+            <span>
+              <UndoIcon className="mr-2 size-4" />
+              Cancelar
+            </span>
           </Button>
         </DialogClose>
 
-        <Button type="submit" disabled={isSubmitting} variant="save">
+        <Button disabled={isSubmitting} type="submit" variant="save">
           {isSubmitting ? (
             <>
               <Loader2Icon className="mr-2 size-4 animate-spin" />
