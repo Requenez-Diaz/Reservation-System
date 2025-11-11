@@ -44,11 +44,11 @@ export default function ResetPasswordPage() {
   const token = searchParams.get('token');
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
     defaultValues: {
       password: '',
       confirmPassword: ''
-    }
+    },
+    resolver: zodResolver(FormSchema)
   });
 
   useEffect(() => {
@@ -63,8 +63,8 @@ export default function ResetPasswordPage() {
 
       if (!result.valid) {
         toast({
-          title: 'Token inválido',
           description: result.message,
+          title: 'Token inválido',
           variant: 'destructive'
         });
       }
@@ -74,7 +74,10 @@ export default function ResetPasswordPage() {
   }, [token, toast]);
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
-    if (!token) return;
+    // CORRECCIÓN 1: Se agrega { } para la regla 'curly'
+    if (!token) {
+      return;
+    }
 
     try {
       const result = await resetPassword(token, values.password);
@@ -82,8 +85,8 @@ export default function ResetPasswordPage() {
       if (result.success) {
         setIsSubmitted(true);
         toast({
-          title: 'Contraseña actualizada',
-          description: result.message
+          description: result.message,
+          title: 'Contraseña actualizada'
         });
 
         // Redirigir al login después de 2 segundos
@@ -92,16 +95,16 @@ export default function ResetPasswordPage() {
         }, 2000);
       } else {
         toast({
-          title: 'Error',
           description: result.message,
+          title: 'Error',
           variant: 'destructive'
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
         description:
           'Hubo un problema al actualizar tu contraseña. Intenta de nuevo.',
+        title: 'Error',
         variant: 'destructive'
       });
     }
@@ -126,6 +129,7 @@ export default function ResetPasswordPage() {
             El enlace de recuperación no es válido o ha expirado.
           </p>
           <Link href="/forgot-password">
+            {/* CORRECCIÓN 2: Props de Button ordenadas */}
             <Button className="w-full">Solicitar nuevo enlace</Button>
           </Link>
         </div>
@@ -139,16 +143,18 @@ export default function ResetPasswordPage() {
         <div className="max-w-md w-full p-8 border border-gray-300 rounded-md text-center">
           <div className="mb-6">
             <svg
+              // CORRECCIÓN 3: Props de SVG ordenadas
               className="mx-auto h-12 w-12 text-green-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path
+                // CORRECCIÓN 4: Props de path ordenadas
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
           </div>
@@ -166,8 +172,9 @@ export default function ResetPasswordPage() {
     <div className="flex justify-center items-center min-h-screen">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          // CORRECCIÓN 5: Props de form ordenadas
           className="max-w-md w-full p-8 border border-gray-300 rounded-md"
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="mb-6">
             <h2 className="text-2xl font-bold mb-2">Nueva contraseña</h2>
@@ -185,18 +192,20 @@ export default function ResetPasswordPage() {
                 <FormControl className="relative">
                   <div className="relative">
                     <Input
-                      type="password"
-                      placeholder="Ingresa tu nueva contraseña"
+                      // CORRECCIÓN 6: Props de Input ordenadas
                       className="w-full rounded-lg border border-stroke bg-white py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      placeholder="Ingresa tu nueva contraseña"
+                      type="password"
                       {...field}
                     />
                     <span className="absolute right-4 top-4">
                       <svg
+                        // CORRECCIÓN 7: Props de SVG ordenadas
                         className="fill-current"
-                        width="22"
+                        fill="none"
                         height="22"
                         viewBox="0 0 22 22"
-                        fill="none"
+                        width="22"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <g opacity="0.5">
@@ -227,18 +236,20 @@ export default function ResetPasswordPage() {
                 <FormControl className="relative">
                   <div className="relative">
                     <Input
-                      type="password"
-                      placeholder="Confirma tu nueva contraseña"
+                      // CORRECCIÓN 8: Props de Input ordenadas
                       className="w-full rounded-lg border border-stroke bg-white py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      placeholder="Confirma tu nueva contraseña"
+                      type="password"
                       {...field}
                     />
                     <span className="absolute right-4 top-4">
                       <svg
+                        // CORRECCIÓN 9: Props de SVG ordenadas
                         className="fill-current"
-                        width="22"
+                        fill="none"
                         height="22"
                         viewBox="0 0 22 22"
-                        fill="none"
+                        width="22"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <g opacity="0.5">
@@ -262,9 +273,10 @@ export default function ResetPasswordPage() {
 
           <div className="mt-6">
             <Button
-              type="submit"
+              // CORRECCIÓN 10: Props de Button ordenadas
               className="w-full"
               disabled={form.formState.isSubmitting}
+              type="submit"
               variant={'save'}
             >
               {form.formState.isSubmitting
@@ -275,8 +287,9 @@ export default function ResetPasswordPage() {
 
           <div className="mt-6 text-center">
             <Link
-              href="/sign-in"
+              // CORRECCIÓN 11: Props de Link ordenadas
               className="text-sm text-blue-700 hover:underline"
+              href="/sign-in"
             >
               Volver al inicio de sesión
             </Link>
