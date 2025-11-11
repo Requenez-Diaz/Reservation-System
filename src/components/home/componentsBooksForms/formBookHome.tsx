@@ -23,6 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
+// Suponiendo que esta es tu acción de servidor
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -52,8 +53,35 @@ export default function BedroomSearchForm({
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
   const { toast } = useToast();
 
+  // EFECTO 1: Carga inicial de habitaciones Y precarga de datos de localStorage
   React.useEffect(() => {
-    const fetchBedrooms = async () => {
+    const fetchBedroomsAndLoadState = async () => {
+      // Cargar el estado guardado (Fechas y Huéspedes)
+      try {
+        const savedDates = localStorage.getItem('selectedDates');
+        const savedGuests = localStorage.getItem('selectedGuests');
+
+        if (savedDates) {
+          const { from, to } = JSON.parse(savedDates);
+          if (from) {
+            setDateRange({
+              from: new Date(from),
+              to: to ? new Date(to) : new Date(from)
+            });
+          }
+        }
+
+        if (savedGuests) {
+          const numGuests = Number.parseInt(savedGuests, 10);
+          if (!Number.isNaN(numGuests) && numGuests >= 1) {
+            setGuests(numGuests);
+          }
+        }
+      } catch (error) {
+        console.error('Error al cargar datos de localStorage:', error);
+      }
+
+      // Cargar las habitaciones
       try {
         const response: Bedroom[] = await getAllBedrooms();
         if (!Array.isArray(response) || response.length === 0) {
@@ -65,9 +93,10 @@ export default function BedroomSearchForm({
         console.error('Error fetching bedrooms:', error);
       }
     };
-    fetchBedrooms();
+    fetchBedroomsAndLoadState();
   }, []);
 
+  // EFECTO 2: Guarda Fechas y Huéspedes en localStorage cada vez que cambian
   React.useEffect(() => {
     if (dateRange?.from) {
       const dateData = {
@@ -76,14 +105,12 @@ export default function BedroomSearchForm({
       };
       localStorage.setItem('selectedDates', JSON.stringify(dateData));
       localStorage.setItem('selectedGuests', guests.toString());
-      localStorage.setItem('fromSearch', 'true');
-      console.log('[v0] Fechas guardadas en localStorage:', dateData);
-      console.log('[v0] Personas guardadas en localStorage:', guests);
-      console.log('[v0] Flag fromSearch guardada en localStorage');
+      localStorage.setItem('fromSearch', 'true'); // Flag para el flujo
     }
   }, [dateRange, guests]);
 
   const handleSearch = async () => {
+    // ... (Lógica de validación y filtrado omitida por ser la misma)
     if (dateRange?.from && dateRange.from < new Date()) {
       toast({
         title: 'Fecha inválida',
@@ -96,13 +123,13 @@ export default function BedroomSearchForm({
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 800));
 
+    // Lógica de filtrado de habitaciones...
     const results = bedrooms.filter((bedroom) => {
       const statusMatch =
         status === 'all' || (status === 'available' && bedroom.status === true);
-
       const capacityMatch = bedroom.capacity >= guests;
-
       let dateMatch = true;
+      // Lógica de conflicto de fechas...
       if (
         dateRange?.from &&
         bedroom.bookingsDetails &&
@@ -110,14 +137,11 @@ export default function BedroomSearchForm({
       ) {
         const searchStart = dateRange.from;
         const searchEnd = dateRange.to || dateRange.from;
-
         const hasConflict = bedroom.bookingsDetails.some((booking) => {
           const bookingStart = new Date(booking.dateStart);
           const bookingEnd = booking.dateEnd
             ? new Date(booking.dateEnd)
             : bookingStart;
-
-          // Verificar si hay solapamiento entre el rango buscado y las reservas existentes
           return (
             (searchStart >= bookingStart && searchStart <= bookingEnd) ||
             (searchEnd >= bookingStart && searchEnd <= bookingEnd) ||
@@ -126,7 +150,6 @@ export default function BedroomSearchForm({
         });
         dateMatch = !hasConflict;
       }
-
       return statusMatch && capacityMatch && dateMatch;
     });
 
@@ -146,6 +169,7 @@ export default function BedroomSearchForm({
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-[1fr,auto,1fr,auto] md:items-center">
+          {/* ... Select de Estado (sin cambios) ... */}
           <div className="relative group">
             <CheckCircle2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary z-10 pointer-events-none" />
             <Select value={status} onValueChange={setStatus}>
@@ -162,7 +186,7 @@ export default function BedroomSearchForm({
             </Select>
           </div>
 
-          {/* Guests selector */}
+          {/* Guests selector (sin cambios) */}
           <div className="flex items-center">
             <Button
               variant="outline"

@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { saveReservation } from '@/app/actions/saveReservation/saveReservation';
@@ -30,6 +31,70 @@ interface FormReservationProps {
   selectedBedroomType?: string;
 }
 
+const getInitialFormValues = (
+  selectedBedroomType: string | undefined
+): ReservationFormValues => {
+  let initialValues: ReservationFormValues = {
+    name: '',
+    lastName: '',
+    guests: 1,
+    rooms: 1,
+    bedroomsType: selectedBedroomType || '',
+    arrivalDate: '',
+    departureDate: ''
+  };
+
+  try {
+    const fromSearch = localStorage.getItem('fromSearch');
+
+    if (fromSearch === 'true') {
+      const storedDates = localStorage.getItem('selectedDates');
+      const storedGuests = localStorage.getItem('selectedGuests');
+
+      if (storedDates) {
+        const { from, to } = JSON.parse(storedDates);
+
+        if (from) {
+          initialValues.arrivalDate = new Date(from)
+            .toISOString()
+            .split('T')[0];
+          initialValues.departureDate = to
+            ? new Date(to).toISOString().split('T')[0]
+            : new Date(from).toISOString().split('T')[0];
+        }
+      }
+
+      if (storedGuests) {
+        const guests = Number.parseInt(storedGuests, 10);
+        if (!Number.isNaN(guests) && guests > 0) {
+          initialValues.guests = guests;
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error al obtener valores iniciales de localStorage:', error);
+  }
+
+  return initialValues;
+};
+
+const calculateSuggestedDates = (
+  nextAvailableDate: Date,
+  originalArrival: Date,
+  originalDeparture: Date
+) => {
+  const originalDuration =
+    originalDeparture.getTime() - originalArrival.getTime();
+  const newArrivalDate = new Date(nextAvailableDate);
+  const newDepartureDate = new Date(
+    newArrivalDate.getTime() + originalDuration
+  );
+  return {
+    arrivalDate: newArrivalDate.toISOString().split('T')[0],
+    departureDate: newDepartureDate.toISOString().split('T')[0]
+  };
+};
+
 export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,119 +108,39 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
     departureDate: string;
   } | null>(null);
 
-  console.log(
-    '[v0] FormReservation - selectedBedroomType prop:',
-    selectedBedroomType
+  const initialValues = React.useMemo(
+    () => getInitialFormValues(selectedBedroomType),
+    [selectedBedroomType]
   );
 
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(ReservationSchema),
-    defaultValues: {
-      name: '',
-      lastName: '',
-      guests: undefined,
-      rooms: undefined,
-      bedroomsType: selectedBedroomType || '',
-      arrivalDate: '',
-      departureDate: ''
-    }
+    defaultValues: initialValues
   });
 
   useEffect(() => {
-    const loadDatesFromStorage = () => {
-      try {
-        const fromSearch = localStorage.getItem('fromSearch');
-        console.log('[v0] Flag fromSearch en localStorage:', fromSearch);
-
-        if (fromSearch === 'true') {
-          const storedDates = localStorage.getItem('selectedDates');
-          const storedGuests = localStorage.getItem('selectedGuests');
-
-          console.log('[v0] Datos en localStorage:', {
-            storedDates,
-            storedGuests,
-            fromSearch
-          });
-
-          if (storedDates) {
-            const { from, to } = JSON.parse(storedDates);
-            const arrivalDate = new Date(from).toISOString().split('T')[0];
-            const departureDate = new Date(to).toISOString().split('T')[0];
-
-            console.log('[v0] Cargando fechas del localStorage:', {
-              arrivalDate,
-              departureDate
-            });
-
-            form.setValue('arrivalDate', arrivalDate);
-            form.setValue('departureDate', departureDate);
-          }
-
-          if (storedGuests) {
-            const guests = Number.parseInt(storedGuests, 10);
-            console.log('[v0] Cargando huéspedes del localStorage:', guests);
-            form.setValue('guests', guests);
-          }
-
-          toast({
-            title: 'Información cargada',
-            description:
-              'Las fechas y número de huéspedes se han cargado automáticamente.'
-          });
-        } else {
-          console.log(
-            '[v0] No se encontró la flag fromSearch, no se cargan fechas automáticamente'
-          );
-        }
-      } catch (error) {
-        console.error('[v0] Error al cargar datos del localStorage:', error);
-      }
-    };
-
-    loadDatesFromStorage();
-  }, [form, toast]);
+    if (localStorage.getItem('fromSearch') === 'true') {
+      toast({
+        title: 'Información cargada',
+        description:
+          'Las fechas y número de huéspedes se han cargado automáticamente.'
+      });
+    }
+  }, [toast]);
 
   useEffect(() => {
-    if (selectedBedroomType) {
-      console.log(
-        '[v0] Resetting form with bedroomsType:',
-        selectedBedroomType
-      );
-      const currentArrivalDate = form.getValues('arrivalDate');
-      const currentDepartureDate = form.getValues('departureDate');
-
+    if (
+      selectedBedroomType &&
+      form.getValues('bedroomsType') !== selectedBedroomType
+    ) {
       form.reset({
-        name: '',
-        lastName: '',
-        guests: undefined,
-        rooms: undefined,
-        bedroomsType: selectedBedroomType,
-        arrivalDate: currentArrivalDate,
-        departureDate: currentDepartureDate
+        ...form.getValues(),
+        bedroomsType: selectedBedroomType
       });
     }
   }, [selectedBedroomType, form]);
 
-  const calculateSuggestedDates = (
-    nextAvailableDate: Date,
-    originalArrival: Date,
-    originalDeparture: Date
-  ) => {
-    const originalDuration =
-      originalDeparture.getTime() - originalArrival.getTime();
-    const newArrivalDate = new Date(nextAvailableDate);
-    const newDepartureDate = new Date(
-      newArrivalDate.getTime() + originalDuration
-    );
-    return {
-      arrivalDate: newArrivalDate.toISOString().split('T')[0],
-      departureDate: newDepartureDate.toISOString().split('T')[0]
-    };
-  };
-
   const handleSubmit = async (data: ReservationFormValues) => {
-    console.log('[v0] Submitting form with data:', data);
-
     setIsSubmitting(true);
     try {
       const finalData = {
@@ -164,12 +149,15 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         departureDate: new Date(data.departureDate)
       };
       const response = await saveReservation(finalData);
+
       if (response.success) {
         toast({ title: 'Reserva realizada', description: response.message });
         form.reset();
+
         localStorage.removeItem('selectedDates');
         localStorage.removeItem('selectedGuests');
         localStorage.removeItem('fromSearch');
+
         setShowConflictAlert(false);
         setAvailabilityInfo(null);
         setOriginalFormData(null);
@@ -198,7 +186,7 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         }
       }
     } catch (error) {
-      console.error('[v0] Error submitting form:', error);
+      console.error('Error submitting form:', error);
       toast({
         title: 'Error',
         description: 'Error inesperado al procesar la reservación.',
@@ -217,14 +205,14 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         departureDate: suggestedDates.departureDate
       });
       setShowConflictAlert(false);
+      setAvailabilityInfo(null);
+      setOriginalFormData(null);
+      setSuggestedDates(null);
       toast({
         title: 'Fechas actualizadas',
         description:
           'Las fechas han sido cambiadas automáticamente. Puedes enviar la reserva nuevamente.'
       });
-      setAvailabilityInfo(null);
-      setOriginalFormData(null);
-      setSuggestedDates(null);
     }
   };
 
