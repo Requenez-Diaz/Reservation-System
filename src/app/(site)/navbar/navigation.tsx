@@ -25,10 +25,10 @@ export default function Navbar() {
       <div className="container mx-auto flex justify-between items-center">
         <Link href="https://www.facebook.com/hotelito.madrono">
           <Image
-            src="/hotel madroño.png"
             alt="Hotel Madroño"
-            width={100}
             height={100}
+            src="/hotel madroño.png"
+            width={100}
           />
         </Link>
 
