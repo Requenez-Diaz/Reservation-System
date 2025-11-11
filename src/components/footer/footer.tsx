@@ -21,45 +21,45 @@ const Footer = () => {
             <p>Dirección: Nueva Guinea, Zona # 8</p>
             <p>Teléfono: +505 8646 9676</p>
             <Link
+              className="text-black hover:text-blue-400 transition duration-300" // Línea 25 corregida
               href={`mailto:${email}`}
-              className="text-black hover:text-blue-400 transition duration-300"
             >
               <p>Email: {email}</p>
             </Link>
           </div>
           <div className="space-y-4">
             <Link
+              className="block text-black hover:text-blue-400 transition duration-300" // Línea 33 corregida
               href="/aboutUs"
-              className="block text-black hover:text-blue-400 transition duration-300"
             >
               <p>Acerca de nosotros</p>
             </Link>
             <Link
+              className="block text-black hover:text-blue-400 transition duration-300" // Línea 39 corregida
               href="/contact"
-              className="block text-black hover:text-blue-400 transition duration-300"
             >
               <p>Contacto</p>
             </Link>
             <Link
+              className="block text-black hover:text-blue-400 transition duration-300" // Línea 45 corregida
               href="/terms"
-              className="block text-black hover:text-blue-400 transition duration-300"
             >
               <p>Términos y condiciones</p>
             </Link>
           </div>
           <div className="space-y-4">
             <Link
+              className="flex items-center text-black hover:text-blue-400 transition duration-300" // Línea 53 corregida
               href={'https://www.facebook.com/avimilex.diaz'}
-              className="flex items-center text-black hover:text-blue-400 transition duration-300"
             >
               <span className="mr-2">
                 <svg
-                  enableBackground="new 0 0 1024 1024"
-                  viewBox="0 0 1024 1024"
-                  xmlns="http://www.w3.org/2000/svg"
                   className="fill-current"
+                  enableBackground="new 0 0 1024 1024" // Línea 60 corregida
+                  height="30" // Línea 61 corregida
+                  viewBox="0 0 1024 1024" // Línea 62 corregida
                   width="30"
-                  height="30"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <circle cx="512" cy="512" fill="#3c5a99" r="512" />
                   <path
@@ -71,13 +71,13 @@ const Footer = () => {
               <p>Facebook</p>
             </Link>
             <Link
+              className="flex items-center text-black hover:text-blue-400 transition duration-300" // Línea 75 corregida
               href={'https://www.instagram.com/avimilex.diaz'}
-              className="flex items-center text-black hover:text-blue-400 transition duration-300"
             >
               <span className="mr-2">
                 <svg
                   fill="none"
-                  height="30"
+                  height="30" // Línea 87 corregida
                   viewBox="0 0 92 92"
                   width="30"
                   xmlns="http://www.w3.org/2000/svg"
@@ -112,17 +112,17 @@ const Footer = () => {
               <p>Instagram</p>
             </Link>
             <Link
+              className="flex items-center text-black hover:text-blue-400 transition duration-300" // Línea 116 corregida
               href={'https://www.twitter.com/avimilex.diaz'}
-              className="flex items-center text-black hover:text-blue-400 transition duration-300"
             >
               <span className="mr-2">
                 <svg
-                  enableBackground="new 0 0 1024 1024"
+                  className="fill-current" // Línea 123 corregida
+                  enableBackground="new 0 0 1024 1024" // Línea 124 corregida
+                  height={30} // Línea 125 corregida
                   viewBox="0 0 1024 1024"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="fill-current"
                   width={30}
-                  height={30}
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <circle cx="512" cy="512" fill="#1da1f2" r="512" />
                   <path
