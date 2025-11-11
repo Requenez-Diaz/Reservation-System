@@ -31,25 +31,22 @@ function generateSlug(text: string): string {
 
 export default function SearchResults({
   searchResults,
-  showResults,
-  typeBedroom,
-  description,
-  lowSeasonPrice,
-  status,
-  numberBedroom,
-  image,
-  slug
+  showResults
+  // Argumentos de props que NO se usan en el cuerpo de esta función han sido omitidos:
+  // typeBedroom, description, lowSeasonPrice, status, numberBedroom, image, slug
 }: SearchResultsProps) {
   if (searchResults.length === 0) {
     return null; // No renderizar si no hay resultados
   }
 
-  const finalSlug = slug || generateSlug(typeBedroom);
-  console.log('Rendering SearchResults with', {
-    searchResults,
-    showResults,
-    slug: finalSlug
-  });
+  // La variable finalSlug y la línea de console.log no tienen utilidad sin 'typeBedroom' o 'slug',
+  // pero las mantendré si asumo que se usarán en el futuro.
+  // const finalSlug = slug || generateSlug(typeBedroom);
+  // console.log('Rendering SearchResults with', {
+  //   searchResults,
+  //   showResults,
+  //   slug: finalSlug
+  // });
 
   const handleRoomClick = () => {
     localStorage.setItem('fromSearch', 'true');
@@ -83,9 +80,9 @@ export default function SearchResults({
               }}
             >
               <Link
+                className="block group hover:bg-accent/50 hover:scale-[1.02] hover:shadow-md onClick={handleRoomClick} p-4 rounded-lg transition-all duration-200" // CORREGIDO (Línea 76)
                 href={`/habitaciones-detail/${generateSlug(bedroom.typeBedroom)}`}
-                className="block hover:bg-accent/50 p-4 rounded-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-md group"
-                onClick={handleRoomClick}
+                onClick={handleRoomClick} // Mantenido aquí para claridad, aunque se incluyó arriba
               >
                 <h3 className="text-lg font-semibold group-hover:text-primary transition-colors duration-200">
                   {bedroom.typeBedroom}

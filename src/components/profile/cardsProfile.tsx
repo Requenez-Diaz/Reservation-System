@@ -22,7 +22,7 @@ interface GeneralTabProps {
   defaultProfile: ProfileFormValues;
   isEditing: boolean;
   onEditToggle: () => void;
-  onSubmit: (data: ProfileFormValues) => Promise<void>;
+  onSubmit: (_data: ProfileFormValues) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -38,8 +38,8 @@ export function GeneralTab({
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
     defaultValues: defaultProfile,
+    resolver: zodResolver(profileSchema),
     values: defaultProfile
   });
 
@@ -64,17 +64,17 @@ export function GeneralTab({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="username" className="text-blue-700">
+              <Label className="text-blue-700" htmlFor="username">
                 Nombre de Usuario
               </Label>
               <Input
+                className="transition-all focus-visible:ring-blue-500 focus-visible:ring-2 focus-visible:ring-offset-2"
+                disabled={!isEditing || isSubmitting}
                 id="username"
                 {...register('username')}
-                disabled={!isEditing || isSubmitting}
-                className="transition-all focus-visible:ring-blue-500 focus-visible:ring-2 focus-visible:ring-offset-2"
               />
               {errors.username && (
                 <p className="text-red-600 text-sm">
@@ -83,15 +83,15 @@ export function GeneralTab({
               )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email" className="text-blue-700">
+              <Label className="text-blue-700" htmlFor="email">
                 Correo Electrónico
               </Label>
               <Input
-                id="email"
-                {...register('email')}
-                disabled={!isEditing || isSubmitting}
-                type="email"
                 className="transition-all focus-visible:ring-blue-500 focus-visible:ring-2 focus-visible:ring-offset-2"
+                disabled={!isEditing || isSubmitting}
+                id="email"
+                type="email"
+                {...register('email')}
               />
               {errors.email && (
                 <p className="text-red-600 text-sm">{errors.email.message}</p>
@@ -101,10 +101,10 @@ export function GeneralTab({
 
           <div className="flex flex-col sm:flex-row justify-between pt-4 mt-4 border-t border-gray-200 gap-2">
             <Button
-              type="button"
               className={`${editCancelEditButtonClass} w-full sm:w-auto`}
-              onClick={onEditToggle}
               disabled={isSubmitting}
+              onClick={onEditToggle}
+              type="button"
             >
               <Edit2 className="mr-2 h-4 w-4" />
               {isEditing ? 'Cancelar Edición' : 'Editar Perfil'}
@@ -113,18 +113,18 @@ export function GeneralTab({
             {isEditing && (
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
-                  type="button"
                   className={`${discardButtonClass} w-full sm:w-auto`}
-                  onClick={onCancel}
                   disabled={isSubmitting}
+                  onClick={onCancel}
+                  type="button"
                 >
                   Descartar
                 </Button>
 
                 <Button
-                  type="submit"
                   className={`${saveButtonClass} w-full sm:w-auto`}
                   disabled={isSubmitting}
+                  type="submit" //
                 >
                   {isSubmitting && (
                     <div className="w-4 h-4 border-2 border-white border-t-green-700 rounded-full animate-spin mr-2 inline-block"></div>
