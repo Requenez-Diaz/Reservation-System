@@ -7,8 +7,8 @@ import { getBedroomsById } from '@/app/actions/get-bedrooms';
 
 interface BedroomImage {
   id: number;
-  imageContent: string; // base64
-  url?: string; // opcional si usas URL directa
+  imageContent: string;
+  url?: string;
 }
 
 interface Bedroom {
@@ -20,9 +20,10 @@ interface Bedroom {
   status: boolean;
   numberBedroom: number;
   seasonsId: number;
-  amenities: any[];
+
+  amenities: unknown[];
   capacity: number;
-  bookingsDetails: any[];
+  bookingsDetails: unknown[];
   BedroomImages: BedroomImage[];
 }
 
@@ -94,13 +95,14 @@ export default function BedroomDetails() {
         {bedroom.BedroomImages && bedroom.BedroomImages.length > 0 && (
           <div className="w-full h-64 overflow-hidden rounded-lg mb-4">
             <img
+              // CORRECCIÓN: Orden alfabético de props (Línea 102 y 103 corregidas)
+              alt={`Imagen de la habitación ${bedroom.numberBedroom}`}
+              className="w-full h-full object-cover"
               src={
                 bedroom.BedroomImages[0].imageContent
                   ? `data:image/jpeg;base64,${bedroom.BedroomImages[0].imageContent}`
                   : (bedroom.BedroomImages[0].url ?? '')
               }
-              alt={`Imagen de la habitación ${bedroom.numberBedroom}`}
-              className="w-full h-full object-cover"
             />
           </div>
         )}
@@ -142,6 +144,7 @@ export default function BedroomDetails() {
                 </li>
               </ul>
             </div>
+
             {bedroom.amenities && bedroom.amenities.length > 0 && (
               <div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
@@ -149,7 +152,7 @@ export default function BedroomDetails() {
                 </h3>
                 <ul className="list-disc list-inside text-gray-700 space-y-1">
                   {bedroom.amenities.map((amenity, index) => (
-                    <li key={index}>{amenity}</li>
+                    <li key={index}>{String(amenity)}</li>
                   ))}
                 </ul>
               </div>

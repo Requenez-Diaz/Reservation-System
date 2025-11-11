@@ -27,10 +27,10 @@ export default function ForgotPasswordPage() {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
     defaultValues: {
       email: ''
-    }
+    },
+    resolver: zodResolver(FormSchema)
   });
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
@@ -40,20 +40,20 @@ export default function ForgotPasswordPage() {
       if (result.success) {
         setIsSubmitted(true);
         toast({
-          title: 'Email enviado',
-          description: result.message
+          description: result.message,
+          title: 'Email enviado'
         });
       } else {
         toast({
-          title: 'Error',
           description: result.message,
+          title: 'Error',
           variant: 'destructive'
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
         description: 'Hubo un problema al enviar el email. Intenta de nuevo.',
+        title: 'Error',
         variant: 'destructive'
       });
     }
@@ -65,17 +65,17 @@ export default function ForgotPasswordPage() {
         <div className="max-w-md w-full p-8 border border-gray-300 rounded-md text-center">
           <div className="mb-6">
             <svg
+              aria-hidden="true"
               className="mx-auto h-12 w-12 text-green-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              aria-hidden="true"
             >
               <path
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
           </div>
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
             favor revisa tu bandeja de entrada y sigue las instrucciones.
           </p>
           <Link href="/sign-in">
-            <Button variant="success" className="w-full">
+            <Button className="w-full" variant="success">
               Volver al inicio de sesión
             </Button>
           </Link>
@@ -98,9 +98,9 @@ export default function ForgotPasswordPage() {
     <div className="flex justify-center items-center min-h-screen">
       <Form {...form}>
         <form
+          aria-label="Formulario de recuperación de contraseña"
           className="max-w-md w-full p-8 border border-gray-300 rounded-md"
           onSubmit={form.handleSubmit(onSubmit)}
-          aria-label="Formulario de recuperación de contraseña"
         >
           <div className="mb-6">
             <h2 className="text-2xl font-bold mb-2">Recuperar contraseña</h2>
@@ -118,10 +118,10 @@ export default function ForgotPasswordPage() {
                 <FormLabel htmlFor="email">Email</FormLabel>
                 <FormControl>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="email@example.com"
                     disabled={form.formState.isSubmitting}
+                    id="email"
+                    placeholder="email@example.com"
+                    type="email"
                     {...field}
                   />
                 </FormControl>
@@ -148,8 +148,8 @@ export default function ForgotPasswordPage() {
 
           <div className="mt-6 text-center">
             <Link
-              href="/sign-in"
               className="text-sm text-blue-700 hover:underline"
+              href="/sign-in"
             >
               Volver al inicio de sesión
             </Link>

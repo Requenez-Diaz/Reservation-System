@@ -78,7 +78,7 @@ export default async function BedroomDetailPage(props: PageProps) {
           </h1>
           <p className="text-lg text-gray-600">{bedroom.description}</p>
           <div className="flex items-center gap-4 mt-4">
-            <Badge variant={bedroom.status ? 'default' : 'secondary'}>
+            <Badge variant={bedroom.status ? 'active' : 'inactive'}>
               {bedroom.status ? 'Disponible' : 'No disponible'}
             </Badge>
             <span className="text-sm text-gray-500">
