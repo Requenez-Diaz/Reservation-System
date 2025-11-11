@@ -153,13 +153,13 @@ export function ReserveRoomDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button variant={'save'} className="w-full sm:w-auto">
+        <Button className="w-full sm:w-auto" variant={'save'}>
           Reservar habitación
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[425px] md:max-w-[500px] max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="max-h-[85vh] overflow-y-auto p-4 sm:p-6 w-[95vw] max-w-[95vw] sm:max-w-[425px] md:max-w-[500px]">
         <DialogHeader className="text-left">
           <DialogTitle className="text-lg sm:text-xl">
             Reservar habitación con oferta
@@ -187,7 +187,7 @@ export function ReserveRoomDialog({
                     {bedroom.typeBedroom}
                   </p>
                 )}
-                <Badge variant="info" className="ml-0 text-xs">
+                <Badge className="ml-0 text-xs" variant="info">
                   ID: {bedroom.id}
                 </Badge>
               </div>
@@ -227,34 +227,35 @@ export function ReserveRoomDialog({
           ) : (
             <div className="p-3 rounded-lg border bg-red-50">
               <p className="text-sm text-red-700 text-center">
-                No se pudo cargar el usuario. Por favor, inicia sesión para reservar.
+                No se pudo cargar el usuario. Por favor, inicia sesión para
+                reservar.
               </p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input type="hidden" name="promotionId" value={promotionId} />
-            <input type="hidden" name="bedroomId" value={bedroom.id} />
-            <input type="hidden" name="pricePerNight" value={pricePerNight} />
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <input name="promotionId" type="hidden" value={promotionId} />
+            <input name="bedroomId" type="hidden" value={bedroom.id} />
+            <input name="pricePerNight" type="hidden" value={pricePerNight} />
             {currentUser && (
-              <input type="hidden" name="userId" value={currentUser.id} />
+              <input name="userId" type="hidden" value={currentUser.id} />
             )}
 
             <div className="space-y-3">
               <div className="space-y-2">
-                <Label htmlFor="guestName" className="text-sm font-medium">
+                <Label className="text-sm font-medium" htmlFor="guestName">
                   <span className="flex items-center gap-2">
                     <User2 className="h-4 w-4" />
                     Nombre completo
                   </span>
                 </Label>
                 <Input
-                  name="guestName"
-                  id="guestName"
-                  placeholder="Juan Pérez"
-                  defaultValue={currentUser?.username || ''}
-                  required
                   className="w-full"
+                  defaultValue={currentUser?.username || ''}
+                  id="guestName"
+                  name="guestName"
+                  placeholder="Juan Pérez"
+                  required
                 />
               </div>
 
@@ -263,13 +264,13 @@ export function ReserveRoomDialog({
                   Email
                 </Label>
                 <Input
-                  type="email"
-                  name="guestEmail"
-                  id="guestEmail"
-                  placeholder="juan@example.com"
-                  defaultValue={currentUser?.email || ''}
-                  required
                   className="w-full"
+                  defaultValue={currentUser?.email || ''}
+                  id="guestEmail"
+                  name="guestEmail"
+                  placeholder="juan@example.com"
+                  required
+                  type="email"
                 />
               </div>
             </div>
@@ -280,14 +281,14 @@ export function ReserveRoomDialog({
                   Huéspedes
                 </Label>
                 <Input
-                  type="number"
-                  name="guests"
-                  id="guests"
-                  min="1"
-                  max="10"
-                  defaultValue="2"
-                  required
                   className="w-full"
+                  defaultValue="2"
+                  id="guests"
+                  max="10"
+                  min="1"
+                  name="guests"
+                  required
+                  type="number"
                 />
               </div>
               <div className="space-y-2">
@@ -295,14 +296,14 @@ export function ReserveRoomDialog({
                   Habitaciones
                 </Label>
                 <Input
-                  type="number"
-                  name="rooms"
-                  id="rooms"
-                  min="1"
-                  max="5"
-                  defaultValue="1"
-                  required
                   className="w-full"
+                  defaultValue="1"
+                  id="rooms"
+                  max="5"
+                  min="1"
+                  name="rooms"
+                  required
+                  type="number"
                 />
               </div>
             </div>
@@ -316,14 +317,14 @@ export function ReserveRoomDialog({
                   </span>
                 </Label>
                 <Input
-                  type="date"
-                  id="checkIn"
-                  name="checkIn"
-                  defaultValue={toInputDate(defaultCheckIn)}
-                  min={toInputDate(defaultCheckIn)}
-                  max={toInputDate(defaultCheckOut)}
-                  required
                   className="w-full"
+                  defaultValue={toInputDate(defaultCheckIn)}
+                  id="checkIn"
+                  max={toInputDate(defaultCheckOut)}
+                  min={toInputDate(defaultCheckIn)}
+                  name="checkIn"
+                  required
+                  type="date"
                 />
               </div>
               <div className="space-y-2">
@@ -334,23 +335,23 @@ export function ReserveRoomDialog({
                   </span>
                 </Label>
                 <Input
-                  type="date"
-                  id="checkOut"
-                  name="checkOut"
-                  defaultValue={toInputDate(defaultCheckOut)}
-                  min={toInputDate(defaultCheckIn)}
-                  max={toInputDate(defaultCheckOut)}
-                  required
                   className="w-full"
+                  defaultValue={toInputDate(defaultCheckOut)}
+                  id="checkOut"
+                  max={toInputDate(defaultCheckOut)}
+                  min={toInputDate(defaultCheckIn)}
+                  name="checkOut"
+                  required
+                  type="date"
                 />
               </div>
             </div>
 
             <DialogFooter className="pt-4">
               <Button
-                type="submit"
-                disabled={isSubmitting || !currentUser}
                 className="w-full sm:w-auto min-w-32"
+                disabled={isSubmitting || !currentUser}
+                type="submit"
                 variant={'save'}
               >
                 {isSubmitting ? 'Creando reserva...' : 'Confirmar reserva'}
