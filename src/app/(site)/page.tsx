@@ -1,5 +1,5 @@
 import ContainerHome from '@/components/home/containerHome';
-import NavbarTwoPass from './navbar/navbar-twoPass';
+import _NavbarTwoPass from './navbar/navbar-twoPass';
 
 const Dashboard = () => {
   return (
