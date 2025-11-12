@@ -32,11 +32,12 @@ export function CalendarForm() {
     resolver: zodResolver(FormSchema)
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {}
+  // Marcamos el parámetro como no usado para evitar advertencia ESLint
+  function onSubmit(_data: z.infer<typeof FormSchema>) {}
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="dob"
@@ -46,33 +47,35 @@ export function CalendarForm() {
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant={'outline'}
                       className={cn(
                         'w-[240px] pl-3 text-left font-normal',
                         !field.value && 'text-muted-foreground'
                       )}
+                      variant="outline"
                     >
                       {field.value ? (
                         format(field.value, 'PPP')
                       ) : (
-                        <span>Fecha de llegada </span>
+                        <span>Fecha de llegada</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+
+                <PopoverContent align="start" className="w-auto p-0">
                   <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
                     disabled={(date) =>
                       date > new Date() || date < new Date('1900-01-01')
                     }
                     initialFocus
+                    mode="single"
+                    onSelect={field.onChange}
+                    selected={field.value}
                   />
                 </PopoverContent>
               </Popover>
+
               <FormMessage />
             </FormItem>
           )}

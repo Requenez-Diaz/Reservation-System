@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 import Provider from '@/app/(site)/navbar/usersComponents/Provider';
 import { Toaster } from '@/components/ui/toaster';
-import { Session, getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 export const fontSans = FontSans({
@@ -22,7 +21,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
+  await getServerSession(authOptions);
+
   return (
     <html>
       <body>
