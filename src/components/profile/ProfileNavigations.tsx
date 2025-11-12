@@ -2,13 +2,13 @@
 
 import type React from 'react';
 import {
-  User,
-  KeyRound,
   Bell,
-  LogOut,
+  HelpCircle,
   ImageIcon,
+  KeyRound,
+  LogOut,
   Palette,
-  HelpCircle
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -37,18 +37,19 @@ export function ProfileNavigation({
   const textMuted = 'text-gray-600';
   const textActive = 'text-blue-800';
 
+  // 🔹 Componente interno NavLink corregido y limpio
   const NavLink: React.FC<{
-    _tab: SettingsTab;
+    tab: SettingsTab;
     icon: React.ReactNode;
     label: string;
-  }> = ({ _tab, icon, label }) => (
+  }> = ({ tab, icon, label }) => (
     <button
       className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${
-        activeTab === _tab // Usamos _tab
+        activeTab === tab
           ? `${activeBg} font-semibold ${textActive} shadow-sm`
           : `${textMuted}`
       }`}
-      onClick={() => onTabChange(_tab)} // Usamos _tab
+      onClick={() => onTabChange(tab)}
       type="button"
     >
       {icon}
@@ -58,53 +59,53 @@ export function ProfileNavigation({
 
   return (
     <div className="w-full md:w-64">
-      <h2 className={`text-3xl font-bold mb-2 tracking-tight ${accentText}`}>
+      <h2 className={`mb-2 text-3xl font-bold tracking-tight ${accentText}`}>
         Configuración
       </h2>
-      <p className="text-sm text-gray-700 mb-6">
+      <p className="mb-6 text-sm text-gray-700">
         Ajusta tu cuenta y preferencias.
       </p>
 
-      <nav className="flex flex-col gap-1 p-3 rounded-xl bg-white shadow-md">
+      <nav className="flex flex-col gap-1 rounded-xl bg-white p-3 shadow-md">
         <NavLink
-          _tab="general" // CORREGIDO (Línea 72)
           icon={<User className="h-5 w-5" />}
           label="General"
+          tab="general"
         />
         <NavLink
-          _tab="avatar" // CORREGIDO (Línea 77)
           icon={<ImageIcon className="h-5 w-5" />}
           label="Foto de Perfil"
+          tab="avatar"
         />
         <NavLink
-          _tab="security" // CORREGIDO (Línea 82)
           icon={<KeyRound className="h-5 w-5" />}
           label="Seguridad"
+          tab="security"
         />
         <NavLink
-          _tab="notifications" // CORREGIDO (Línea 87)
           icon={<Bell className="h-5 w-5" />}
           label="Notificaciones"
+          tab="notifications"
         />
         <NavLink
-          _tab="preferences" // CORREGIDO (Línea 92)
           icon={<Palette className="h-5 w-5" />}
           label="Preferencias"
+          tab="preferences"
         />
         <NavLink
-          _tab="support" // CORREGIDO (Línea 97)
           icon={<HelpCircle className="h-5 w-5" />}
           label="Soporte"
+          tab="support"
         />
 
         <Separator className="my-2 bg-gray-200" />
 
         <Button
-          className="justify-start text-gray-600 hover:text-white hover:bg-red-500/90 rounded-lg transition-colors duration-200"
+          className="rounded-lg justify-start text-gray-600 transition-colors duration-200 hover:bg-red-500/90 hover:text-white"
           onClick={() => signOut()}
           variant="ghost"
         >
-          <LogOut className="h-5 w-5 mr-3" />
+          <LogOut className="mr-3 h-5 w-5" />
           Cerrar Sesión
         </Button>
       </nav>

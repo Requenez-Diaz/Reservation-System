@@ -9,25 +9,25 @@ interface ImagesProps {
 
 const BannerGalleryProps = ({ title, description, images }: ImagesProps) => {
   return (
-    <div className="p-4 rounded bg-gray-100">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="rounded bg-gray-100 p-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
           {images.map((image, index) => (
             <Image
+              alt={image.alt}
+              className="mb-4 w-full rounded-lg"
+              height={100}
               key={index}
               src={image.src}
-              alt={image.alt}
               width={150}
-              height={100}
-              className="w-full mb-4 rounded-lg"
             />
           ))}
         </div>
-        <div className="md:pr-4 flex flex-col justify-center items-center bg-yellow-50 bg-opacity-75 rounded-r-full">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-black mb-2 leading-tight ml-2">
+        <div className="flex flex-col items-center justify-center rounded-r-full bg-yellow-50 bg-opacity-75 md:pr-4">
+          <h1 className="ml-2 mb-2 text-4xl font-extrabold leading-tight text-black md:text-5xl">
             {title}
           </h1>
-          <p className="text-black text-sm font-light ml-2">{description}</p>
+          <p className="ml-2 text-sm font-light text-black">{description}</p>
         </div>
       </div>
     </div>

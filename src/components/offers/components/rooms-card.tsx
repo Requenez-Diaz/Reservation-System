@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Percent, Calendar, Eye } from 'lucide-react';
+import { Calendar, Eye, MapPin } from 'lucide-react'; // Eliminamos Percent
 import Link from 'next/link';
 
 interface PromotionRoomCardProps {
@@ -35,7 +35,9 @@ interface PromotionRoomCardProps {
 export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
   const bedroom = promotion.BedroomsPromotions[0]?.bedroom;
 
-  if (!bedroom) return null;
+  if (!bedroom) {
+    return null;
+  }
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('es-ES', {
@@ -50,7 +52,7 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
     now >= new Date(promotion.dateStart) && now <= new Date(promotion.dateEnd);
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">{promotion.codePromotions}</CardTitle>
@@ -60,6 +62,7 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
         </div>
         <CardDescription>Promoción para habitación específica</CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-4">
         {/* Información de la habitación */}
         <div className="flex items-center gap-2">
@@ -68,7 +71,7 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
             <span className="font-medium">
               {bedroom.name} - {bedroom.type} #{bedroom.number}
             </span>
-            <Badge variant="info" className="text-xs">
+            <Badge className="text-xs" variant="info">
               ID: {bedroom.id}
             </Badge>
           </div>
@@ -77,9 +80,8 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
         {/* Descuento */}
         <div className="flex items-center gap-2">
           <span className="text-lg font-semibold text-green-600">
-            {promotion.porcentageDescuent} % de descuento
+            {promotion.porcentageDescuent}% de descuento
           </span>
-          {/* <Percent className="h-4 w-4 text-green-600" /> */}
         </div>
 
         {/* Fechas */}
@@ -92,15 +94,15 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
 
         {/* Descripción */}
         {promotion.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="line-clamp-2 text-sm text-muted-foreground">
             {promotion.description}
           </p>
         )}
 
         {/* Botón para ver detalles */}
         <Link href={`/ofertas/${promotion.id}`}>
-          <Button variant="save" className="w-full">
-            <Eye className="h-4 w-4 mr-2" />
+          <Button className="w-full" variant="save">
+            <Eye className="mr-2 h-4 w-4" />
             Ver habitación específica
           </Button>
         </Link>

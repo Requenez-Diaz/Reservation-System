@@ -1,75 +1,129 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { Bell } from "lucide-react";
-import Image from "next/image";
-import ReservationDetailModal from "./ReservationDetailModal";
-import NotificationMenu from "./NotificationMenu";
-import { getConfirmedNotifications } from "@/app/actions/notification/getNotification";
-import { useSession } from "next-auth/react";
+import { useEffect, useState } from 'react';
+import { Bell } from 'lucide-react';
+import Image from 'next/image';
+import ReservationDetailModal from './ReservationDetailModal';
+import NotificationMenu from './NotificationMenu';
+import { getConfirmedNotifications } from '@/app/actions/notification/getNotification';
+import { useSession } from 'next-auth/react';
+
+interface User {
+  id: number;
+  username: string;
+  image?: string | null;
+  email?: string | null;
+}
+
+interface Notification {
+  id: number;
+  message: string;
+  user: User;
+  reservation: any | null;
+  createdAt: string;
+}
+
+interface SelectedReservation {
+  id: string;
+  arrivalDate: string;
+  departureDate: string;
+  bedroomsType: string;
+  status: string;
+  rooms: number;
+  guests: number;
+  formattedArrivalDate: string;
+  formattedDepartureDate: string;
+  User: {
+    image?: string;
+    username: string;
+    email: string;
+  };
+}
 
 export function NotificationsTab() {
   const { data: session } = useSession();
-  const [items, setItems] = useState<any[]>([]);
-  const [selectedReservation, setSelectedReservation] = useState<any | null>(null);
+  const [items, setItems] = useState<Notification[]>([]);
+  const [selectedReservation, setSelectedReservation] =
+    useState<SelectedReservation | null>(null);
 
   useEffect(() => {
     const fetchAll = async () => {
       if (!session?.user?.id) return;
 
       try {
-        const response = await getConfirmedNotifications(Number(session.user.id));
+        const response = await getConfirmedNotifications(
+          Number(session.user.id)
+        );
         if (!response.success) {
-          console.error("Error cargando notificaciones:", response.message);
+          console.error('Error cargando notificaciones:', response.message);
           setItems([]);
           return;
         }
 
-        const combined = response.notifications.map((n) => ({
-          id: n.id,
-          user: n.user,
-          message: n.message,
-          reservation: n.reservation
-            ? {
-              ...n.reservation,
-              arrivalDate: n.reservation.arrivalDate,
-              departureDate: n.reservation.departureDate,
-              formattedArrivalDate: new Date(n.reservation.arrivalDate).toLocaleDateString("es-NI"),
-              formattedDepartureDate: new Date(n.reservation.departureDate).toLocaleDateString("es-NI"),
-            }
-            : null,
-
-          createdAt: new Date(n.createdAt).toLocaleString("es-NI", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        }));
-
-        combined.sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        const notifications: Notification[] = response.notifications.map(
+          (n: any) => ({
+            id: n.id,
+            user: n.user,
+            message: n.message,
+            reservation: n.reservation,
+            createdAt: new Date(n.createdAt).toLocaleString('es-NI', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          })
         );
-        setItems(combined);
+
+        // Ordenar por fecha más reciente
+        notifications.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+        setItems(notifications);
       } catch (error) {
-        console.error("Error cargando notificaciones:", error);
+        console.error('Error cargando notificaciones:', error);
       }
     };
 
     fetchAll();
   }, [session]);
 
+  // 🔹 Función para normalizar la reserva al formato que el modal espera
+  const mapToSelectedReservation = (
+    res: any,
+    user: User
+  ): SelectedReservation => ({
+    id: String(res.id ?? ''),
+    arrivalDate: res.arrivalDate ?? '',
+    departureDate: res.departureDate ?? '',
+    bedroomsType: res.bedroomsType ?? 'Habitación',
+    status: res.status ?? 'confirmada',
+    rooms: res.rooms ?? 1,
+    guests: res.guests ?? res.guestsCount ?? 1,
+    formattedArrivalDate: new Date(res.arrivalDate).toLocaleDateString('es-NI'),
+    formattedDepartureDate: new Date(res.departureDate).toLocaleDateString(
+      'es-NI'
+    ),
+    User: {
+      image: user.image ?? undefined,
+      username: user.username ?? 'Usuario',
+      email: user.email ?? 'Sin correo'
+    }
+  });
+
   return (
     <div className="p-6">
-      <h1 className="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800">
+      <h1 className="mb-6 flex items-center gap-2 text-xl font-semibold text-gray-800">
         <Bell className="h-5 w-5 text-blue-600" />
         Notificaciones
       </h1>
 
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-gray-500">
-          <Bell className="h-12 w-12 mb-3 text-gray-400" />
+          <Bell className="mb-3 h-12 w-12 text-gray-400" />
           <p className="text-lg">No tienes notificaciones 🎉</p>
         </div>
       ) : (
@@ -77,39 +131,40 @@ export function NotificationsTab() {
           {items.map((item) => (
             <li key={item.id}>
               <div
-                onClick={() =>
-                  item.reservation &&
-                  setSelectedReservation({
-                    ...item.reservation,
-                    user: item.user,
-                  })
-                }
-                className="cursor-pointer p-4 border rounded-lg bg-white hover:shadow-md transition-shadow flex items-center justify-between"
+                className="flex cursor-pointer items-center justify-between rounded-lg border bg-white p-4 transition-shadow hover:shadow-md"
+                onClick={() => {
+                  if (!item.reservation) return;
+                  const selected = mapToSelectedReservation(
+                    item.reservation,
+                    item.user
+                  );
+                  setSelectedReservation(selected);
+                }}
               >
                 <div className="flex items-center gap-3">
                   {item.user?.image ? (
-                    <div className="relative w-10 aspect-square rounded-full overflow-hidden border border-gray-300">
+                    <div className="relative aspect-square w-10 overflow-hidden rounded-full border border-gray-300">
                       <Image
-                        src={item.user.image}
                         alt={item.user.username}
-                        fill
                         className="object-cover"
+                        fill
+                        src={item.user.image}
                       />
                     </div>
                   ) : (
-                    <div className="w-10 aspect-square rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
-                      {item.user?.username?.[0]?.toUpperCase() ?? "U"}
+                    <div className="flex aspect-square w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600">
+                      {item.user?.username?.[0]?.toUpperCase() ?? 'U'}
                     </div>
                   )}
 
                   <div className="flex flex-col">
                     <p className="text-sm text-gray-700">
                       <span className="font-semibold text-gray-900">
-                        {item.user?.username ?? "Usuario"}
-                      </span>{" "}
-                      se ha confirmado una{" "}
-                      <span className="text-blue-600 font-medium">
-                        {item.reservation?.bedroomsType || "habitación"}
+                        {item.user?.username ?? 'Usuario'}
+                      </span>{' '}
+                      se ha confirmado una{' '}
+                      <span className="font-medium text-blue-600">
+                        {item.reservation?.bedroomsType || 'habitación'}
                       </span>
                       .
                     </p>
