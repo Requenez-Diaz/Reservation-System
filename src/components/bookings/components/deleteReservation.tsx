@@ -26,6 +26,11 @@ export function DeleteReservation({
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     await deleteReservation(formData);
+
+    toast({
+      title: 'Reservación eliminada.',
+      description: 'La reservación se ha eliminado correctamente.'
+    });
   };
 
   return (
@@ -40,33 +45,25 @@ export function DeleteReservation({
             ¿Está seguro de que desea cancelar la reservación?
           </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <input
-            type="hidden"
             name="reservationId"
+            type="hidden"
             value={String(reservationId)}
           />
-          <DialogFooter className="flex flex-col sm:flex-row justify-center mt-4">
+          <DialogFooter className="mt-4 flex flex-col sm:flex-row justify-center">
             <DialogClose asChild>
               <Button
+                className="mb-2 sm:mb-0 sm:mr-4"
                 type="button"
                 variant="success"
-                className="mb-2 sm:mb-0 sm:mr-4"
               >
                 No
               </Button>
             </DialogClose>
-            <Button
-              type="submit"
-              variant="destructive"
-              className="sm:ml-4"
-              onClick={() => {
-                toast({
-                  title: 'Reservación eliminada.',
-                  description: 'La reservación se ha eliminado correctamente.'
-                });
-              }}
-            >
+
+            <Button className="sm:ml-4" type="submit" variant="destructive">
               Sí
             </Button>
           </DialogFooter>

@@ -3,10 +3,10 @@
 import { Star } from 'lucide-react';
 
 interface RatingStarProps {
-  rating: number;
   interactive?: boolean;
-  size?: 'sm' | 'md';
   onRatingChange?: (rating: number) => void;
+  rating: number;
+  size?: 'sm' | 'md';
 }
 
 export function RatingStars({
@@ -22,19 +22,23 @@ export function RatingStars({
       {Array.from({ length: 5 }, (_, i) =>
         interactive ? (
           <button
-            key={i}
-            type="button"
-            onClick={() => onRatingChange?.(i + 1)}
             className="focus:outline-none"
+            key={i}
+            onClick={() => onRatingChange?.(i + 1)}
+            type="button"
           >
             <Star
-              className={`${starSize} ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+              className={`${starSize} ${
+                i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+              }`}
             />
           </button>
         ) : (
           <Star
+            className={`${starSize} ${
+              i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+            }`}
             key={i}
-            className={`${starSize} ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
           />
         )
       )}

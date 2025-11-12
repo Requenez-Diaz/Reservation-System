@@ -3,22 +3,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { Input } from '@/components/ui/input';
 
 import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormDescription,
   FormMessage
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-
-interface ProfileFormProps {
-  username: string;
-}
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -27,16 +23,12 @@ const formSchema = z.object({
 });
 
 export function ProfileForm() {
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   });
 
-  const data = {
-    username: 'shadcn'
-  };
-
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = (formData: z.infer<typeof formSchema>) => {
+    console.log(formData);
   };
 
   return (

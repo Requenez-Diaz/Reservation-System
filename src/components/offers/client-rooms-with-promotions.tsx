@@ -20,7 +20,6 @@ interface Season {
   dateEnd: string | Date;
 }
 
-// Actualizar las interfaces para reflejar la estructura de datos correcta
 interface BedroomPromotion {
   id: number;
   bedroomId: number;
@@ -34,7 +33,7 @@ interface BedroomPromotion {
     status: boolean;
     numberBedroom: number;
     seasonsId: number;
-    amenities: any[];
+    amenities: string[]; // 🔹 Cambiado de any[] a string[]
     capacity: number;
   };
   Promotions: {
@@ -101,7 +100,7 @@ export const ClientRoomsWithPromotions: React.FC<
   if (loading) {
     return (
       <div className="p-8 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-current border-solid border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
         <p className="mt-2">Cargando promociones...</p>
       </div>
     );
@@ -111,7 +110,6 @@ export const ClientRoomsWithPromotions: React.FC<
     return <div className="p-4 text-center text-red-500">{error}</div>;
   }
 
-  // Calcular el precio con descuento
   const calculateDiscountedPrice = (
     originalPrice: number,
     discountPercentage: number
@@ -119,18 +117,15 @@ export const ClientRoomsWithPromotions: React.FC<
     return originalPrice - (originalPrice * discountPercentage) / 100;
   };
 
-  // Modificar la función de renderizado para usar la estructura correcta
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {rooms.map((room, index) => {
-        // Encuentra promociones aplicables a esta habitación
         const applicablePromotions = promotions.filter((promotion) =>
           promotion.BedroomsPromotions?.some(
             (bp) => bp.Bedrooms?.typeBedroom === room.type
           )
         );
 
-        // Obtener los detalles de la habitación desde BedroomsPromotions si están disponibles
         const bedroomDetails =
           applicablePromotions.length > 0
             ? applicablePromotions[0].BedroomsPromotions.find(
@@ -138,42 +133,40 @@ export const ClientRoomsWithPromotions: React.FC<
               )?.Bedrooms
             : null;
 
-        // Usar el precio de temporada alta o baja si está disponible, o el precio proporcionado
         const originalPrice = bedroomDetails
           ? bedroomDetails.highSeasonPrice || bedroomDetails.lowSeasonPrice
           : room.price;
 
         return (
           <div
+            className="overflow-hidden rounded-lg bg-white shadow-md"
             key={index}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
           >
             <img
-              src={room.image || '/placeholder.svg?height=300&width=500'}
               alt={room.type}
-              className="w-full h-48 object-cover"
+              className="h-48 w-full object-cover"
+              src={room.image || '/placeholder.svg?height=300&width=500'}
             />
 
             <div className="p-4">
-              <h3 className="text-xl font-semibold mb-2">{room.type}</h3>
-              <p className="text-gray-600 mb-4">
+              <h3 className="mb-2 text-xl font-semibold">{room.type}</h3>
+              <p className="mb-4 text-gray-600">
                 {bedroomDetails?.description || room.description}
               </p>
 
-              <div className="flex items-baseline mb-2">
+              <div className="mb-2 flex items-baseline">
                 <span className="text-lg font-bold">
                   Precio: ${originalPrice.toFixed(2)}
                 </span>
-
                 {applicablePromotions.length > 0 && (
-                  <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded">
+                  <span className="ml-2 rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-800">
                     {applicablePromotions[0].porcentageDescuent}% OFF
                   </span>
                 )}
               </div>
 
               {applicablePromotions.length > 0 && (
-                <div className="mt-2 mb-4">
+                <div className="mb-4 mt-2">
                   {applicablePromotions.map((promo) => {
                     const discountedPrice = calculateDiscountedPrice(
                       originalPrice,
@@ -182,19 +175,19 @@ export const ClientRoomsWithPromotions: React.FC<
 
                     return (
                       <div
+                        className="rounded-md bg-green-50 p-3"
                         key={promo.id}
-                        className="bg-green-50 p-3 rounded-md"
                       >
-                        <div className="flex justify-between items-center">
-                          <span className="text-green-700 font-medium">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-green-700">
                             Descuento:
                           </span>
                           <span className="font-bold">
                             {promo.porcentageDescuent}%
                           </span>
                         </div>
-                        <div className="flex justify-between items-center mt-1">
-                          <span className="text-green-700 font-medium">
+                        <div className="mt-1 flex items-center justify-between">
+                          <span className="font-medium text-green-700">
                             Precio Final:
                           </span>
                           <span className="text-xl font-bold text-green-800">
@@ -214,10 +207,9 @@ export const ClientRoomsWithPromotions: React.FC<
 
               {applicablePromotions.length > 0 && (
                 <div className="mt-4 border-t pt-3">
-                  <h4 className="text-md font-semibold mb-2">Promociones:</h4>
+                  <h4 className="mb-2 text-md font-semibold">Promociones:</h4>
                   <ul className="space-y-2">
                     {applicablePromotions.map((promotion) => {
-                      // Obtener los detalles de la promoción específica para esta habitación
                       const bedroomPromotion =
                         promotion.BedroomsPromotions.find(
                           (bp) => bp.Bedrooms?.typeBedroom === room.type
@@ -225,26 +217,26 @@ export const ClientRoomsWithPromotions: React.FC<
 
                       return (
                         <li
+                          className="flex flex-col rounded bg-gray-50 p-2 text-sm"
                           key={promotion.id}
-                          className="text-sm bg-gray-50 p-2 rounded flex flex-col"
                         >
                           <div className="flex items-center">
                             <span className="font-medium text-blue-600">
                               {promotion.codePromotions}
                             </span>
-                            <span className="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                            <span className="ml-auto rounded bg-blue-100 px-2 py-0.5 text-blue-800 text-xs">
                               {promotion.porcentageDescuent}% OFF
                             </span>
                           </div>
                           <p className="mt-1">{promotion.description}</p>
-                          <div className="text-xs text-gray-500 mt-1 flex justify-between">
+                          <div className="mt-1 flex justify-between text-xs text-gray-500">
                             <span>
                               Desde: {formatDate(promotion.dateStart)}
                             </span>
                             <span>Hasta: {formatDate(promotion.dateEnd)}</span>
                           </div>
                           {bedroomPromotion?.Bedrooms?.capacity && (
-                            <div className="mt-1 text-xs bg-blue-50 p-1 rounded">
+                            <div className="mt-1 rounded bg-blue-50 p-1 text-xs">
                               Capacidad: {bedroomPromotion.Bedrooms.capacity}{' '}
                               personas
                             </div>
@@ -256,9 +248,8 @@ export const ClientRoomsWithPromotions: React.FC<
                 </div>
               )}
 
-              {/* Mostrar detalles adicionales de la habitación si están disponibles */}
               {bedroomDetails && (
-                <div className="mt-4 pt-2 border-t border-gray-100">
+                <div className="mt-4 border-t border-gray-100 pt-2">
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="flex items-center">
                       <span className="text-gray-600">Capacidad:</span>

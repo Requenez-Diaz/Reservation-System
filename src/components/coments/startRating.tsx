@@ -2,8 +2,8 @@ import React from 'react';
 import { Star } from 'lucide-react';
 
 interface StarRatingProps {
-  rating: number;
   onRatingChange: (rating: number) => void;
+  rating: number;
 }
 
 export default function StarRating({
@@ -14,18 +14,18 @@ export default function StarRating({
     <div className="flex space-x-1">
       {[1, 2, 3, 4, 5].map((value) => (
         <button
-          key={value}
-          type="button"
-          onClick={() => onRatingChange(value)}
           className="focus:outline-none"
+          key={value}
+          onClick={() => onRatingChange(value)}
+          type="button"
         >
           <Star
-            size={24}
-            className={`${
+            className={`cursor-pointer transition-colors ${
               value <= rating
                 ? 'fill-yellow-400 text-yellow-400'
-                : 'text-gray-300'
-            } cursor-pointer hover:text-yellow-400 transition-colors`}
+                : 'text-gray-300 hover:text-yellow-400'
+            }`}
+            size={24}
           />
         </button>
       ))}
