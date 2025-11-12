@@ -1,13 +1,7 @@
-import { Car } from 'lucide-react';
 import React from 'react';
 import { CarouselDescriptions } from './CarrouselDescriptions';
 
-interface ImagesCarrouselInterface {
-  name: string;
-  images: string;
-}
-
-const ImagesCarrousel = ({ name, images }: ImagesCarrouselInterface) => {
+const ImagesCarrousel = () => {
   const imagesItems = [
     {
       name: 'Habitación 1',
@@ -29,9 +23,7 @@ const ImagesCarrousel = ({ name, images }: ImagesCarrouselInterface) => {
 
   return (
     <div>
-      <div>
-        <CarouselDescriptions />
-      </div>
+      <CarouselDescriptions items={imagesItems} />
     </div>
   );
 };
