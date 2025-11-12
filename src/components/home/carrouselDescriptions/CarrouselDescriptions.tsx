@@ -27,10 +27,10 @@ export function CarouselDescriptions() {
 
   return (
     <Carousel
-      plugins={[plugin.current]}
       className="w-full max-w-xs"
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
+      plugins={[plugin.current]}
     >
       <CarouselContent>
         {imagesItems.map((image, index) => (
@@ -39,9 +39,9 @@ export function CarouselDescriptions() {
               <Card>
                 <CardContent className="flex aspect-square items-center justify-center p-6">
                   <img
-                    src={image}
                     alt={`Slide ${index + 1}`}
-                    className="object-cover w-full h-full"
+                    className="h-full object-cover w-full"
+                    src={image}
                   />
                 </CardContent>
               </Card>

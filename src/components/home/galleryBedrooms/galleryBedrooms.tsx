@@ -47,10 +47,10 @@ const GalleryBedrooms = () => {
               onClick={() => setSelectedImage(index)}
             >
               <Image
-                src={imagen.src || '/placeholder.svg'}
                 alt={imagen.alt}
-                fill
                 className="object-cover group-hover:scale-110 transition-transform duration-500"
+                fill
+                src={imagen.src || '/placeholder.svg'}
               />
               {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-amber-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -75,25 +75,25 @@ const GalleryBedrooms = () => {
               onClick={() => setSelectedImage(null)}
             >
               <svg
-                className="w-8 h-8"
+                className="h-8 w-8"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path
+                  d="M6 18L18 6M6 6l12 12"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
             </button>
             <div className="relative max-w-5xl w-full aspect-video">
               <Image
-                src={imagenes[selectedImage].src || '/placeholder.svg'}
                 alt={imagenes[selectedImage].alt}
-                fill
                 className="object-contain"
+                fill
+                src={imagenes[selectedImage].src || '/placeholder.svg'}
               />
             </div>
           </div>

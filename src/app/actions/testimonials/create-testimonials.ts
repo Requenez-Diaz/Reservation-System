@@ -20,13 +20,21 @@ export const createTestimonial = async (formData: FormData) => {
     const comment = formData.get('comment') as string;
     const location = formData.get('location') as string;
 
-    if (!name || !rating || !comment || !location) {
-      const missingFields = [];
-      if (!name) missingFields.push('name');
-      if (!rating) missingFields.push('rating');
-      if (!comment) missingFields.push('comment');
-      if (!location) missingFields.push('location');
+    const missingFields: string[] = [];
+    if (!name) {
+      missingFields.push('name');
+    }
+    if (!rating) {
+      missingFields.push('rating');
+    }
+    if (!comment) {
+      missingFields.push('comment');
+    }
+    if (!location) {
+      missingFields.push('location');
+    }
 
+    if (missingFields.length > 0) {
       throw new Error(
         `Campos requeridos faltantes: ${missingFields.join(', ')}`
       );
@@ -76,17 +84,12 @@ export const createTestimonial = async (formData: FormData) => {
   }
 };
 
+// Función para obtener habitaciones
 export const getBedrooms = async () => {
   try {
     const bedrooms = await prisma.bedrooms.findMany({
-      select: {
-        id: true,
-        typeBedroom: true,
-        description: true
-      },
-      orderBy: {
-        typeBedroom: 'asc'
-      }
+      select: { id: true, typeBedroom: true, description: true },
+      orderBy: { typeBedroom: 'asc' }
     });
 
     return { success: true, bedrooms };
@@ -96,6 +99,7 @@ export const getBedrooms = async () => {
   }
 };
 
+// Función para obtener el usuario actual
 export const getCurrentUser = async () => {
   try {
     const session = await getServerSession(authOptions);
@@ -105,14 +109,8 @@ export const getCurrentUser = async () => {
     }
 
     const user = await prisma.user.findUnique({
-      where: {
-        id: Number.parseInt(session.user.id)
-      },
-      select: {
-        id: true,
-        username: true,
-        email: true
-      }
+      where: { id: Number.parseInt(session.user.id) },
+      select: { id: true, username: true, email: true }
     });
 
     if (!user) {
@@ -126,25 +124,14 @@ export const getCurrentUser = async () => {
   }
 };
 
+// Obtener testimoniales
 export const getTestimonials = async (limit?: number) => {
   try {
     const testimonials = await prisma.testimonials.findMany({
-      where: {
-        isApproved: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
+      where: { isApproved: true },
+      orderBy: { createdAt: 'desc' },
       ...(limit && { take: limit }),
-      include: {
-        User: {
-          select: {
-            id: true,
-            username: true,
-            email: true
-          }
-        }
-      }
+      include: { User: { select: { id: true, username: true, email: true } } }
     });
 
     return { success: true, testimonials };
@@ -154,25 +141,13 @@ export const getTestimonials = async (limit?: number) => {
   }
 };
 
+// Obtener testimoniales de un usuario específico
 export const getTestimonialsByUser = async (userId: number) => {
   try {
     const testimonials = await prisma.testimonials.findMany({
-      where: {
-        userId: userId,
-        isApproved: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      include: {
-        User: {
-          select: {
-            id: true,
-            username: true,
-            email: true
-          }
-        }
-      }
+      where: { userId, isApproved: true },
+      orderBy: { createdAt: 'desc' },
+      include: { User: { select: { id: true, username: true, email: true } } }
     });
 
     return { success: true, testimonials };

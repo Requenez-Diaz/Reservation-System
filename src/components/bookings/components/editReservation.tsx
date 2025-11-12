@@ -55,6 +55,7 @@ export function EditReservation({ reservationId }: { reservationId: number }) {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (isOpen) {
       loadReservation();
@@ -73,11 +74,12 @@ export function EditReservation({ reservationId }: { reservationId: number }) {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="default" className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700" variant="default">
           Cambiar elección
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] p-6">
+
+      <DialogContent className="p-6 sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Editar reservación</DialogTitle>
           <DialogDescription>
@@ -87,19 +89,19 @@ export function EditReservation({ reservationId }: { reservationId: number }) {
 
         {loading && (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            <Loader2 className="mr-2 h-6 w-6 animate-spin" />
             <span>Cargando reservación...</span>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
             <p className="text-red-600">{error}</p>
             <Button
-              variant="outline"
-              size="sm"
               className="mt-2 bg-transparent"
               onClick={loadReservation}
+              size="sm"
+              variant="outline"
             >
               Reintentar
             </Button>
@@ -108,8 +110,8 @@ export function EditReservation({ reservationId }: { reservationId: number }) {
 
         {reservation && !loading && !error && (
           <FormEditReservation
-            reservation={reservation}
             onSuccess={() => setIsOpen(false)}
+            reservation={reservation}
           />
         )}
       </DialogContent>

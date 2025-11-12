@@ -50,7 +50,6 @@ export function FormEditReservation({
     const fetchBedroomsTypes = async () => {
       try {
         const bedrooms = await getAllBedrooms();
-        // Mapea los resultados para obtener solo el 'typeBedroom' y elimina duplicados
         const types = bedrooms.map((bedroom) => bedroom.typeBedroom);
         const uniqueTypes = Array.from(new Set(types));
         setBedroomsTypes(uniqueTypes);
@@ -65,7 +64,7 @@ export function FormEditReservation({
     };
 
     fetchBedroomsTypes();
-  }, []);
+  }, [toast]);
 
   const form = useForm<ReservationFormValues>({
     defaultValues: {
@@ -139,11 +138,11 @@ export function FormEditReservation({
                   <FormControl>
                     <Input
                       {...restField}
-                      type="number"
-                      min="1"
-                      placeholder="Número de personas"
                       disabled={isSubmitting}
+                      min="1"
                       onChange={(e) => fieldOnChange(Number(e.target.value))}
+                      placeholder="Número de personas"
+                      type="number"
                     />
                   </FormControl>
                   <FormMessage />
@@ -163,11 +162,11 @@ export function FormEditReservation({
                   <FormControl>
                     <Input
                       {...restField}
-                      type="number"
-                      min="1"
-                      placeholder="Cantidad de habitaciones"
                       disabled={isSubmitting}
+                      min="1"
                       onChange={(e) => fieldOnChange(Number(e.target.value))}
+                      placeholder="Cantidad de habitaciones"
+                      type="number"
                     />
                   </FormControl>
                   <FormMessage />
@@ -185,9 +184,9 @@ export function FormEditReservation({
               <FormLabel>Tipo de habitación</FormLabel>
               <FormControl>
                 <select
+                  {...field}
                   className="border border-gray-300 rounded-lg p-2 w-full"
                   disabled={isSubmitting}
-                  {...field}
                 >
                   <option disabled value="">
                     Selecciona el tipo de habitación
@@ -212,7 +211,7 @@ export function FormEditReservation({
               <FormItem>
                 <FormLabel>Fecha de llegada</FormLabel>
                 <FormControl>
-                  <Input disabled={isSubmitting} type="date" {...field} />
+                  <Input disabled={isSubmitting} {...field} type="date" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -226,7 +225,7 @@ export function FormEditReservation({
               <FormItem>
                 <FormLabel>Fecha de salida</FormLabel>
                 <FormControl>
-                  <Input disabled={isSubmitting} type="date" {...field} />
+                  <Input disabled={isSubmitting} {...field} type="date" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -234,7 +233,7 @@ export function FormEditReservation({
           />
         </div>
 
-        <DialogFooter className="flex flex-wrap justify-between pt-4 gap-4">
+        <DialogFooter className="flex flex-wrap justify-between gap-4 pt-4">
           <DialogClose asChild>
             <Button disabled={isSubmitting} type="button" variant="outline">
               <Icon action="undo" className="mr-2" />
