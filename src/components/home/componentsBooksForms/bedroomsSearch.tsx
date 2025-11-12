@@ -20,20 +20,20 @@ export default function BedroomSearch() {
   return (
     <div className="w-full bg-gradient-to-b from-primary/10 to-background p-8">
       <BedroomSearchForm
-        onSearch={handleSearchResults}
         isLoading={isLoading}
+        onSearch={handleSearchResults}
         setIsLoading={setIsLoading}
       />
       <SearchResults
+        description={''}
+        image={''}
+        lowSeasonPrice={0}
+        numberBedroom={0}
         searchResults={searchResults}
         showResults={showResults}
-        typeBedroom={''}
-        description={''}
-        lowSeasonPrice={0}
         status={false}
-        numberBedroom={0}
-        image={''}
-      /> 
+        typeBedroom={''}
+      />
       <LoadingOverlay isLoading={isLoading} />
     </div>
   );
