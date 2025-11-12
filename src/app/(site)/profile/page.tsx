@@ -42,7 +42,9 @@ export default function UserProfile() {
   const userId = Number(session?.user?.id);
 
   const fetchProfileAndImage = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      return;
+    }
 
     try {
       const profileResult = await getProfileData();
@@ -135,15 +137,22 @@ export default function UserProfile() {
   };
 
   const handleAvatarClick = () => {
-    if (isEditing && fileInputRef.current) {
-      fileInputRef.current.click();
+    if (isEditing) {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      }
     }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (!file) {
+      return;
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
 
     if (isUploading) {
       toast({
@@ -189,8 +198,11 @@ export default function UserProfile() {
       const reader = new FileReader();
       const imageBase64 = await new Promise<string>((resolve, reject) => {
         reader.onload = () => {
-          if (typeof reader.result === 'string') resolve(reader.result);
-          else reject(new Error('Failed to read file as base64'));
+          if (typeof reader.result === 'string') {
+            resolve(reader.result);
+          } else {
+            reject(new Error('Failed to read file as base64'));
+          }
         };
         reader.onerror = () => reject(reader.error);
         reader.readAsDataURL(file);
@@ -222,7 +234,9 @@ export default function UserProfile() {
     }
   };
 
-  const handleCancel = () => setIsEditing(false);
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
 
   if (!userId || defaultProfile.username === 'Cargando...') {
     return (
@@ -268,9 +282,7 @@ export default function UserProfile() {
           )}
 
           {activeTab === 'notifications' && <NotificationsTab />}
-
           {activeTab === 'preferences' && <PreferencesTab />}
-
           {activeTab === 'support' && <SupportTab />}
         </div>
       </div>

@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +16,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
-
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, User, MapPin } from 'lucide-react';
 import {
@@ -112,7 +110,9 @@ export function CreateTestimonialForm({
   };
 
   const handleSubmit = async () => {
-    if (!formDataState) return;
+    if (!formDataState) {
+      return;
+    }
 
     startTransition(async () => {
       try {
@@ -128,10 +128,14 @@ export function CreateTestimonialForm({
           const form = document.getElementById(
             'create-testimonial-form'
           ) as HTMLFormElement;
-          form?.reset();
+          if (form) {
+            form.reset();
+          }
           setRating(5);
 
-          onSuccess?.();
+          if (onSuccess) {
+            onSuccess();
+          }
         } else {
           toast({
             description: result.error,
@@ -170,11 +174,11 @@ export function CreateTestimonialForm({
     return (
       <Card className={`max-w-2xl mx-auto ${className}`}>
         <CardContent className="p-8 text-center">
-          <User className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <User className="mb-4 h-12 w-12 mx-auto text-gray-400" />
+          <h3 className="mb-2 text-lg font-semibold text-gray-900">
             Inicia sesión requerido
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="mb-4 text-gray-600">
             Debes iniciar sesión para compartir tu experiencia
           </p>
           <Button className="bg-blue-600 hover:bg-blue-700">
@@ -190,7 +194,7 @@ export function CreateTestimonialForm({
       <Card className={`max-w-2xl mx-auto ${className}`}>
         <CardHeader className="pb-4">
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
               <User className="h-5 w-5 text-blue-600" />
             </div>
             <div>
@@ -213,32 +217,32 @@ export function CreateTestimonialForm({
             className="space-y-6"
             onSubmit={handlePreSubmit}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-sm font-medium" htmlFor="name">
                   Nombre completo
                 </Label>
                 <Input
+                  className="transition-colors"
                   defaultValue={currentUser.name || currentUser.username || ''}
                   disabled={isPending}
                   id="name"
                   name="name"
                   required
-                  className="transition-colors"
                 />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium" htmlFor="location">
-                  <MapPin className="inline h-4 w-4 mr-1" />
+                  <MapPin className="mr-1 inline h-4 w-4" />
                   Ubicación
                 </Label>
                 <Input
+                  className="transition-colors"
                   disabled={isPending}
                   id="location"
                   name="location"
                   placeholder="Ciudad, País"
                   required
-                  className="transition-colors"
                 />
               </div>
             </div>
@@ -250,8 +254,8 @@ export function CreateTestimonialForm({
               <div className="flex items-center space-x-2">
                 <RatingStars
                   interactive
-                  rating={rating}
                   onRatingChange={setRating}
+                  rating={rating}
                   size="md"
                 />
                 <span className="ml-2 text-sm text-gray-600">({rating}/5)</span>
@@ -263,13 +267,13 @@ export function CreateTestimonialForm({
                 Tu experiencia
               </Label>
               <Textarea
+                className="resize-none transition-colors"
                 disabled={isPending}
                 id="comment"
                 name="comment"
                 placeholder="Cuéntanos sobre tu estancia: ¿qué te gustó más? ¿Recomendarías este lugar?"
                 required
                 rows={4}
-                className="transition-colors resize-none"
               />
               <p className="text-xs text-gray-500">
                 Comparte detalles específicos que puedan ayudar a otros
@@ -278,9 +282,9 @@ export function CreateTestimonialForm({
             </div>
 
             <Button
+              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
               disabled={isPending}
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               {isPending ? (
                 <>
@@ -306,15 +310,15 @@ export function CreateTestimonialForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
+              className="bg-red-500 text-white transition-colors hover:bg-red-600"
               disabled={isPending}
-              className="bg-red-500 text-white *:hover:bg-red-600 transition-colors"
             >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
+              className="bg-blue-600 text-white transition-colors hover:bg-blue-700"
               disabled={isPending}
               onClick={handleSubmit}
-              className="bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               {isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
