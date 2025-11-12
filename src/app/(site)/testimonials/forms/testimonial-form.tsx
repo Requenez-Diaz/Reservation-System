@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import { useToast } from '@/components/ui/use-toast';
-
 import { Loader2, User, MapPin } from 'lucide-react';
 import {
   createTestimonial,
@@ -56,7 +55,6 @@ export function CreateTestimonialForm({
   const [_bedrooms, setBedrooms] = useState<Bedroom[]>([]);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedRoom, setSelectedRoom] = useState('');
   const { toast } = useToast();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [formDataState, setFormDataState] = useState<FormData | null>(null);
@@ -114,9 +112,7 @@ export function CreateTestimonialForm({
   };
 
   const handleSubmit = async () => {
-    if (!formDataState) {
-      return;
-    }
+    if (!formDataState) return;
 
     startTransition(async () => {
       try {
@@ -134,7 +130,6 @@ export function CreateTestimonialForm({
           ) as HTMLFormElement;
           form?.reset();
           setRating(5);
-          setSelectedRoom('');
 
           onSuccess?.();
         } else {
@@ -214,8 +209,8 @@ export function CreateTestimonialForm({
 
         <CardContent className="pt-0">
           <form
-            className="space-y-6"
             id="create-testimonial-form"
+            className="space-y-6"
             onSubmit={handlePreSubmit}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -224,12 +219,12 @@ export function CreateTestimonialForm({
                   Nombre completo
                 </Label>
                 <Input
-                  className="transition-colors"
                   defaultValue={currentUser.name || currentUser.username || ''}
                   disabled={isPending}
                   id="name"
                   name="name"
                   required
+                  className="transition-colors"
                 />
               </div>
               <div className="space-y-2">
@@ -238,12 +233,12 @@ export function CreateTestimonialForm({
                   Ubicación
                 </Label>
                 <Input
-                  className="transition-colors"
                   disabled={isPending}
                   id="location"
                   name="location"
                   placeholder="Ciudad, País"
                   required
+                  className="transition-colors"
                 />
               </div>
             </div>
@@ -254,12 +249,12 @@ export function CreateTestimonialForm({
               </Label>
               <div className="flex items-center space-x-2">
                 <RatingStars
-                  interactive={true}
-                  onRatingChange={setRating}
+                  interactive
                   rating={rating}
+                  onRatingChange={setRating}
                   size="md"
                 />
-                <span className="text-sm text-gray-600 ml-2">({rating}/5)</span>
+                <span className="ml-2 text-sm text-gray-600">({rating}/5)</span>
               </div>
             </div>
 
@@ -268,13 +263,13 @@ export function CreateTestimonialForm({
                 Tu experiencia
               </Label>
               <Textarea
-                className="transition-colors resize-none"
                 disabled={isPending}
                 id="comment"
                 name="comment"
                 placeholder="Cuéntanos sobre tu estancia: ¿qué te gustó más? ¿Recomendarías este lugar?"
                 required
                 rows={4}
+                className="transition-colors resize-none"
               />
               <p className="text-xs text-gray-500">
                 Comparte detalles específicos que puedan ayudar a otros
@@ -283,9 +278,9 @@ export function CreateTestimonialForm({
             </div>
 
             <Button
-              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
               disabled={isPending}
               type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               {isPending ? (
                 <>
@@ -311,15 +306,15 @@ export function CreateTestimonialForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="bg-red-500 text-white *:hover:bg-red-600 transition-colors"
               disabled={isPending}
+              className="bg-red-500 text-white *:hover:bg-red-600 transition-colors"
             >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-blue-600 text-white hover:bg-blue-700 transition-colors"
               disabled={isPending}
               onClick={handleSubmit}
+              className="bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             >
               {isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

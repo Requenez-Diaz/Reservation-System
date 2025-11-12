@@ -21,19 +21,19 @@ export function TestimonialsClient({
     useState<Testimonial[]>(initialTestimonials);
   const [showForm, setShowForm] = useState(false);
 
-  const handleSubmitTestimonial = (formData: TestimonialFormData) => {
+  const handleSubmitTestimonial = (_formData: TestimonialFormData) => {
     const newTestimonial: Testimonial = {
       id: testimonials.length + 1,
-      name: formData.name,
+      name: _formData.name,
       avatar: '/placeholder.svg?height=40&width=40',
-      rating: formData.rating,
-      comment: formData.comment,
-      location: formData.location
+      rating: _formData.rating,
+      comment: _formData.comment,
+      location: _formData.location
     };
 
     setTestimonials([newTestimonial, ...testimonials]);
     setShowForm(false);
-    onSubmit?.(formData);
+    onSubmit?.(_formData);
   };
 
   const calculateStats = () => {
@@ -66,14 +66,14 @@ export function TestimonialsClient({
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <SectionHeader
-        title="Lo que dicen nuestros huéspedes"
         description="Descubre las experiencias reales de quienes han elegido nuestras habitaciones"
+        title="Lo que dicen nuestros huéspedes"
       />
 
       <div className="flex justify-center">
         <Button
-          onClick={() => setShowForm(!showForm)}
           className="bg-blue-600 hover:bg-blue-700"
+          onClick={() => setShowForm(!showForm)}
         >
           {showForm ? 'Cancelar' : 'Escribir reseña'}
         </Button>
@@ -89,8 +89,8 @@ export function TestimonialsClient({
 
       <StatsSection
         averageRating={stats.averageRating}
-        totalReviews={stats.totalReviews}
         satisfactionPercentage={stats.satisfactionPercentage}
+        totalReviews={stats.totalReviews}
       />
     </div>
   );

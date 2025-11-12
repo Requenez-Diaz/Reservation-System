@@ -37,7 +37,7 @@ export default function AboutUsComponent() {
             animate={{ opacity: 1 }}
             className="text-xl text-white/90 max-w-xl mx-auto"
             initial={{ opacity: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
           >
             Encuentra la habitación perfecta para tu estancia en Nueva Guinea
             con ReserveSimple. Con una amplia selección de alojamientos y una
@@ -62,7 +62,7 @@ export default function AboutUsComponent() {
             animate={isInView1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
           >
             En SIRM, nuestra misión es proporcionar a nuestros clientes una
             experiencia de reservación de alojamiento en línea excepcional,
@@ -79,59 +79,43 @@ export default function AboutUsComponent() {
           ref={ref2}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-20"
         >
-          <motion.div
-            animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            className="flex flex-col items-center text-center"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4">
-              <Calendar className="w-7 h-7 text-neutral-700" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">
-              Proceso de Reserva Sencillo
-            </h3>
-            <p className="text-muted-foreground">
-              Reserva tu alojamiento en solo unos clics con nuestro proceso de
-              reserva sencillo y seguro.
-            </p>
-          </motion.div>
-
-          <motion.div
-            animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            className="flex flex-col items-center text-center"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4">
-              <Clock className="w-7 h-7 text-neutral-700" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">
-              Actualizaciones en Tiempo Real
-            </h3>
-            <p className="text-muted-foreground">
-              Siempre ve el estado de la habitación más actualizado con
-              actualizaciones en vivo.
-            </p>
-          </motion.div>
-
-          <motion.div
-            animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            className="flex flex-col items-center text-center"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4">
-              <Users className="w-7 h-7 text-neutral-700" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">
-              Experiencias Personalizadas
-            </h3>
-            <p className="text-muted-foreground">
-              Encuentra el alojamiento perfecto para tus necesidades con nuestra
-              amplia selección de habitaciones y apartamentos.
-            </p>
-          </motion.div>
+          {[
+            {
+              icon: Calendar,
+              title: 'Proceso de Reserva Sencillo',
+              description:
+                'Reserva tu alojamiento en solo unos clics con nuestro proceso de reserva sencillo y seguro.',
+              delay: 0.1
+            },
+            {
+              icon: Clock,
+              title: 'Actualizaciones en Tiempo Real',
+              description:
+                'Siempre ve el estado de la habitación más actualizado con actualizaciones en vivo.',
+              delay: 0.2
+            },
+            {
+              icon: Users,
+              title: 'Experiencias Personalizadas',
+              description:
+                'Encuentra el alojamiento perfecto para tus necesidades con nuestra amplia selección de habitaciones y apartamentos.',
+              delay: 0.3
+            }
+          ].map((feature, idx) => (
+            <motion.div
+              key={idx}
+              animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              className="flex flex-col items-center text-center"
+              initial={{ opacity: 0, y: 20 }}
+              transition={{ delay: feature.delay, duration: 0.5 }}
+            >
+              <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4">
+                <feature.icon className="w-7 h-7 text-neutral-700" />
+              </div>
+              <h3 className="text-xl font-medium mb-2">{feature.title}</h3>
+              <p className="text-muted-foreground">{feature.description}</p>
+            </motion.div>
+          ))}
         </div>
 
         {/* Team Section */}
@@ -146,74 +130,35 @@ export default function AboutUsComponent() {
           </motion.h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              animate={
-                isInView3
-                  ? { opacity: 1, scale: 1 }
-                  : { opacity: 0, scale: 0.9 }
-              }
-              className="flex flex-col items-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <div className="w-40 h-40 rounded-full overflow-hidden mb-4">
-                <Image
-                  alt="Team member"
-                  className="object-cover"
-                  height={160}
-                  src="https://josecamachofotografia.com/wp-content/uploads/2023/08/fotografo-hoteles-piscina-vista-frontal.jpg"
-                  width={160}
-                />
-              </div>
-              <h3 className="text-xl font-medium">Avimilex Requenez</h3>
-              <p className="text-muted-foreground">Desarrollador</p>
-            </motion.div>
-
-            <motion.div
-              animate={
-                isInView3
-                  ? { opacity: 1, scale: 1 }
-                  : { opacity: 0, scale: 0.9 }
-              }
-              className="flex flex-col items-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="w-40 h-40 rounded-full overflow-hidden mb-4">
-                <Image
-                  alt="Team member"
-                  className="object-cover"
-                  height={160}
-                  src="https://josecamachofotografia.com/wp-content/uploads/2023/08/fotografo-hoteles-piscina-vista-frontal.jpg"
-                  width={160}
-                />
-              </div>
-              <h3 className="text-xl font-medium">Elliam Sanchez</h3>
-              <p className="text-muted-foreground">Desarrollador</p>
-            </motion.div>
-
-            <motion.div
-              animate={
-                isInView3
-                  ? { opacity: 1, scale: 1 }
-                  : { opacity: 0, scale: 0.9 }
-              }
-              className="flex flex-col items-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <div className="w-40 h-40 rounded-full overflow-hidden mb-4">
-                <Image
-                  alt="Team member"
-                  className="object-cover"
-                  height={160}
-                  src="https://josecamachofotografia.com/wp-content/uploads/2023/08/fotografo-hoteles-piscina-vista-frontal.jpg"
-                  width={160}
-                />
-              </div>
-              <h3 className="text-xl font-medium">Sophie Chen</h3>
-              <p className="text-muted-foreground">CTO</p>
-            </motion.div>
+            {[
+              { name: 'Avimilex Requenez', role: 'Desarrollador' },
+              { name: 'Elliam Sanchez', role: 'Desarrollador' },
+              { name: 'Sophie Chen', role: 'CTO' }
+            ].map((member, idx) => (
+              <motion.div
+                key={idx}
+                animate={
+                  isInView3
+                    ? { opacity: 1, scale: 1 }
+                    : { opacity: 0, scale: 0.9 }
+                }
+                className="flex flex-col items-center"
+                initial={{ opacity: 0, scale: 0.9 }}
+                transition={{ delay: 0.1 + idx * 0.1, duration: 0.5 }}
+              >
+                <div className="w-40 h-40 rounded-full overflow-hidden mb-4">
+                  <Image
+                    alt="Team member"
+                    className="object-cover"
+                    height={160}
+                    src="https://josecamachofotografia.com/wp-content/uploads/2023/08/fotografo-hoteles-piscina-vista-frontal.jpg"
+                    width={160}
+                  />
+                </div>
+                <h3 className="text-xl font-medium">{member.name}</h3>
+                <p className="text-muted-foreground">{member.role}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -221,42 +166,42 @@ export default function AboutUsComponent() {
       {/* Contact Section */}
       <section className="py-16 px-4 bg-neutral-50">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl font-light mb-12">Visitanos</h2>
+          <h2 className="text-3xl font-light mb-12">Visítanos</h2>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
-            <motion.div
-              className="flex flex-col items-center"
-              initial={{ opacity: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1 }}
-            >
-              <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4">
-                <Building2 className="w-7 h-7 text-neutral-700" />
-              </div>
-              <h3 className="text-xl font-medium mb-2">
-                Dirección de la Oficina
-              </h3>
-              <p className="text-muted-foreground">Zona #8</p>
-              <p className="text-muted-foreground">Nueva Guinea</p>
-            </motion.div>
-
-            <motion.div
-              className="flex flex-col items-center"
-              initial={{ opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1 }}
-            >
-              <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4">
-                <MapPin className="w-7 h-7 text-neutral-700" />
-              </div>
-              <h3 className="text-xl font-medium mb-2">Contacto</h3>
-              <p className="text-muted-foreground">
-                alfredorequenez57libra@gmail.com
-              </p>
-              <p className="text-muted-foreground">+505 8646-9676</p>
-            </motion.div>
+            {[
+              {
+                icon: Building2,
+                title: 'Dirección de la Oficina',
+                lines: ['Zona #8', 'Nueva Guinea'],
+                delay: 0
+              },
+              {
+                icon: MapPin,
+                title: 'Contacto',
+                lines: ['alfredorequenez57libra@gmail.com', '+505 8646-9676'],
+                delay: 0.2
+              }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                className="flex flex-col items-center"
+                initial={{ opacity: 0 }}
+                transition={{ delay: item.delay, duration: 0.6 }}
+                viewport={{ once: true }}
+                whileInView={{ opacity: 1 }}
+              >
+                <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4">
+                  <item.icon className="w-7 h-7 text-neutral-700" />
+                </div>
+                <h3 className="text-xl font-medium mb-2">{item.title}</h3>
+                {item.lines.map((line, lineIdx) => (
+                  <p key={lineIdx} className="text-muted-foreground">
+                    {line}
+                  </p>
+                ))}
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

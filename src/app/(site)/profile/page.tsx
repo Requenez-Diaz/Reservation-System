@@ -1,7 +1,5 @@
 'use client';
 
-import type React from 'react';
-
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from '@/components/ui/use-toast';
@@ -52,10 +50,10 @@ export default function UserProfile() {
         setDefaultProfile(profileResult.data);
       } else {
         toast({
-          title: 'Error de carga',
           description:
             profileResult.error ||
             'No se pudieron cargar los datos del perfil.',
+          title: 'Error de carga',
           variant: 'destructive'
         });
       }
@@ -85,23 +83,23 @@ export default function UserProfile() {
         setDefaultProfile(data);
         setIsEditing(false);
         toast({
-          title: 'Perfil actualizado',
           description:
-            'Tu información de perfil ha sido actualizada exitosamente.'
+            'Tu información de perfil ha sido actualizada exitosamente.',
+          title: 'Perfil actualizado'
         });
       } else {
         toast({
-          title: 'Error de actualización',
           description:
             result.error ||
             'No se pudo actualizar el perfil. Inténtalo de nuevo.',
+          title: 'Error de actualización',
           variant: 'destructive'
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
         description: 'Ocurrió un error inesperado al guardar.',
+        title: 'Error',
         variant: 'destructive'
       });
     }
@@ -115,22 +113,22 @@ export default function UserProfile() {
 
       if (result.success) {
         toast({
-          title: 'Contraseña Actualizada',
-          description: 'Tu contraseña ha sido cambiada exitosamente.'
+          description: 'Tu contraseña ha sido cambiada exitosamente.',
+          title: 'Contraseña Actualizada'
         });
       } else {
         toast({
-          title: 'Error de Seguridad',
           description:
             result.error ||
             'No se pudo cambiar la contraseña. Verifica la contraseña actual.',
+          title: 'Error de Seguridad',
           variant: 'destructive'
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
         description: 'Ocurrió un error inesperado al cambiar la contraseña.',
+        title: 'Error',
         variant: 'destructive'
       });
     }
@@ -144,38 +142,32 @@ export default function UserProfile() {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-
-    if (!file) {
-      return;
-    }
+    if (!file) return;
+    if (fileInputRef.current) fileInputRef.current.value = '';
 
     if (isUploading) {
       toast({
-        title: 'Carga en progreso',
         description: 'Por favor espera a que termine la carga actual.',
+        title: 'Carga en progreso',
         variant: 'destructive'
       });
       return;
     }
+
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
       toast({
-        title: 'Tipo de archivo inválido',
         description: 'Solo se permiten imágenes JPG, PNG o WebP.',
+        title: 'Tipo de archivo inválido',
         variant: 'destructive'
       });
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      console.log('[v0] File too large:', file.size);
       toast({
-        title: 'Archivo muy grande',
         description: 'La imagen debe ser menor a 5MB.',
+        title: 'Archivo muy grande',
         variant: 'destructive'
       });
       return;
@@ -183,9 +175,9 @@ export default function UserProfile() {
 
     if (!userId) {
       toast({
-        title: 'Error de sesión',
         description:
           'No se pudo identificar tu usuario. Por favor inicia sesión nuevamente.',
+        title: 'Error de sesión',
         variant: 'destructive'
       });
       return;
@@ -195,39 +187,34 @@ export default function UserProfile() {
 
     try {
       const reader = new FileReader();
-
       const imageBase64 = await new Promise<string>((resolve, reject) => {
         reader.onload = () => {
-          if (typeof reader.result === 'string') {
-            resolve(reader.result);
-          } else {
-            reject(new Error('Failed to read file as base64'));
-          }
+          if (typeof reader.result === 'string') resolve(reader.result);
+          else reject(new Error('Failed to read file as base64'));
         };
         reader.onerror = () => reject(reader.error);
         reader.readAsDataURL(file);
       });
-      const result = await UploadFile(userId, imageBase64);
 
+      const result = await UploadFile(userId, imageBase64);
       if (result.success) {
         setAvatarSrc(imageBase64);
-
         toast({
-          title: 'Avatar actualizado',
-          description: 'Tu foto de perfil ha sido actualizada exitosamente.'
+          description: 'Tu foto de perfil ha sido actualizada exitosamente.',
+          title: 'Avatar actualizado'
         });
       } else {
         toast({
-          title: 'Error de carga',
           description: result.error || 'No se pudo subir la imagen.',
+          title: 'Error de carga',
           variant: 'destructive'
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
         description:
           'Ocurrió un error al subir la imagen. Por favor intenta de nuevo.',
+        title: 'Error',
         variant: 'destructive'
       });
     } finally {
@@ -235,17 +222,14 @@ export default function UserProfile() {
     }
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
+  const handleCancel = () => setIsEditing(false);
 
   if (!userId || defaultProfile.username === 'Cargando...') {
     return (
       <div className="container mx-auto p-4 md:p-10 flex justify-center items-center h-screen">
         <div className="flex flex-col items-center">
-          <div className="w-10 h-10 border-4 border-gray-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-
-          <p className="text-blue-7000">Cargando perfil...</p>
+          <div className="w-10 h-10 border-4 border-gray-500 border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-blue-700">Cargando perfil...</p>
         </div>
       </div>
     );
@@ -261,20 +245,20 @@ export default function UserProfile() {
             <GeneralTab
               defaultProfile={defaultProfile as ProfileFormValues}
               isEditing={isEditing}
+              onCancel={handleCancel}
               onEditToggle={() => setIsEditing(!isEditing)}
               onSubmit={handleProfileSubmit}
-              onCancel={handleCancel}
             />
           )}
 
           {activeTab === 'avatar' && (
             <AvatarCard
               avatarSrc={avatarSrc}
-              isUploading={isUploading}
+              fileInputRef={fileInputRef}
               isEditing={isEditing}
+              isUploading={isUploading}
               name={defaultProfile.username}
               onAvatarClick={handleAvatarClick}
-              fileInputRef={fileInputRef}
               onFileChange={handleFileChange}
             />
           )}
