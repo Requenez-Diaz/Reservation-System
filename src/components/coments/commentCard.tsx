@@ -1,34 +1,33 @@
 import React from 'react';
-import { ThumbsUp, ThumbsDown, MoreVertical, Star } from 'lucide-react';
-import User from '@/app/(site)/navbar/usersComponents/User';
+import { ThumbsDown, ThumbsUp, MoreVertical, Star } from 'lucide-react';
 
 interface CommentCardProps {
-  user: string;
-  date: string;
-  content: string;
-  rating: number;
-  likes: number;
-  dislikes: number;
   avatarUrl: string;
+  content: string;
+  date: string;
+  dislikes: number;
+  likes: number;
+  rating: number;
+  user: string;
 }
 
 export default function CommentCard({
-  user,
-  date,
+  avatarUrl,
   content,
-  rating,
-  likes,
+  date,
   dislikes,
-  avatarUrl
+  likes,
+  rating,
+  user
 }: CommentCardProps) {
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm mb-4">
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-4">
           <img
-            src={avatarUrl}
             alt={user}
-            className="w-12 h-12 rounded-full object-cover"
+            className="h-12 w-12 rounded-full object-cover"
+            src={avatarUrl}
           />
           <div>
             <h3 className="font-semibold text-gray-800">{user}</h3>
@@ -39,13 +38,13 @@ export default function CommentCard({
           <div className="flex items-center">
             {[...Array(5)].map((_, index) => (
               <Star
-                key={index}
-                size={16}
                 className={
                   index < rating
                     ? 'fill-yellow-400 text-yellow-400'
                     : 'text-gray-300'
                 }
+                key={index}
+                size={16}
               />
             ))}
           </div>
@@ -55,7 +54,7 @@ export default function CommentCard({
         </div>
       </div>
 
-      <p className="mt-4 text-gray-600 leading-relaxed">{content}</p>
+      <p className="mt-4 leading-relaxed text-gray-600">{content}</p>
 
       <div className="mt-4 flex items-center space-x-4">
         <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600">

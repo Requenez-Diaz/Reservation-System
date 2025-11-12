@@ -52,25 +52,25 @@ export function CarouselDescriptions() {
   ];
 
   React.useEffect(() => {
-    if (api) {
-      const interval = setInterval(() => {
-        if (!isHovered) {
-          api.scrollNext();
-        }
-      }, 4000);
+    if (!api) return;
 
-      return () => clearInterval(interval);
-    }
+    const interval = setInterval(() => {
+      if (!isHovered) {
+        api.scrollNext();
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, [api, isHovered]);
 
   React.useEffect(() => {
-    if (api) {
-      setCurrent(api.selectedScrollSnap());
+    if (!api) return;
 
-      api.on('select', () => {
-        setCurrent(api.selectedScrollSnap());
-      });
-    }
+    setCurrent(api.selectedScrollSnap());
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
   }, [api]);
 
   return (
@@ -133,8 +133,8 @@ export function CarouselDescriptions() {
                       <ul className="w-full space-y-3">
                         {service.features.map((feature, idx) => (
                           <li
-                            key={idx}
                             className="flex items-start gap-3 text-muted-foreground"
+                            key={idx}
                           >
                             <div className="flex-shrink-0 mt-2 h-2 w-2 rounded-full bg-accent" />
                             <span className="leading-relaxed text-lg">
@@ -149,20 +149,20 @@ export function CarouselDescriptions() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-4 bg-card/90 border-border shadow-lg hover:bg-card" />
-          <CarouselNext className="right-4 bg-card/90 border-border shadow-lg hover:bg-card" />
+          <CarouselPrevious className="bg-card/90 border-border left-4 shadow-lg hover:bg-card" />
+          <CarouselNext className="bg-card/90 border-border right-4 shadow-lg hover:bg-card" />
         </Carousel>
 
         <div className="flex gap-2 mt-6">
           {services.map((_, index) => (
             <button
-              key={index}
               aria-label={`Ir a información ${index + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${
                 current === index
                   ? 'w-8 bg-accent'
                   : 'w-2 bg-muted-foreground/40 hover:bg-accent/60'
               }`}
+              key={index}
               onClick={() => api?.scrollTo(index)}
             />
           ))}
@@ -171,3 +171,5 @@ export function CarouselDescriptions() {
     </div>
   );
 }
+
+export default CarouselDescriptions;
