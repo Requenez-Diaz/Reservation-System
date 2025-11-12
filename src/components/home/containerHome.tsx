@@ -1,5 +1,4 @@
 import React from 'react';
-import { CarouselDescriptions } from './cardsSearchRooms/carrucelServicios';
 import { ContainerAboutHotels } from './adventagesHotels/containerAboutServices';
 import CardDescriptions from './cardsSearchRooms/cardsServicesHotels';
 import GalleryBedrooms from './galleryBedrooms/galleryBedrooms';

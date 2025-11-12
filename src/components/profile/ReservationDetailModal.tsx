@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Dialog,
@@ -6,24 +6,56 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Bell } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { calculateDuration } from "@/app/actions/saveReservation/calculateDuration";
+  DialogClose
+} from '@/components/ui/dialog';
+import { Bell } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { calculateDuration } from '@/app/actions/saveReservation/calculateDuration';
+
+// --- DEFINICIONES DE TIPOS (Asegúrate de que estas coincidan con NotificationsTab) ---
+
+interface User {
+  image?: string;
+  username?: string;
+  email?: string;
+}
+
+interface NotificationReservation {
+  id: string | number;
+  arrivalDate: string;
+  departureDate: string;
+  bedroomsType: string;
+  status: string;
+  rooms: number;
+  guests: number;
+  // Estas propiedades son cruciales para la compatibilidad con SelectedReservation:
+  formattedArrivalDate: string;
+  formattedDepartureDate: string;
+}
+
+// El tipo que el componente NotificationsTab pasa al modal
+interface SelectedReservation extends NotificationReservation {
+  User: User;
+}
+
+// --- PROPS CORREGIDOS ---
 
 interface ReservationDetailModalProps {
-  reservation: any;
-  selectedReservation: any | null;
-  setSelectedReservation: (res: any | null) => void;
+  // Ahora espera el tipo SelectedReservation, que es el tipo real del estado en el padre
+  reservation: SelectedReservation;
+  selectedReservation: SelectedReservation | null;
+  // CORRECCIÓN: El setter debe manejar SelectedReservation o null
+  setSelectedReservation: (res: SelectedReservation | null) => void;
 }
+
+// --- COMPONENTE ---
 
 export default function ReservationDetailModal({
   reservation,
   selectedReservation,
-  setSelectedReservation,
+  setSelectedReservation
 }: ReservationDetailModalProps) {
   const router = useRouter();
   const nights = calculateDuration(
@@ -33,8 +65,8 @@ export default function ReservationDetailModal({
 
   return (
     <Dialog
-      open={selectedReservation?.id === reservation.id}
       onOpenChange={(open) => !open && setSelectedReservation(null)}
+      open={selectedReservation?.id === reservation.id}
     >
       <DialogContent className="w-full max-w-[95vw] sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 sm:p-8 shadow-2xl bg-white border border-gray-100">
         <DialogHeader>
@@ -51,10 +83,10 @@ export default function ReservationDetailModal({
           {reservation.User?.image ? (
             <div className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-blue-200 shadow-sm">
               <Image
-                src={reservation.User.image}
-                alt={reservation.User.username ?? "Usuario"}
-                fill
+                alt={reservation.User.username ?? 'Usuario'}
                 className="object-cover"
+                fill
+                src={reservation.User.image}
               />
             </div>
           ) : (
@@ -65,30 +97,30 @@ export default function ReservationDetailModal({
 
           <div className="flex flex-col">
             <p className="font-semibold text-gray-800 text-lg leading-tight">
-              {reservation.User?.username ?? "Usuario desconocido"}
+              {reservation.User?.username ?? 'Usuario desconocido'}
             </p>
             <p className="text-sm text-gray-500 mt-0.5">
-              {reservation.User?.email ?? "Sin correo"}
+              {reservation.User?.email ?? 'Sin correo'}
             </p>
           </div>
         </div>
 
-
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
-            { label: "Habitación", value: reservation.bedroomsType },
-            { label: "Estado", value: reservation.status },
-            { label: "Noches", value: nights },
-            { label: "Habitaciones", value: reservation.rooms },
-            { label: "Huéspedes", value: reservation.guests },
+            { label: 'Habitación', value: reservation.bedroomsType },
+            { label: 'Estado', value: reservation.status },
+            { label: 'Noches', value: nights },
+            { label: 'Habitaciones', value: reservation.rooms },
+            { label: 'Huéspedes', value: reservation.guests },
+            // Usamos las propiedades formateadas que ya vienen en SelectedReservation
             {
-              label: "Llegada",
-              value: new Date(reservation.arrivalDate).toLocaleDateString(),
+              label: 'Llegada',
+              value: reservation.formattedArrivalDate
             },
             {
-              label: "Salida",
-              value: new Date(reservation.departureDate).toLocaleDateString(),
-            },
+              label: 'Salida',
+              value: reservation.formattedDepartureDate
+            }
           ].map((item, i) => (
             <div
               key={i}
@@ -103,15 +135,15 @@ export default function ReservationDetailModal({
         <div className="mt-8 flex flex-col sm:flex-row justify-end gap-3">
           <DialogClose asChild>
             <Button
-              variant="outline"
               className="border-gray-300 text-gray-700 hover:bg-gray-100"
+              variant="outline"
             >
               Cerrar
             </Button>
           </DialogClose>
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white px-5"
-            onClick={() => router.push("/reservaciones")}
+            onClick={() => router.push('/reservaciones')}
           >
             Ir a Reservaciones
           </Button>
