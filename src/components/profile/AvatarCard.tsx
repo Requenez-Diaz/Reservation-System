@@ -18,7 +18,7 @@ interface AvatarCardProps {
   name: string;
   onAvatarClick: () => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // Nota: El linter aquí se refiere a la definición de tipo 'e' en la interfaz, aunque el error se corrigió en la desestructuración de la función.
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function AvatarCard({
@@ -36,7 +36,6 @@ export function AvatarCard({
   return (
     <Card
       className={`bg-white transition-all duration-300 rounded-xl ${
-        // CORREGIDO (Línea 66)
         isEditing ? 'shadow-lg shadow-blue-200' : 'shadow-md'
       }`}
     >
@@ -44,14 +43,14 @@ export function AvatarCard({
         <CardTitle
           className={`flex items-center gap-2 text-lg font-semibold ${accentText}`}
         >
-          <ImageIcon className={`h-5 w-5 ${accentText}`} />{' '}
-          {/* CORREGIDO (Línea 67) */}
+          <ImageIcon className={accentText + ' h-5 w-5'} />
           Foto de Perfil
         </CardTitle>
         <CardDescription className="text-gray-600">
           Tu avatar ayuda a identificar tu cuenta en toda la aplicación.
         </CardDescription>
       </CardHeader>
+
       <CardContent className="flex flex-col items-center gap-6 py-6">
         <div className="relative group">
           <Avatar
@@ -64,20 +63,21 @@ export function AvatarCard({
           >
             {avatarSrc ? (
               <AvatarImage
-                src={avatarSrc || '/placeholder.svg'}
+                src={avatarSrc}
                 alt={name}
                 className="object-cover"
               />
-            ) : null}
-            <AvatarFallback className="bg-gradient-to-br from-blue-100 to-white">
-              <User className={`w-14 h-14 ${accentText}`} />
-            </AvatarFallback>
+            ) : (
+              <AvatarFallback className="bg-gradient-to-br from-blue-100 to-white">
+                <User className={`w-14 h-14 ${accentText}`} />
+              </AvatarFallback>
+            )}
 
             {isUploading && (
               <div
                 className={`absolute inset-0 ${accentBg} rounded-full flex items-center justify-center bg-opacity-80`}
               >
-                <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin" />
               </div>
             )}
 
@@ -95,11 +95,11 @@ export function AvatarCard({
           )}
 
           <input
-            accept="image/*" // CORREGIDO (Línea 97)
-            className="hidden" // CORREGIDO (Línea 98)
-            disabled={isUploading || !isEditing} // CORREGIDO (Línea 99)
-            onChange={onFileChange} // CORREGIDO (Línea 100)
-            ref={fileInputRef} // CORREGIDO (Línea 101)
+            accept="image/*"
+            className="hidden"
+            disabled={isUploading || !isEditing}
+            onChange={onFileChange}
+            ref={fileInputRef}
             type="file"
           />
         </div>

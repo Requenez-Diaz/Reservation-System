@@ -34,7 +34,7 @@ interface FormReservationProps {
 const getInitialFormValues = (
   selectedBedroomType: string | undefined
 ): ReservationFormValues => {
-  let initialValues: ReservationFormValues = {
+  const initialValues: ReservationFormValues = {
     name: '',
     lastName: '',
     guests: 1,
@@ -46,14 +46,12 @@ const getInitialFormValues = (
 
   try {
     const fromSearch = localStorage.getItem('fromSearch');
-
     if (fromSearch === 'true') {
       const storedDates = localStorage.getItem('selectedDates');
       const storedGuests = localStorage.getItem('selectedGuests');
 
       if (storedDates) {
         const { from, to } = JSON.parse(storedDates);
-
         if (from) {
           initialValues.arrivalDate = new Date(from)
             .toISOString()
@@ -121,9 +119,9 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   useEffect(() => {
     if (localStorage.getItem('fromSearch') === 'true') {
       toast({
-        title: 'Información cargada',
         description:
-          'Las fechas y número de huéspedes se han cargado automáticamente.'
+          'Las fechas y número de huéspedes se han cargado automáticamente.',
+        title: 'Información cargada'
       });
     }
   }, [toast]);
@@ -151,7 +149,7 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
       const response = await saveReservation(finalData);
 
       if (response.success) {
-        toast({ title: 'Reserva realizada', description: response.message });
+        toast({ description: response.message, title: 'Reserva realizada' });
         form.reset();
 
         localStorage.removeItem('selectedDates');
@@ -162,34 +160,32 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         setAvailabilityInfo(null);
         setOriginalFormData(null);
         setSuggestedDates(null);
-      } else {
-        if (response.showAvailabilityInfo && response.availabilityInfo) {
-          setAvailabilityInfo(response.availabilityInfo);
-          setOriginalFormData(data);
-          if (response.availabilityInfo.nextAvailableDate) {
-            const suggested = calculateSuggestedDates(
+      } else if (response.showAvailabilityInfo && response.availabilityInfo) {
+        setAvailabilityInfo(response.availabilityInfo);
+        setOriginalFormData(data);
+        if (response.availabilityInfo.nextAvailableDate) {
+          setSuggestedDates(
+            calculateSuggestedDates(
               response.availabilityInfo.nextAvailableDate,
               new Date(data.arrivalDate),
               new Date(data.departureDate)
-            );
-            setSuggestedDates(suggested);
-          }
-          setShowConflictAlert(true);
-        } else {
-          toast({
-            title: 'Error',
-            description:
-              response.message ||
-              'Hubo un problema al registrar la reservación.',
-            variant: 'destructive'
-          });
+            )
+          );
         }
+        setShowConflictAlert(true);
+      } else {
+        toast({
+          description:
+            response.message || 'Hubo un problema al registrar la reservación.',
+          title: 'Error',
+          variant: 'destructive'
+        });
       }
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
-        title: 'Error',
         description: 'Error inesperado al procesar la reservación.',
+        title: 'Error',
         variant: 'destructive'
       });
     } finally {
@@ -209,9 +205,9 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
       setOriginalFormData(null);
       setSuggestedDates(null);
       toast({
-        title: 'Fechas actualizadas',
         description:
-          'Las fechas han sido cambiadas automáticamente. Puedes enviar la reserva nuevamente.'
+          'Las fechas han sido cambiadas automáticamente. Puedes enviar la reserva nuevamente.',
+        title: 'Fechas actualizadas'
       });
     }
   };
@@ -222,8 +218,8 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
     setOriginalFormData(null);
     setSuggestedDates(null);
     toast({
-      title: 'Sin cambios',
-      description: 'Puedes modificar las fechas manualmente en el formulario.'
+      description: 'Puedes modificar las fechas manualmente en el formulario.',
+      title: 'Sin cambios'
     });
   };
 
@@ -239,13 +235,13 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         </form>
       </Form>
       <ConflictAlertDialog
-        open={showConflictAlert}
-        onOpenChange={setShowConflictAlert}
         availabilityInfo={availabilityInfo}
-        originalFormData={originalFormData}
-        suggestedDates={suggestedDates}
         onAccept={handleAcceptSuggestedDates}
         onCancel={handleCancelChange}
+        onOpenChange={setShowConflictAlert}
+        open={showConflictAlert}
+        originalFormData={originalFormData}
+        suggestedDates={suggestedDates}
       />
     </>
   );

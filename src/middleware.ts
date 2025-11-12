@@ -6,7 +6,7 @@ export const config = {
 };
 
 export default function middleware(request: NextRequest) {
-  const isAuthtenticated = Boolean(request.cookies.get('authToken'));
+  const _isAuthtenticated = Boolean(request.cookies.get('authToken'));
 
   // if (!isAuthtenticated) {
   //   return NextResponse.redirect(new URL('/sign-up', request.url));
