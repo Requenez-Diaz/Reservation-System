@@ -1,28 +1,141 @@
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
+import Image from "next/image";
+import ReservationDetailModal from "./ReservationDetailModal";
+import NotificationMenu from "./NotificationMenu";
+import { getConfirmedNotifications } from "@/app/actions/notification/getNotification";
+import { useSession } from "next-auth/react";
 
 export function NotificationsTab() {
+  const { data: session } = useSession();
+  const [items, setItems] = useState<any[]>([]);
+  const [selectedReservation, setSelectedReservation] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      if (!session?.user?.id) return;
+
+      try {
+        const response = await getConfirmedNotifications(Number(session.user.id));
+        if (!response.success) {
+          console.error("Error cargando notificaciones:", response.message);
+          setItems([]);
+          return;
+        }
+
+        const combined = response.notifications.map((n) => ({
+          id: n.id,
+          user: n.user,
+          message: n.message,
+          reservation: n.reservation
+            ? {
+              ...n.reservation,
+              arrivalDate: n.reservation.arrivalDate,
+              departureDate: n.reservation.departureDate,
+              formattedArrivalDate: new Date(n.reservation.arrivalDate).toLocaleDateString("es-NI"),
+              formattedDepartureDate: new Date(n.reservation.departureDate).toLocaleDateString("es-NI"),
+            }
+            : null,
+
+          createdAt: new Date(n.createdAt).toLocaleString("es-NI", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        }));
+
+        combined.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setItems(combined);
+      } catch (error) {
+        console.error("Error cargando notificaciones:", error);
+      }
+    };
+
+    fetchAll();
+  }, [session]);
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Preferencias de Notificación</CardTitle>
-        <CardDescription>
-          Decide cómo y cuándo quieres ser notificado.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-muted-foreground">
-          Aquí irían los toggles para activar/desactivar correos electrónicos,
-          notificaciones push, etc.
-        </p>
-      </CardContent>
-    </Card>
+    <div className="p-6">
+      <h1 className="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800">
+        <Bell className="h-5 w-5 text-blue-600" />
+        Notificaciones
+      </h1>
+
+      {items.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-10 text-gray-500">
+          <Bell className="h-12 w-12 mb-3 text-gray-400" />
+          <p className="text-lg">No tienes notificaciones 🎉</p>
+        </div>
+      ) : (
+        <ul className="space-y-4">
+          {items.map((item) => (
+            <li key={item.id}>
+              <div
+                onClick={() =>
+                  item.reservation &&
+                  setSelectedReservation({
+                    ...item.reservation,
+                    user: item.user,
+                  })
+                }
+                className="cursor-pointer p-4 border rounded-lg bg-white hover:shadow-md transition-shadow flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  {item.user?.image ? (
+                    <div className="relative w-10 aspect-square rounded-full overflow-hidden border border-gray-300">
+                      <Image
+                        src={item.user.image}
+                        alt={item.user.username}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 aspect-square rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
+                      {item.user?.username?.[0]?.toUpperCase() ?? "U"}
+                    </div>
+                  )}
+
+                  <div className="flex flex-col">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-semibold text-gray-900">
+                        {item.user?.username ?? "Usuario"}
+                      </span>{" "}
+                      se ha confirmado una{" "}
+                      <span className="text-blue-600 font-medium">
+                        {item.reservation?.bedroomsType || "habitación"}
+                      </span>
+                      .
+                    </p>
+                    <p className="text-xs text-gray-500">{item.createdAt}</p>
+                  </div>
+                </div>
+
+                <NotificationMenu
+                  notificationId={item.id}
+                  onDeleted={() =>
+                    setItems((prev) => prev.filter((i) => i.id !== item.id))
+                  }
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {selectedReservation && (
+        <ReservationDetailModal
+          reservation={selectedReservation}
+          selectedReservation={selectedReservation}
+          setSelectedReservation={setSelectedReservation}
+        />
+      )}
+    </div>
   );
 }

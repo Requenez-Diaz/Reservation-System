@@ -20,7 +20,7 @@ model UsersRole {
 }
 
 model Reservation {
-  id            Int         @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   name          String
   lastName      String
   email         String
@@ -29,14 +29,36 @@ model Reservation {
   rooms         Int
   arrivalDate   DateTime
   departureDate DateTime
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   status        Status
   userId        Int
   promotionId   Int?
-  isRead        Boolean     @default(false)
-  Promotions    Promotions? @relation(fields: [promotionId], references: [id])
-  User          User        @relation(fields: [userId], references: [id])
+  isRead        Boolean        @default(false)
+  Promotions    Promotions?    @relation(fields: [promotionId], references: [id])
+  User          User           @relation(fields: [userId], references: [id])
+  notifications Notification[]
+}
+
+model Notification {
+  id            Int              @id @default(autoincrement())
+  title         String
+  message       String
+  isRead        Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  email         String
+  userImage     String?
+  userId        Int
+  user          User             @relation(fields: [userId], references: [id])
+  reservationId Int?
+  reservation   Reservation?     @relation(fields: [reservationId], references: [id])
+  type          NotificationType
+}
+
+enum NotificationType {
+  CREATED
+  CONFIRMED
+  CANCELLED
 }
 
 model Comments {
@@ -229,6 +251,7 @@ model User {
   Role               Role                @relation(fields: [roleName], references: [roleName])
   UserImage          UserImage?
   testimonials       testimonials[]
+  notifications      Notification[]
 }
 
 model BedroomImages {
