@@ -18,7 +18,7 @@ interface AvatarCardProps {
   name: string;
   onAvatarClick: () => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // Nota: El linter aquí se refiere a la definición de tipo 'e' en la interfaz, aunque el error se corrigió en la desestructuración de la función.
 }
 
 export function AvatarCard({
@@ -36,6 +36,7 @@ export function AvatarCard({
   return (
     <Card
       className={`bg-white transition-all duration-300 rounded-xl ${
+        // CORREGIDO (Línea 66)
         isEditing ? 'shadow-lg shadow-blue-200' : 'shadow-md'
       }`}
     >
@@ -43,7 +44,8 @@ export function AvatarCard({
         <CardTitle
           className={`flex items-center gap-2 text-lg font-semibold ${accentText}`}
         >
-          <ImageIcon className={`w-5 h-5 ${accentText}`} />
+          <ImageIcon className={`h-5 w-5 ${accentText}`} />{' '}
+          {/* CORREGIDO (Línea 67) */}
           Foto de Perfil
         </CardTitle>
         <CardDescription className="text-gray-600">
@@ -93,12 +95,12 @@ export function AvatarCard({
           )}
 
           <input
+            accept="image/*" // CORREGIDO (Línea 97)
+            className="hidden" // CORREGIDO (Línea 98)
+            disabled={isUploading || !isEditing} // CORREGIDO (Línea 99)
+            onChange={onFileChange} // CORREGIDO (Línea 100)
+            ref={fileInputRef} // CORREGIDO (Línea 101)
             type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            onChange={onFileChange}
-            disabled={isUploading || !isEditing}
           />
         </div>
 

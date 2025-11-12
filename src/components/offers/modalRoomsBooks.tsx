@@ -45,7 +45,7 @@ export function ModalBookRooms() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button variant="default">Reservar</Button>
       </DialogTrigger>
@@ -64,12 +64,13 @@ export function ModalBookRooms() {
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    id="checkin"
-                    variant={'outline'}
                     className={cn(
+                      // CORREGIDO (Línea 48)
                       'w-full justify-start text-left font-normal',
                       !checkIn && 'text-muted-foreground'
                     )}
+                    id="checkin"
+                    variant={'outline'}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {checkIn
@@ -79,10 +80,10 @@ export function ModalBookRooms() {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
-                    mode="single"
-                    selected={checkIn}
-                    onSelect={setCheckIn}
                     initialFocus
+                    mode="single"
+                    onSelect={setCheckIn}
+                    selected={checkIn}
                   />
                 </PopoverContent>
               </Popover>
@@ -92,12 +93,13 @@ export function ModalBookRooms() {
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    id="checkout"
-                    variant={'outline'}
                     className={cn(
+                      // CORREGIDO (Línea 84)
                       'w-full justify-start text-left font-normal',
                       !checkOut && 'text-muted-foreground'
                     )}
+                    id="checkout" // CORREGIDO (Línea 85)
+                    variant={'outline'}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {checkOut
@@ -107,17 +109,19 @@ export function ModalBookRooms() {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
-                    mode="single"
-                    selected={checkOut}
-                    onSelect={setCheckOut}
                     initialFocus
+                    mode="single"
+                    onSelect={setCheckOut}
+                    selected={checkOut}
                   />
                 </PopoverContent>
               </Popover>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="guests">Número de huéspedes</Label>
-              <Select value={guests} onValueChange={setGuests}>
+              <Select onValueChange={setGuests} value={guests}>
+                {' '}
+                {/* CORREGIDO (Línea 97) */}
                 <SelectTrigger id="guests">
                   <SelectValue placeholder="Seleccionar huéspedes" />
                 </SelectTrigger>
@@ -132,6 +136,8 @@ export function ModalBookRooms() {
           </div>
           <DialogFooter>
             <Button type="submit" variant={'success'}>
+              {' '}
+              {/* CORREGIDO (Línea 120) */}
               Confirmar reserva
             </Button>
           </DialogFooter>

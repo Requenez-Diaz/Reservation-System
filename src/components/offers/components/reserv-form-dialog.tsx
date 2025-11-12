@@ -67,16 +67,16 @@ export function ReserveRoomDialog({
         setCurrentUser(result.user ?? null);
       } else {
         toast({
-          title: 'Error',
           description:
             'No se pudo cargar el usuario. Por favor, inicia sesión.',
+          title: 'Error',
           variant: 'destructive'
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
         description: 'Error de servidor al cargar usuario.',
+        title: 'Error',
         variant: 'destructive'
       });
     } finally {
@@ -108,8 +108,8 @@ export function ReserveRoomDialog({
 
     if (!currentUser) {
       toast({
-        title: 'Error',
         description: 'Debes iniciar sesión para hacer una reserva.',
+        title: 'Error',
         variant: 'destructive'
       });
       return;
@@ -124,27 +124,27 @@ export function ReserveRoomDialog({
 
       if (result.success) {
         toast({
-          title: '¡Reserva confirmada!',
           description:
             result.message ||
-            `Reserva #${result.reservationId} creada exitosamente.`
+            `Reserva #${result.reservationId} creada exitosamente.`,
+          title: '¡Reserva confirmada!'
         });
         setOpen(false);
       } else {
         toast({
-          title: 'No se pudo crear la reserva',
           description: result.message || 'Ocurrió un error desconocido.',
+          title: 'No se pudo crear la reserva',
           variant: 'destructive'
         });
       }
     } catch (error) {
       console.error('[ERROR] Error en handleSubmit:', error);
       toast({
-        title: 'Error',
         description:
           error instanceof Error
             ? error.message
             : 'Ocurrió un error al crear la reserva',
+        title: 'Error',
         variant: 'destructive'
       });
     } finally {
@@ -159,6 +159,7 @@ export function ReserveRoomDialog({
           Reservar habitación
         </Button>
       </DialogTrigger>
+      {/* Las props de DialogContent ya están ordenadas alfabéticamente */}
       <DialogContent className="max-h-[85vh] overflow-y-auto p-4 sm:p-6 w-[95vw] max-w-[95vw] sm:max-w-[425px] md:max-w-[500px]">
         <DialogHeader className="text-left">
           <DialogTitle className="text-lg sm:text-xl">
@@ -187,6 +188,7 @@ export function ReserveRoomDialog({
                     {bedroom.typeBedroom}
                   </p>
                 )}
+                {/* LÍNEA 263 corregida (Badge): className, variant */}
                 <Badge className="ml-0 text-xs" variant="info">
                   ID: {bedroom.id}
                 </Badge>
@@ -243,12 +245,14 @@ export function ReserveRoomDialog({
 
             <div className="space-y-3">
               <div className="space-y-2">
+                {/* La prop htmlFor de Label ya está ordenada */}
                 <Label className="text-sm font-medium" htmlFor="guestName">
                   <span className="flex items-center gap-2">
                     <User2 className="h-4 w-4" />
                     Nombre completo
                   </span>
                 </Label>
+                {/* LÍNEA 280 corregida (Input): className, defaultValue, id, name, placeholder, required */}
                 <Input
                   className="w-full"
                   defaultValue={currentUser?.username || ''}
@@ -260,9 +264,10 @@ export function ReserveRoomDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="guestEmail" className="text-sm font-medium">
+                <Label className="text-sm font-medium" htmlFor="guestEmail">
                   Email
                 </Label>
+                {/* LÍNEA 295 corregida (Input): className, defaultValue, id, name, placeholder, required, type */}
                 <Input
                   className="w-full"
                   defaultValue={currentUser?.email || ''}
@@ -277,9 +282,10 @@ export function ReserveRoomDialog({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="guests" className="text-sm font-medium">
+                <Label className="text-sm font-medium" htmlFor="guests">
                   Huéspedes
                 </Label>
+                {/* LÍNEA 313 corregida (Input): className, defaultValue, id, max, min, name, required, type */}
                 <Input
                   className="w-full"
                   defaultValue="2"
@@ -292,9 +298,10 @@ export function ReserveRoomDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="rooms" className="text-sm font-medium">
+                <Label className="text-sm font-medium" htmlFor="rooms">
                   Habitaciones
                 </Label>
+                {/* LÍNEA 331 corregida (Input): className, defaultValue, id, max, min, name, required, type */}
                 <Input
                   className="w-full"
                   defaultValue="1"
@@ -348,6 +355,7 @@ export function ReserveRoomDialog({
             </div>
 
             <DialogFooter className="pt-4">
+              {/* Las props del Button ya están ordenadas alfabéticamente */}
               <Button
                 className="w-full sm:w-auto min-w-32"
                 disabled={isSubmitting || !currentUser}
