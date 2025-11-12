@@ -1,15 +1,21 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
+// Función para crear una instancia de Prisma
 const prismaClientSingleton = () => {
-  return new PrismaClient()
-}
+  return new PrismaClient();
+};
 
+// Declaramos globalThis para mantener la instancia en desarrollo
 declare const globalThis: {
   prismaGlobal: ReturnType<typeof prismaClientSingleton>;
 } & typeof global;
 
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+// Usamos la instancia global si existe (evita múltiples conexiones en dev)
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
-export default prisma
+// En desarrollo, asignamos la instancia a globalThis para evitar reconexiones
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.prismaGlobal = prisma;
+}
 
-if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
+export default prisma;
