@@ -2,12 +2,12 @@ import React from 'react';
 import { Star } from 'lucide-react';
 
 interface StarRatingProps {
-  onRatingChange: (rating: number) => void;
-  rating: number;
+  onRatingChange: (_rating: number) => void;
+  _rating: number;
 }
 
 export default function StarRating({
-  rating,
+  _rating,
   onRatingChange
 }: StarRatingProps) {
   return (
@@ -21,7 +21,7 @@ export default function StarRating({
         >
           <Star
             className={`cursor-pointer transition-colors ${
-              value <= rating
+              value <= _rating
                 ? 'fill-yellow-400 text-yellow-400'
                 : 'text-gray-300 hover:text-yellow-400'
             }`}

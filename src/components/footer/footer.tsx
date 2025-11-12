@@ -21,7 +21,7 @@ const Footer = () => {
             <p>Dirección: Nueva Guinea, Zona # 8</p>
             <p>Teléfono: +505 8646 9676</p>
             <Link
-              className="text-black hover:text-blue-400 transition duration-300" // Línea 25 corregida
+              className="text-black hover:text-blue-400 transition duration-300"
               href={`mailto:${email}`}
             >
               <p>Email: {email}</p>
@@ -29,19 +29,19 @@ const Footer = () => {
           </div>
           <div className="space-y-4">
             <Link
-              className="block text-black hover:text-blue-400 transition duration-300" // Línea 33 corregida
+              className="block text-black hover:text-blue-400 transition duration-300"
               href="/aboutUs"
             >
               <p>Acerca de nosotros</p>
             </Link>
             <Link
-              className="block text-black hover:text-blue-400 transition duration-300" // Línea 39 corregida
+              className="block text-black hover:text-blue-400 transition duration-300"
               href="/contact"
             >
               <p>Contacto</p>
             </Link>
             <Link
-              className="block text-black hover:text-blue-400 transition duration-300" // Línea 45 corregida
+              className="block text-black hover:text-blue-400 transition duration-300"
               href="/terms"
             >
               <p>Términos y condiciones</p>
@@ -49,15 +49,15 @@ const Footer = () => {
           </div>
           <div className="space-y-4">
             <Link
-              className="flex items-center text-black hover:text-blue-400 transition duration-300" // Línea 53 corregida
+              className="flex items-center text-black hover:text-blue-400 transition duration-300"
               href={'https://www.facebook.com/avimilex.diaz'}
             >
               <span className="mr-2">
                 <svg
                   className="fill-current"
-                  enableBackground="new 0 0 1024 1024" // Línea 60 corregida
-                  height="30" // Línea 61 corregida
-                  viewBox="0 0 1024 1024" // Línea 62 corregida
+                  enableBackground="new 0 0 1024 1024"
+                  height="30"
+                  viewBox="0 0 1024 1024"
                   width="30"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -71,13 +71,13 @@ const Footer = () => {
               <p>Facebook</p>
             </Link>
             <Link
-              className="flex items-center text-black hover:text-blue-400 transition duration-300" // Línea 75 corregida
+              className="flex items-center text-black hover:text-blue-400 transition duration-300"
               href={'https://www.instagram.com/avimilex.diaz'}
             >
               <span className="mr-2">
                 <svg
                   fill="none"
-                  height="30" // Línea 87 corregida
+                  height="30"
                   viewBox="0 0 92 92"
                   width="30"
                   xmlns="http://www.w3.org/2000/svg"
@@ -112,14 +112,14 @@ const Footer = () => {
               <p>Instagram</p>
             </Link>
             <Link
-              className="flex items-center text-black hover:text-blue-400 transition duration-300" // Línea 116 corregida
+              className="flex items-center text-black hover:text-blue-400 transition duration-300"
               href={'https://www.twitter.com/avimilex.diaz'}
             >
               <span className="mr-2">
                 <svg
-                  className="fill-current" // Línea 123 corregida
-                  enableBackground="new 0 0 1024 1024" // Línea 124 corregida
-                  height={30} // Línea 125 corregida
+                  className="fill-current"
+                  enableBackground="new 0 0 1024 1024"
+                  height={30}
                   viewBox="0 0 1024 1024"
                   width={30}
                   xmlns="http://www.w3.org/2000/svg"
