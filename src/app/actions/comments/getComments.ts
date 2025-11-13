@@ -1,7 +1,6 @@
 'use server';
 
 import prisma from '@/lib/db';
-import { ca } from 'date-fns/locale';
 
 export const getAllComments = async () => {
   try {

@@ -16,8 +16,8 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
         <div className="flex items-center gap-3">
           <Avatar className="h-12 w-12">
             <AvatarImage
-              src={testimonial.avatar || '/placeholder.svg'}
               alt={testimonial.name}
+              src={testimonial.avatar || '/placeholder.svg'}
             />
             <AvatarFallback>
               {testimonial.name

@@ -10,7 +10,7 @@ interface RatingStarProps {
 }
 
 export function RatingStars({
-  rating,
+  rating: starRating,
   interactive = false,
   size = 'sm',
   onRatingChange
@@ -28,15 +28,15 @@ export function RatingStars({
             type="button"
           >
             <Star
-              className={`${starSize} ${
-                i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-              }`}
+              className={`${starSize} ${i < starRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
             />
           </button>
         ) : (
           <Star
             className={`${starSize} ${
-              i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+              i < starRating
+                ? 'fill-yellow-400 text-yellow-400'
+                : 'text-gray-300'
             }`}
             key={i}
           />
