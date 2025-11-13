@@ -7,7 +7,7 @@ import { getBedroomsById } from '@/app/actions/get-bedrooms';
 
 interface BedroomImage {
   id: number;
-  imageContent: string;
+  imageContent: string | null;
   url?: string;
 }
 
