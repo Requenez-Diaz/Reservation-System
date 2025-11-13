@@ -14,8 +14,8 @@ export default function Loading() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {Array.from({ length: 6 }).map((_, index) => (
           <div
+            className="rounded-lg overflow-hidden border border-border" // <-- Corregido: className antes de key
             key={index}
-            className="rounded-lg overflow-hidden border border-border"
           >
             <Skeleton className="h-48 w-full" />
             <div className="p-4">

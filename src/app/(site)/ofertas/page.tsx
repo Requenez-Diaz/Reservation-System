@@ -1,10 +1,48 @@
 import { getPromotions } from '@/app/actions/getPromotions/getPromotions';
 import { PromotionRoomCard } from '@/components/offers/components/rooms-card';
 
+interface Bedroom {
+  id: string | number;
+  description: string;
+  typeBedroom: string;
+  numberBedroom: number;
+}
+
+interface BedroomPromotionItem {
+  Bedrooms: Bedroom;
+}
+
+interface Promotion {
+  id: string | number;
+  codePromotions: string;
+  porcentageDescuent: number;
+  dateStart: string | Date;
+  dateEnd: string | Date;
+  description?: string;
+  BedroomsPromotions: BedroomPromotionItem[];
+}
+
+interface TransformedPromotion extends Omit<Promotion, 'BedroomsPromotions'> {
+  dateStart: string;
+  dateEnd: string;
+  BedroomsPromotions: {
+    bedroom: {
+      id: string | number;
+      name: string;
+      type: string;
+      number: string;
+      typeBedroom: string;
+    };
+  }[];
+}
+
+// --- COMPONENTE ---
+
 export default async function OffertsPage() {
   const result = await getPromotions();
 
   console.log('Promotions fetched:', { result });
+
   if (!('success' in result) || !result.success || !result.data) {
     return (
       <div className="container mx-auto py-8">
@@ -12,6 +50,9 @@ export default async function OffertsPage() {
       </div>
     );
   }
+
+  const promotionsData = result.data as Promotion[];
+
   return (
     <div className="container mx-auto py-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -23,31 +64,34 @@ export default async function OffertsPage() {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {result.data.map((promotion) => (
+        {promotionsData.map((promotion) => (
           <PromotionRoomCard
             key={promotion.id}
-            promotion={{
-              ...promotion,
-              dateStart:
-                promotion.dateStart instanceof Date
-                  ? promotion.dateStart.toISOString()
-                  : promotion.dateStart,
-              dateEnd:
-                promotion.dateEnd instanceof Date
-                  ? promotion.dateEnd.toISOString()
-                  : promotion.dateEnd,
-              BedroomsPromotions: promotion.BedroomsPromotions.map(
-                (bp: any) => ({
-                  bedroom: {
-                    id: bp.Bedrooms.id,
-                    name: bp.Bedrooms.description,
-                    type: bp.Bedrooms.typeBedroom,
-                    number: String(bp.Bedrooms.numberBedroom),
-                    typeBedroom: bp.Bedrooms.typeBedroom
-                  }
-                })
-              )
-            }}
+            promotion={
+              {
+                ...promotion,
+                // Manteniendo codePromotions y porcentageDescuent aquí
+                dateStart:
+                  promotion.dateStart instanceof Date
+                    ? promotion.dateStart.toISOString()
+                    : promotion.dateStart,
+                dateEnd:
+                  promotion.dateEnd instanceof Date
+                    ? promotion.dateEnd.toISOString()
+                    : promotion.dateEnd,
+                BedroomsPromotions: promotion.BedroomsPromotions.map(
+                  (bp: BedroomPromotionItem) => ({
+                    bedroom: {
+                      id: bp.Bedrooms.id,
+                      name: bp.Bedrooms.description,
+                      type: bp.Bedrooms.typeBedroom,
+                      number: String(bp.Bedrooms.numberBedroom),
+                      typeBedroom: bp.Bedrooms.typeBedroom
+                    }
+                  })
+                )
+              } as TransformedPromotion
+            }
           />
         ))}
       </div>

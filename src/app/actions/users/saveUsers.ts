@@ -61,7 +61,7 @@ export const saveUsers = async (formData: FormData) => {
 
     return user;
   } catch (error) {
-    throw error;
+    return { error: (error as Error).message };
   }
 };
 

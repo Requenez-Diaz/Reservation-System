@@ -10,7 +10,7 @@ import { CreateTestimonialForm } from './forms/testimonial-form';
 
 interface TestimonialsClientProps {
   initialTestimonials: Testimonial[];
-  onSubmit?: (formData: TestimonialFormData) => void;
+  onSubmit?: (_formData: TestimonialFormData) => void;
 }
 
 export function TestimonialsClient({

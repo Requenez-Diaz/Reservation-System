@@ -213,8 +213,8 @@ export function CreateTestimonialForm({
 
         <CardContent className="pt-0">
           <form
-            id="create-testimonial-form"
             className="space-y-6"
+            id="create-testimonial-form"
             onSubmit={handlePreSubmit}
           >
             <div className="grid gap-4 md:grid-cols-2">
@@ -310,7 +310,7 @@ export function CreateTestimonialForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="bg-red-500 text-white transition-colors hover:bg-red-600"
+              className="bg-red-500 text-white transition-colors hover:bg-red-600" // CORRECCIÓN: className antes de disabled
               disabled={isPending}
             >
               Cancelar

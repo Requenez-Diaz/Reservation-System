@@ -42,7 +42,7 @@ export function ConflictAlertDialog({
   suggestedDates,
   onAccept,
   onCancel,
-  open
+  open: _open // CORRECCIÓN: Renombrado a _open para ignorar el warning no-unused-vars
 }: ConflictAlertDialogProps) {
   const formatDateDisplay = (dateString: string) =>
     new Date(dateString).toLocaleDateString('es-ES', {
@@ -53,7 +53,7 @@ export function ConflictAlertDialog({
     });
 
   return (
-    <AlertDialog onOpenChange={onOpenChange} open={open}>
+    <AlertDialog onOpenChange={onOpenChange} open={_open}>
       <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-amber-700">
@@ -131,8 +131,8 @@ export function ConflictAlertDialog({
                           .slice(0, 2)
                           .map((reservation) => (
                             <div
+                              className="rounded bg-white p-2 text-xs text-blue-700" // CORRECCIÓN: className antes de key
                               key={reservation.id}
-                              className="rounded bg-white p-2 text-xs text-blue-700"
                             >
                               <div className="flex justify-between">
                                 <span>
@@ -184,8 +184,8 @@ export function ConflictAlertDialog({
           </AlertDialogCancel>
           {suggestedDates && (
             <AlertDialogAction
+              className="bg-green-600 hover:bg-green-700" // CORRECCIÓN: className antes de onClick
               onClick={onAccept}
-              className="bg-green-600 hover:bg-green-700"
             >
               Sí, cambiar fechas
             </AlertDialogAction>
