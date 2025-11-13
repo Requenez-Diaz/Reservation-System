@@ -12,7 +12,6 @@ import {
 import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import FormEditReservation from './editReservationForm';
-import { getReservationById } from '@/app/actions/saveReservation/getReservation';
 
 interface Reservation {
   id: number;
@@ -24,35 +23,20 @@ interface Reservation {
   status: string;
 }
 
-export function EditReservation({ reservationId }: { reservationId: number }) {
+export function EditReservation({
+  _reservationId
+}: {
+  _reservationId: number;
+}) {
   const [reservation, setReservation] = useState<Reservation | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const loadReservation = async () => {
-    if (reservation) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      console.log('Cargando reservación con ID:', reservationId);
-
-      const result = await getReservationById(reservationId);
-
-      console.log('Resultado del Server Action:', result);
-
-      if (result.success && result.reservation) {
-        setReservation(result.reservation);
-      } else {
-        setError(result.message || 'Error al cargar la reservación');
-      }
-    } catch (err) {
-      console.error('Error loading reservation:', err);
-      setError('Error inesperado al cargar la reservación');
-    } finally {
+    if (reservation) {
       setLoading(false);
+      return;
     }
   };
 

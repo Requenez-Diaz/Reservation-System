@@ -52,7 +52,9 @@ export function CarouselDescriptions() {
   ];
 
   React.useEffect(() => {
-    if (!api) return;
+    if (!api) {
+      return;
+    }
 
     const interval = setInterval(() => {
       if (!isHovered) {
@@ -64,7 +66,9 @@ export function CarouselDescriptions() {
   }, [api, isHovered]);
 
   React.useEffect(() => {
-    if (!api) return;
+    if (!api) {
+      return;
+    }
 
     setCurrent(api.selectedScrollSnap());
 

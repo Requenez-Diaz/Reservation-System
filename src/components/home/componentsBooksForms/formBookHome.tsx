@@ -32,8 +32,8 @@ import { useToast } from '@/components/ui/use-toast';
 import type { DateRange } from 'react-day-picker';
 
 interface BedroomSearchFormProps {
-  onSearch: (results: Bedroom[]) => void;
-  setIsLoading: (isLoading: boolean) => void;
+  onSearch: (_results: Bedroom[]) => void;
+  setIsLoading: (_isLoading: boolean) => void;
   isLoading: boolean;
 }
 
@@ -87,12 +87,12 @@ export default function BedroomSearchForm({
 
       // Cargar las habitaciones
       try {
-        const response: Bedroom[] = await getAllBedrooms();
+        const response = await getAllBedrooms();
         if (!Array.isArray(response) || response.length === 0) {
           console.error('API response is not an array or is empty');
           return;
         }
-        setBedrooms(response);
+        setBedrooms(response as Bedroom[]);
       } catch (error) {
         console.error('Error fetching bedrooms:', error);
       }

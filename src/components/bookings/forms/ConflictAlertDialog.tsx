@@ -26,13 +26,13 @@ interface AvailabilityInfo {
 }
 
 interface ConflictAlertDialogProps {
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (_open: boolean) => void;
   availabilityInfo: AvailabilityInfo | null;
   originalFormData: ReservationFormValues | null;
   suggestedDates: { arrivalDate: string; departureDate: string } | null;
   onAccept: () => void;
   onCancel: () => void;
-  open: boolean;
+  _open: boolean;
 }
 
 export function ConflictAlertDialog({
@@ -42,7 +42,7 @@ export function ConflictAlertDialog({
   suggestedDates,
   onAccept,
   onCancel,
-  open: _open // CORRECCIÓN: Renombrado a _open para ignorar el warning no-unused-vars
+  _open: _open // CORRECCIÓN: Renombrado a _open para ignorar el warning no-unused-vars
 }: ConflictAlertDialogProps) {
   const formatDateDisplay = (dateString: string) =>
     new Date(dateString).toLocaleDateString('es-ES', {

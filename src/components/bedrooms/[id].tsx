@@ -3,6 +3,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BookingDetail } from '../home/roomsType';
 
 interface Bedroom {
   id: number;
@@ -13,9 +14,9 @@ interface Bedroom {
   status: boolean;
   numberBedroom: number;
   seasonsId: number;
-  amenities: any[];
+  amenities: string[];
   capacity: number;
-  bookingsDetails: any[];
+  bookingsDetails: BookingDetail[];
 }
 
 export default function BedroomDetails() {
