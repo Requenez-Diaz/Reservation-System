@@ -18,7 +18,7 @@ type CarouselProps = {
   opts?: CarouselOptions;
   orientation?: 'horizontal' | 'vertical';
   plugins?: CarouselPlugin;
-  setApi?: (api: CarouselApi) => void;
+  setApi?: (_api: CarouselApi) => void;
 };
 
 type CarouselContextProps = {
@@ -243,11 +243,11 @@ const CarouselNext = React.forwardRef<
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
         className
       )}
-      disabled={!canScrollNext} // CORREGIDO (Línea 237)
+      disabled={!canScrollNext}
       onClick={scrollNext}
       ref={ref}
-      size={size} // CORREGIDO (Línea 244)
-      variant={variant} // CORREGIDO (Línea 245)
+      size={size}
+      variant={variant}
       {...props}
     >
       <ArrowRight className="h-4 w-4" />

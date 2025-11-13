@@ -24,7 +24,7 @@ export type SettingsTab =
 
 interface ProfileNavigationProps {
   activeTab: SettingsTab;
-  onTabChange: (tab: SettingsTab) => void;
+  onTabChange: (_tab: SettingsTab) => void;
 }
 
 export function ProfileNavigation({

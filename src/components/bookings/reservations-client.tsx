@@ -1,6 +1,5 @@
 'use client';
 
-import { EditReservation } from './components/editReservation';
 import { DeleteReservation } from './components/deleteReservation';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Status } from '@prisma/client';

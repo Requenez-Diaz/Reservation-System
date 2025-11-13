@@ -126,7 +126,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-const listeners: Array<(state: State) => void> = [];
+const listeners: Array<(_state: State) => void> = [];
 
 let memoryState: State = { toasts: [] };
 
@@ -181,7 +181,7 @@ function useToast() {
         listeners.splice(index, 1);
       }
     };
-  }, []); // El 'state' ya fue eliminado de aquí.
+  }, []);
 
   return {
     ...state,

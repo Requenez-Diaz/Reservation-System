@@ -18,7 +18,7 @@ interface AvatarCardProps {
   name: string;
   onAvatarClick: () => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function AvatarCard({

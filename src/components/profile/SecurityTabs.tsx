@@ -20,7 +20,7 @@ import {
 } from '@/lib/schemas/schemas-profile';
 
 interface SecurityTabProps {
-  onPasswordSubmit: (data: PasswordFormValues) => Promise<void>;
+  onPasswordSubmit: (_data: PasswordFormValues) => Promise<void>;
 }
 
 export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
