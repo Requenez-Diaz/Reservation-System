@@ -4,7 +4,7 @@ import { Star } from 'lucide-react';
 
 interface RatingStarProps {
   interactive?: boolean;
-  onRatingChange?: (rating: number) => void;
+  onRatingChange?: (_rating: number) => void;
   rating: number;
   size?: 'sm' | 'md';
 }

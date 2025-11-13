@@ -47,7 +47,7 @@ interface ReservationDetailModalProps {
   reservation: SelectedReservation;
   selectedReservation: SelectedReservation | null;
   // CORRECCIÓN: El setter debe manejar SelectedReservation o null
-  setSelectedReservation: (res: SelectedReservation | null) => void;
+  setSelectedReservation: (_res: SelectedReservation | null) => void;
 }
 
 // --- COMPONENTE ---
