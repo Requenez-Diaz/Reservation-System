@@ -29,7 +29,7 @@ const ImagesCarrousel = ({ _name, _images }: ImagesCarrouselInterface) => {
   return (
     <div>
       <div>
-        <CarouselComponents images={imagesItems} />
+        <CarouselComponents image={imagesItems.map((item) => item.images)} />
       </div>
     </div>
   );
