@@ -17,7 +17,7 @@ interface AvatarCardProps {
   isEditing: boolean;
   name: string;
   onAvatarClick: () => void;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   onFileChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
