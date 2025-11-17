@@ -239,7 +239,7 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         onAccept={handleAcceptSuggestedDates}
         onCancel={handleCancelChange}
         onOpenChange={setShowConflictAlert}
-        open={showConflictAlert}
+        _open={showConflictAlert}
         originalFormData={originalFormData}
         suggestedDates={suggestedDates}
       />
