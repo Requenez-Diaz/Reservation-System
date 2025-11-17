@@ -50,7 +50,7 @@ export function CreateTestimonialForm({
 }: CreateTestimonialFormProps) {
   const [isPending, startTransition] = useTransition();
   const [rating, setRating] = useState(5);
-  const [_bedrooms, setBedrooms] = useState<Bedroom[]>([]);
+  const [_bedrooms, _setBedrooms] = useState<Bedroom[]>([]);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
