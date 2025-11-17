@@ -33,7 +33,7 @@ interface BedroomPromotion {
     status: boolean;
     numberBedroom: number;
     seasonsId: number;
-    amenities: string[]; // 🔹 Cambiado de any[] a string[]
+    amenities: string[];
     capacity: number;
   };
   Promotions: {
@@ -63,6 +63,20 @@ interface Promotion {
   BedroomsPromotions: BedroomPromotion[];
 }
 
+interface PromotionsResponse {
+  success: boolean;
+  data: Promotion[];
+}
+
+function isPromotionsResponse(result: unknown): result is PromotionsResponse {
+  return (
+    typeof result === 'object' &&
+    result !== null &&
+    'success' in result &&
+    'data' in result
+  );
+}
+
 interface ClientRoomsWithPromotionsProps {
   rooms: RoomCardProps[];
 }
@@ -79,15 +93,15 @@ export const ClientRoomsWithPromotions: React.FC<
       try {
         setLoading(true);
         const result = await getPromotions();
-        console.log('Promotions result:', result);
+        console.log('[v0] Promotions result:', result);
 
-        if (result.success) {
+        if (isPromotionsResponse(result) && result.success) {
           setPromotions(result.data);
         } else {
           setError('No se pudieron cargar las promociones');
         }
       } catch (err) {
-        console.error('Error loading promotions:', err);
+        console.error('[v0] Error loading promotions:', err);
         setError('Error al cargar las promociones');
       } finally {
         setLoading(false);
@@ -96,6 +110,13 @@ export const ClientRoomsWithPromotions: React.FC<
 
     loadPromotions();
   }, []);
+
+  const calculateDiscountedPrice = (
+    originalPrice: number,
+    discountPercentage: number
+  ) => {
+    return originalPrice - (originalPrice * discountPercentage) / 100;
+  };
 
   if (loading) {
     return (
@@ -109,13 +130,6 @@ export const ClientRoomsWithPromotions: React.FC<
   if (error) {
     return <div className="p-4 text-center text-red-500">{error}</div>;
   }
-
-  const calculateDiscountedPrice = (
-    originalPrice: number,
-    discountPercentage: number
-  ) => {
-    return originalPrice - (originalPrice * discountPercentage) / 100;
-  };
 
   return (
     <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
