@@ -21,19 +21,8 @@ export function TestimonialsClient({
     useState<Testimonial[]>(initialTestimonials);
   const [showForm, setShowForm] = useState(false);
 
-  const handleSubmitTestimonial = (_formData: TestimonialFormData) => {
-    const newTestimonial: Testimonial = {
-      id: testimonials.length + 1,
-      name: _formData.name,
-      avatar: '/placeholder.svg?height=40&width=40',
-      rating: _formData.rating,
-      comment: _formData.comment,
-      location: _formData.location
-    };
-
-    setTestimonials([newTestimonial, ...testimonials]);
+  const handleSubmitTestimonial = () => {
     setShowForm(false);
-    onSubmit?.(_formData);
   };
 
   const calculateStats = () => {
@@ -79,7 +68,9 @@ export function TestimonialsClient({
         </Button>
       </div>
 
-      {showForm && <CreateTestimonialForm onSubmit={handleSubmitTestimonial} />}
+      {showForm && (
+        <CreateTestimonialForm onSuccess={handleSubmitTestimonial} />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {testimonials.map((testimonial) => (
