@@ -8,11 +8,7 @@ interface Item {
   status: boolean;
   numberBedroom: number;
   image: string;
-  slug: string;
-  fileName: string;
-  mimeType: string;
-  imageUrl: string;
-  imageContent: string;
+  slug?: string;
 }
 
 interface ParentComponents {
@@ -25,8 +21,12 @@ const ParentCards = ({ items }: ParentComponents) => {
       {items.map((item) => (
         <PropsCards
           key={item.numberBedroom}
-          {...item}
-          imageUrl={item.image || '/placeholder.svg'}
+          typeBedroom={item.typeBedroom}
+          lowSeasonPrice={item.lowSeasonPrice}
+          status={item.status}
+          numberBedroom={item.numberBedroom}
+          slug={item.slug}
+          imageUrl={item.image}
         />
       ))}
     </div>
