@@ -62,7 +62,7 @@ export function CreateTestimonialForm({
       try {
         setIsLoading(true);
 
-        const [bedroomsResult, userResult] = await Promise.all([
+        const [_bedroomsResult, userResult] = await Promise.all([
           getBedrooms(),
           getCurrentUser()
         ]);
