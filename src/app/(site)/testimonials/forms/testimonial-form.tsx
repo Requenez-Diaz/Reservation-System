@@ -40,7 +40,7 @@ interface CurrentUser {
 }
 
 interface CreateTestimonialFormProps {
-  onSubmit?: (formData: FormData) => void;
+  onSubmit?: (_formData: FormData) => void;
   onSuccess?: () => void;
   className?: string;
 }

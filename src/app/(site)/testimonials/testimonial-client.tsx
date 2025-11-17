@@ -14,10 +14,9 @@ interface TestimonialsClientProps {
 }
 
 export function TestimonialsClient({
-  initialTestimonials,
-  onSubmit
+  initialTestimonials
 }: TestimonialsClientProps) {
-  const [testimonials, setTestimonials] =
+  const [testimonials, _setTestimonials] =
     useState<Testimonial[]>(initialTestimonials);
   const [showForm, setShowForm] = useState(false);
 
