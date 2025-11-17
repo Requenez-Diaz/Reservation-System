@@ -21,9 +21,14 @@ const ImagesCarrousel = () => {
     }
   ];
 
+  const CarouselDescriptionsWithProps =
+    CarouselDescriptions as React.ComponentType<{
+      items: { name: string; images: string }[];
+    }>;
+
   return (
     <div>
-      <CarouselDescriptions items={imagesItems} />
+      <CarouselDescriptionsWithProps items={imagesItems} />
     </div>
   );
 };
