@@ -23,7 +23,6 @@ import {
 import { GeneralTab } from '@/components/profile/cardsProfile';
 import { AvatarCard } from '@/components/profile/AvatarCard';
 import { SecurityTab } from '@/components/profile/SecurityTabs';
-import { NotificationsTab } from '@/components/profile/NotificationsTabs';
 import { PreferencesTab } from '@/components/profile/PreferencesTab';
 import { SupportTab } from '@/components/profile/SupportTab';
 
@@ -281,7 +280,6 @@ export default function UserProfile() {
             <SecurityTab onPasswordSubmit={handlePasswordSubmit} />
           )}
 
-          {activeTab === 'notifications' && <NotificationsTab />}
           {activeTab === 'preferences' && <PreferencesTab />}
           {activeTab === 'support' && <SupportTab />}
         </div>
