@@ -2,7 +2,7 @@ import { getPromotions } from '@/app/actions/getPromotions/getPromotions';
 import { PromotionRoomCard } from '@/components/offers/components/rooms-card';
 
 interface Bedroom {
-  id: string | number;
+  id: number;
   description: string;
   typeBedroom: string;
   numberBedroom: number;
@@ -13,7 +13,7 @@ interface BedroomPromotionItem {
 }
 
 interface Promotion {
-  id: string | number;
+  id: number;
   codePromotions: string;
   porcentageDescuent: number;
   dateStart: string | Date;
@@ -27,7 +27,7 @@ interface TransformedPromotion extends Omit<Promotion, 'BedroomsPromotions'> {
   dateEnd: string;
   BedroomsPromotions: {
     bedroom: {
-      id: string | number;
+      id: number;
       name: string;
       type: string;
       number: string;
@@ -70,7 +70,6 @@ export default async function OffertsPage() {
             promotion={
               {
                 ...promotion,
-                // Manteniendo codePromotions y porcentageDescuent aquí
                 dateStart:
                   promotion.dateStart instanceof Date
                     ? promotion.dateStart.toISOString()
