@@ -67,17 +67,8 @@ export function CreateTestimonialForm({
           getCurrentUser()
         ]);
 
-        if (bedroomsResult.success) {
-          setBedrooms(bedroomsResult.bedrooms);
-        } else {
-          console.warn(
-            'No se pudieron cargar las habitaciones:',
-            bedroomsResult.error
-          );
-        }
-
         if (userResult.success) {
-          setCurrentUser(userResult.user);
+          setCurrentUser(userResult.user ?? null);
         } else {
           toast({
             description: 'Debes iniciar sesión para crear un testimonial',
