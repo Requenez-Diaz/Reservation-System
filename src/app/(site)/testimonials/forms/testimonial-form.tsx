@@ -40,11 +40,13 @@ interface CurrentUser {
 }
 
 interface CreateTestimonialFormProps {
+  onSubmit?: (formData: FormData) => void;
   onSuccess?: () => void;
   className?: string;
 }
 
 export function CreateTestimonialForm({
+  onSubmit,
   onSuccess,
   className
 }: CreateTestimonialFormProps) {
@@ -95,6 +97,11 @@ export function CreateTestimonialForm({
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     formData.set('rating', rating.toString());
+
+    if (onSubmit) {
+      onSubmit(formData);
+      return;
+    }
 
     setFormDataState(formData);
     setShowConfirmation(true);
@@ -301,7 +308,7 @@ export function CreateTestimonialForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="bg-red-500 text-white transition-colors hover:bg-red-600" // CORRECCIÓN: className antes de disabled
+              className="bg-red-500 text-white transition-colors hover:bg-red-600"
               disabled={isPending}
             >
               Cancelar
