@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import StarRating from './startRating';
 import { createComment } from '@/app/actions/comments/comments';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -64,7 +63,6 @@ export default function CommentForm({ bedroomId }: { bedroomId?: number }) {
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Calificación
         </label>
-        <StarRating onRatingChange={setRating} rating={rating} />{' '}
         {/* CORREGIDO (Línea 66) */}
       </div>
       <div className="mb-4">
