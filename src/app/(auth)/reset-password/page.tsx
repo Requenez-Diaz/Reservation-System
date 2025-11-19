@@ -74,7 +74,6 @@ export default function ResetPasswordPage() {
   }, [token, toast]);
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
-    // CORRECCIÓN 1: Se agrega { } para la regla 'curly'
     if (!token) {
       return;
     }
