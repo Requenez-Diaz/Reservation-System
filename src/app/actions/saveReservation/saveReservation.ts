@@ -213,6 +213,19 @@ export const saveReservation = async (
       }
     });
 
+    // NUEVO: crear la notificación asociada a la reserva
+    await prisma.notification.create({
+      data: {
+        title: 'Nueva Reserva Creada',
+        userId: userRecord.id,
+        email: userRecord.email,
+        userImage: null,
+        type: 'CREATED',
+        message: `Se ha creado una nueva reserva (ID: ${newReservation.id}) para ${name} ${lastName}.`,
+        isRead: false
+      }
+    });
+
     revalidatePath('/dashboard/bookings');
 
     return {
