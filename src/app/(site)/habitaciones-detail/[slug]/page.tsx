@@ -11,6 +11,7 @@ import { getGalleryImages } from '@/app/actions/upload/get-images-gallery';
 import { AddReservation } from '@/components/bookings/components/addReservation';
 import { generateWhatsappUrl } from '@/components/bedrooms/messages/message-encode';
 import { SelectedDatesDisplay } from '@/components/home/componentsBooksForms/selected-day-display';
+import type { BedroomImages } from '@prisma/client'; // Importar el tipo para la galería
 
 interface PageProps {
   params: Promise<{
@@ -18,6 +19,9 @@ interface PageProps {
   }>;
 }
 
+// --------------------------------------------------
+// METADATA
+// --------------------------------------------------
 export async function generateMetadata(props: PageProps) {
   const params = await props.params;
   const bedroom = await prisma.bedrooms.findUnique({
@@ -34,6 +38,9 @@ export async function generateMetadata(props: PageProps) {
   };
 }
 
+// --------------------------------------------------
+// UTILITY: getValidImageUrl
+// --------------------------------------------------
 const getValidImageUrl = (imageContent: string | null) => {
   if (!imageContent) {
     return '/placeholder.svg';
@@ -43,11 +50,14 @@ const getValidImageUrl = (imageContent: string | null) => {
     return imageContent;
   }
 
-  // Extraer solo el nombre del archivo
+  // Asumiendo que usas una ruta proxy como /api-imagenes
   const fileName = imageContent.split('/').pop() || '';
   return `/api-imagenes/${fileName}`;
 };
 
+// --------------------------------------------------
+// PRINCIPAL COMPONENT
+// --------------------------------------------------
 export default async function BedroomDetailPage(props: PageProps) {
   const params = await props.params;
   const bedroomSlug = params.slug;
@@ -65,16 +75,45 @@ export default async function BedroomDetailPage(props: PageProps) {
   }
 
   const imagesResult = await getGalleryImages(bedroom.id);
-  const galleryImages =
+  const galleryImagesFromDb =
     Array.isArray(imagesResult.data) && imagesResult.success
       ? imagesResult.data
       : [];
 
-  const selectedBedroomType = bedroom.typeBedroom || '';
+  let fullGallery: BedroomImages[] = [];
+  const primaryImageUrl = bedroom.image;
 
-  const mainImage = galleryImages[0]?.imageContent
-    ? getValidImageUrl(galleryImages[0].imageContent)
-    : bedroom.image || '/placeholder.svg';
+  if (primaryImageUrl) {
+    // 1. Crear un objeto temporal para la imagen principal y ponerla al inicio
+    const primaryImageObject: BedroomImages = {
+      id: -1, // ID temporal, ya que no viene de la tabla BedroomImages
+      imageContent: primaryImageUrl,
+      fileName: 'main-image',
+      mimeType: 'image/jpeg',
+      bedroomId: bedroom.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    fullGallery.push(primaryImageObject);
+  }
+
+  // 2. Filtrar las imágenes de la galería para evitar duplicar la principal
+  // Esto es crucial si la imagen principal también está guardada en la tabla BedroomImages
+  const nonDuplicateGallery = galleryImagesFromDb.filter(
+    (img) => img.imageContent !== primaryImageUrl
+  );
+
+  // 3. Concatenar el resto de las imágenes de la galería
+  fullGallery = fullGallery.concat(nonDuplicateGallery);
+
+  // Usar la primera imagen de la galería completa como imagen principal
+  const mainImage = fullGallery[0]?.imageContent
+    ? getValidImageUrl(fullGallery[0].imageContent)
+    : '/placeholder.svg';
+
+  // --- FIN DE LA LÓGICA DE CORRECCIÓN ---
+
+  const selectedBedroomType = bedroom.typeBedroom || '';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -100,33 +139,30 @@ export default async function BedroomDetailPage(props: PageProps) {
             <Card>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {/* Imagen principal */}
+                  {/* Imagen principal (grande) */}
                   <div className="relative h-96 overflow-hidden rounded-lg">
                     <Image
                       alt={`${bedroom.typeBedroom} - Vista principal`}
                       className="object-cover transition-transform duration-300 hover:scale-105"
                       fill
-                      src={mainImage || '/placeholder.svg'}
+                      src={mainImage}
                     />
                   </div>
 
                   {/* Miniaturas de galería */}
-                  {galleryImages.length > 1 && (
+                  {fullGallery.length > 1 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {galleryImages.slice(1).map((image, index) => (
+                      {/* Mostrar todas las imágenes EXCEPTO la primera (que es la principal) */}
+                      {fullGallery.slice(1).map((image, index) => (
                         <div
                           className="relative h-32 overflow-hidden rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500 transition-colors"
-                          key={image.id} // CORREGIDO: key ordenado alfabéticamente (Línea 119)
+                          key={image.id || index}
                         >
                           <Image
                             alt={`${bedroom.typeBedroom} - Vista ${index + 2}`}
                             className="object-cover transition-transform duration-300 hover:scale-105"
                             fill
-                            src={
-                              getValidImageUrl(image.imageContent) ||
-                              '/placeholder.svg' ||
-                              '/placeholder.svg'
-                            }
+                            src={getValidImageUrl(image.imageContent)}
                           />
                         </div>
                       ))}
@@ -136,7 +172,7 @@ export default async function BedroomDetailPage(props: PageProps) {
               </CardContent>
             </Card>
 
-            {/* Detalles de la habitación */}
+            {/* ... (Detalles y otras tarjetas) ... */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -162,7 +198,7 @@ export default async function BedroomDetailPage(props: PageProps) {
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <p className="text-sm font-medium">Imágenes</p>
-                    <p className="text-lg font-bold">{galleryImages.length}</p>
+                    <p className="text-lg font-bold">{fullGallery.length}</p>
                   </div>
                 </div>
               </CardContent>

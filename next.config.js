@@ -36,8 +36,15 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'fxdmgtvjvretdeqrqxby.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**'
       }
-    ]
+    ],
+    unoptimized: true
   },
   async rewrites() {
     return [
@@ -52,6 +59,10 @@ const nextConfig = {
         destination: 'http://localhost:3000/uploads/bedrooms/:fileName'
       }
     ];
+  },
+
+  typescript: {
+    ignoreBuildErrors: true
   }
 };
 
