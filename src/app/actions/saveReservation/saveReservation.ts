@@ -12,8 +12,8 @@ interface SaveReservationData {
   rooms: number;
   arrivalDate: Date;
   departureDate: Date;
-  name: string;
-  lastName: string;
+  name?: string;
+  lastName?: string;
 }
 
 interface SaveReservationResponse {
@@ -31,6 +31,7 @@ interface SaveReservationResponse {
       rooms: number;
     }>;
   };
+  reservationId?: number;
 }
 
 export const saveReservation = async (
@@ -47,8 +48,6 @@ export const saveReservation = async (
   }
 
   const {
-    name,
-    lastName,
     bedroomsType,
     guests,
     rooms,
@@ -198,10 +197,16 @@ export const saveReservation = async (
     }
 
     // 🔹 NUEVO: se crea la reserva y se asocia al usuario
+
+    // Split username to get name and lastName
+    const nameParts = userRecord.username.split(' ');
+    const derivedName = nameParts[0];
+    const derivedLastName = nameParts.slice(1).join(' ') || '.';
+
     const newReservation = await prisma.reservation.create({
       data: {
-        name,
-        lastName,
+        name: derivedName,
+        lastName: derivedLastName,
         email,
         bedroomsType,
         guests,
@@ -221,7 +226,7 @@ export const saveReservation = async (
         email: userRecord.email,
         userImage: null,
         type: 'CREATED',
-        message: `Se ha creado una nueva reserva (ID: ${newReservation.id}) para ${name} ${lastName}.`,
+        message: `Se ha creado una nueva reserva (ID: ${newReservation.id}) para ${derivedName} ${derivedLastName}.`,
         isRead: false
       }
     });
@@ -230,7 +235,8 @@ export const saveReservation = async (
 
     return {
       success: true,
-      message: `La reserva se registró correctamente. ID de reservación: ${newReservation.id}`
+      message: `La reserva se registró correctamente. ID de reservación: ${newReservation.id}`,
+      reservationId: newReservation.id
     };
   } catch (error) {
     console.error('Error al guardar la reserva:', error);

@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const ReservationSchema = z
   .object({
-    name: z.string().trim().min(1, 'El nombre es obligatorio.'),
-    lastName: z.string().trim().min(1, 'El apellido es obligatorio.'),
+    name: z.string().optional(),
+    lastName: z.string().optional(),
 
     guests: z.coerce.number().min(1, 'Debe haber al menos 1 huésped.'),
     rooms: z.coerce

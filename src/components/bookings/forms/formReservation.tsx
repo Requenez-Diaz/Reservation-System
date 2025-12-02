@@ -93,8 +93,13 @@ const calculateSuggestedDates = (
   };
 };
 
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   const { toast } = useToast();
+  const { data: session } = useSession();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConflictAlert, setShowConflictAlert] = useState(false);
   const [availabilityInfo, setAvailabilityInfo] =
@@ -116,27 +121,9 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
     defaultValues: initialValues
   });
 
-  useEffect(() => {
-    if (localStorage.getItem('fromSearch') === 'true') {
-      toast({
-        description:
-          'Las fechas y número de huéspedes se han cargado automáticamente.',
-        title: 'Información cargada'
-      });
-    }
-  }, [toast]);
 
-  useEffect(() => {
-    if (
-      selectedBedroomType &&
-      form.getValues('bedroomsType') !== selectedBedroomType
-    ) {
-      form.reset({
-        ...form.getValues(),
-        bedroomsType: selectedBedroomType
-      });
-    }
-  }, [selectedBedroomType, form]);
+
+  // ... existing useEffects
 
   const handleSubmit = async (data: ReservationFormValues) => {
     setIsSubmitting(true);
@@ -160,7 +147,11 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         setAvailabilityInfo(null);
         setOriginalFormData(null);
         setSuggestedDates(null);
+
+        // Redirect to all reservations page
+        router.push('/reservaciones');
       } else if (response.showAvailabilityInfo && response.availabilityInfo) {
+        // ... existing error handling
         setAvailabilityInfo(response.availabilityInfo);
         setOriginalFormData(data);
         if (response.availabilityInfo.nextAvailableDate) {
@@ -227,6 +218,13 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          {session?.user?.username && (
+            <div className="mb-4 p-4 bg-blue-50 text-blue-700 rounded-md">
+              <p className="text-sm font-medium">
+                Reservando como: <span className="font-bold">{session.user.username}</span>
+              </p>
+            </div>
+          )}
           <FormFields
             form={form}
             isSubmitting={isSubmitting}

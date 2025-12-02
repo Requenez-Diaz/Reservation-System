@@ -29,44 +29,7 @@ export default function FormFields({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  disabled={isSubmitting}
-                  placeholder="Escribe tu nombre"
-                  type="text"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Apellido</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  disabled={isSubmitting}
-                  placeholder="Escribe tu apellido"
-                  type="text"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+
 
       <div className="grid grid-cols-2 gap-4">
         <FormField

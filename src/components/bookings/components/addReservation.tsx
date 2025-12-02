@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,14 +10,43 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import FormReservation from '../forms/formReservation';
+import { useSession } from 'next-auth/react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 interface AddReservationProps {
   selectedBedroomType?: string;
 }
 
 export function AddReservation({ selectedBedroomType }: AddReservationProps) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const openModalParam = searchParams.get('openModal');
+    if (openModalParam === 'true' && status === 'authenticated') {
+      setIsOpen(true);
+      // Clean up the URL parameter
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.delete('openModal');
+      router.replace(`${pathname}?${newSearchParams.toString()}`, { scroll: false });
+    }
+  }, [searchParams, status, pathname, router]);
+
+  const handleOpenChange = (open: boolean) => {
+    if (open && status === 'unauthenticated') {
+      const callbackUrl = encodeURIComponent(`${pathname}?openModal=true`);
+      router.push(`/sign-in?callbackUrl=${callbackUrl}`);
+      return;
+    }
+    setIsOpen(open);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-full bg-blue-500 hover:bg-blue-600">
           Reservar
