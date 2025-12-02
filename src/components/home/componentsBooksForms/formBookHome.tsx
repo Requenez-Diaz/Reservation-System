@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-// Suponiendo que esta es tu acción de servidor
+
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -45,9 +45,8 @@ const ROOM_STATUS = [
 export default function BedroomSearchForm({
   onSearch,
   setIsLoading,
-  isLoading // El linter lo detecta como no usado, aunque se usa en el return
+  isLoading
 }: BedroomSearchFormProps) {
-  // CORREGIDO: Renombrar para evitar el error no-unused-vars (Línea 35 y 36)
   const _onSearch = onSearch;
   const _isLoading = isLoading;
 
@@ -57,10 +56,8 @@ export default function BedroomSearchForm({
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
   const { toast } = useToast();
 
-  // EFECTO 1: Carga inicial de habitaciones Y precarga de datos de localStorage
   React.useEffect(() => {
     const fetchBedroomsAndLoadState = async () => {
-      // Cargar el estado guardado (Fechas y Huéspedes)
       try {
         const savedDates = localStorage.getItem('selectedDates');
         const savedGuests = localStorage.getItem('selectedGuests');
@@ -195,9 +192,9 @@ export default function BedroomSearchForm({
           {/* Guests selector (sin cambios) */}
           <div className="flex items-center">
             <Button
-              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent" // CORREGIDO (Línea 193)
-              onClick={() => setGuests((prev) => Math.max(1, prev - 1))} // CORREGIDO (Línea 194)
-              size="icon" // CORREGIDO (Línea 195)
+              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent"
+              onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
+              size="icon"
               variant="outline"
             >
               -
@@ -242,14 +239,14 @@ export default function BedroomSearchForm({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              align="start" // CORREGIDO (Línea 240)
+              align="start"
               className="w-auto p-0 animate-in fade-in slide-in-from-top-2 duration-200"
             >
               <CalendarComponent
-                initialFocus // CORREGIDO (Línea 245)
-                locale={es} // CORREGIDO (Línea 246)
-                mode="range" // CORREGIDO (Línea 247)
-                numberOfMonths={2} // CORREGIDO (Línea 248)
+                initialFocus
+                locale={es}
+                mode="range"
+                numberOfMonths={2}
                 onSelect={setDateRange}
                 selected={dateRange}
               />
@@ -258,7 +255,7 @@ export default function BedroomSearchForm({
 
           <Button
             className="relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100" // CORREGIDO (Línea 256)
-            disabled={isLoading} // CORREGIDO (Línea 257)
+            disabled={isLoading}
             onClick={handleSearch}
             variant="save"
           >

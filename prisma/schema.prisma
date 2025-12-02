@@ -21,24 +21,14 @@ model UsersRole {
 }
 
 model Reservation {
-  id            Int            @id @default(autoincrement())
-  name          String
-  lastName      String
-  email         String
-  bedroomsType  String
-  guests        Int
-  rooms         Int
-  arrivalDate   DateTime
-  departureDate DateTime
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  status        Status
-  userId        Int
-  promotionId   Int?
-  isRead        Boolean        @default(false)
-  Promotions    Promotions?    @relation(fields: [promotionId], references: [id])
-  User          User           @relation(fields: [userId], references: [id])
-  notifications Notification[]
+  id                 Int                  @id @default(autoincrement())
+  userId             Int                  @map("user_id")
+  status             BookingsStatus       @default(PENDING)
+  createdAt          DateTime             @default(now())
+  isRead             Boolean              @default(false)
+  User               User                 @relation(fields: [userId], references: [id])
+  notifications      Notification[]
+  reservationDetails ReservationDetails[]
 }
 
 model Notification {
@@ -135,21 +125,21 @@ model bookingsServices {
   services   Services? @relation(fields: [servicesId], references: [id])
 }
 
-model BookingsDetails {
-  id           Int        @id @default(autoincrement())
-  bookingId    Int
-  bedroomId    Int
-  price        Int
-  dateStart    DateTime
-  dateEnd      DateTime
-  promotionId  Int
-  status       Status
-  created_at   DateTime   @default(now())
-  bookingsId   Int
-  bedroomsId   Int
-  promotionsId Int
-  bedrooms     Bedrooms   @relation(fields: [bedroomsId], references: [id])
-  promotions   Promotions @relation(fields: [promotionsId], references: [id])
+model ReservationDetails {
+  id            Int         @id @default(autoincrement())
+  reservationId Int         @map("reservation_id")
+  price         Int
+  dateStart     DateTime
+  dateEnd       DateTime
+  promotionId   Int?        @map("promotion_id")
+  status        Status
+  created_at    DateTime    @default(now())
+  bedroomsId    Int         @map("bedrooms_id")
+  promotionsId  Int
+  guestQuantity Int
+  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  bedrooms      Bedrooms    @relation(fields: [bedroomsId], references: [id])
+  promotions    Promotions  @relation(fields: [promotionsId], references: [id])
 }
 
 model PasswordResetToken {
@@ -209,9 +199,8 @@ model Promotions {
   updatedAt          DateTime
   seasonId           Int
   BedroomsPromotions BedroomsPromotions[]
-  bookingsDetails    BookingsDetails[]
+  reservationDetails ReservationDetails[]
   Seasons            Seasons              @relation(fields: [seasonId], references: [id])
-  Reservation        Reservation[]
 }
 
 model Bedrooms {
@@ -232,7 +221,7 @@ model Bedrooms {
   BedroomImages      BedroomImages[]
   Seasons            Seasons              @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
   BedroomsPromotions BedroomsPromotions[]
-  bookingsDetails    BookingsDetails[]
+  reservationDetails ReservationDetails[]
   comments           Comments[]
   testimonials       testimonials[]
 }

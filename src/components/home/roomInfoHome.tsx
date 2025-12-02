@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
-import OrdersRooms from '../bedrooms/ordersRooms';
 import ParentCards from '../bedrooms/parentCards';
 
 export default async function RoomInfoHome() {
@@ -17,7 +16,6 @@ export default async function RoomInfoHome() {
 
   return (
     <div>
-      <OrdersRooms />
       <ParentCards items={mappedItems} />
     </div>
   );
