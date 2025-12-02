@@ -22,6 +22,12 @@
         "react",
         "prettier"
     ],
+    "root": true,
+    "ignorePatterns": [
+        "**/*.prisma",
+        "node_modules/",
+        "dist/"
+    ],
     "rules": {
         "dot-notation": "error",
         "no-else-return": "error",
