@@ -131,15 +131,14 @@ model ReservationDetails {
   price         Int
   dateStart     DateTime
   dateEnd       DateTime
-  promotionId   Int?        @map("promotion_id")
+  promotionsId  Int?        @map("promotion_id")
   status        Status
   created_at    DateTime    @default(now())
   bedroomsId    Int         @map("bedrooms_id")
-  promotionsId  Int
   guestQuantity Int
   Reservation   Reservation @relation(fields: [reservationId], references: [id])
   bedrooms      Bedrooms    @relation(fields: [bedroomsId], references: [id])
-  promotions    Promotions  @relation(fields: [promotionsId], references: [id])
+  promotions    Promotions? @relation(fields: [promotionsId], references: [id])
 }
 
 model PasswordResetToken {

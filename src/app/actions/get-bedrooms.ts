@@ -10,7 +10,7 @@ export const getAllBedrooms = async () => {
       },
 
       include: {
-        bookingsDetails: {
+        reservationDetails: {
           where: {
             dateStart: new Date()
           }
@@ -44,7 +44,7 @@ export const getBedroomsById = async (id: number) => {
         id
       },
       include: {
-        bookingsDetails: true,
+        reservationDetails: true,
         BedroomImages: true
       }
     });

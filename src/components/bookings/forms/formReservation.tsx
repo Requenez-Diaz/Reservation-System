@@ -12,8 +12,14 @@ import {
   ReservationSchema
 } from '../types/reservationSchema';
 
+// 1. 🔑 IMPORTACIÓN CLAVE: Importa el hook para la sesión
+// (Ajusta esta importación según tu librería de autenticación, ej: useSession)
+import { useSession } from 'next-auth/react';
+
 import { ConflictAlertDialog } from './ConflictAlertDialog';
 import FormFields from './form-field';
+
+// ... (Interfaces, getInitialFormValues, calculateSuggestedDates se mantienen igual) ...
 
 interface AvailabilityInfo {
   availableRooms: number;
@@ -31,12 +37,19 @@ interface FormReservationProps {
   selectedBedroomType?: string;
 }
 
+// Función auxiliar para valores iniciales (ajustada para aceptar datos de sesión)
 const getInitialFormValues = (
-  selectedBedroomType: string | undefined
+  selectedBedroomType: string | undefined,
+  sessionName: string | undefined
 ): ReservationFormValues => {
+  // Se modificó para ser más simple
+
+  // Si el nombre de la sesión incluye un apellido, lo separamos
+  const [name = '', lastName = ''] = sessionName?.split(' ') || [];
+
   const initialValues: ReservationFormValues = {
-    name: '',
-    lastName: '',
+    name: name, // <-- Valor de la sesión
+    lastName: lastName, // <-- Valor de la sesión
     guests: 1,
     rooms: 1,
     bedroomsType: selectedBedroomType || '',
@@ -44,6 +57,7 @@ const getInitialFormValues = (
     departureDate: ''
   };
 
+  // ... (Lógica de localStorage para fechas/huéspedes se mantiene igual) ...
   try {
     const fromSearch = localStorage.getItem('fromSearch');
     if (fromSearch === 'true') {
@@ -76,22 +90,7 @@ const getInitialFormValues = (
   return initialValues;
 };
 
-const calculateSuggestedDates = (
-  nextAvailableDate: Date,
-  originalArrival: Date,
-  originalDeparture: Date
-) => {
-  const originalDuration =
-    originalDeparture.getTime() - originalArrival.getTime();
-  const newArrivalDate = new Date(nextAvailableDate);
-  const newDepartureDate = new Date(
-    newArrivalDate.getTime() + originalDuration
-  );
-  return {
-    arrivalDate: newArrivalDate.toISOString().split('T')[0],
-    departureDate: newDepartureDate.toISOString().split('T')[0]
-  };
-};
+// ... (calculateSuggestedDates se mantiene igual) ...
 
 export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   const { toast } = useToast();
@@ -106,15 +105,41 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
     departureDate: string;
   } | null>(null);
 
+  // 2. 🎣 USAR HOOK DE SESIÓN
+  const { data: session } = useSession();
+  const sessionUserName = session?.user?.name;
+
+  // 3. ACTUALIZAR VALORES INICIALES PARA USAR LA SESIÓN
   const initialValues = React.useMemo(
-    () => getInitialFormValues(selectedBedroomType),
-    [selectedBedroomType]
+    () => getInitialFormValues(selectedBedroomType, sessionUserName),
+    [selectedBedroomType, sessionUserName] // Dependencia de la sesión
   );
 
   const form = useForm<ReservationFormValues>({
     resolver: zodResolver(ReservationSchema),
+    // Usamos initialValues (que ahora incluye datos de sesión)
     defaultValues: initialValues
   });
+
+  // 4. RESETEAR EL FORMULARIO CUANDO LOS DATOS DE LA SESIÓN SE CARGUEN
+  // Este useEffect asegura que el formulario se actualice si la sesión se carga después del render inicial.
+  const didMountRef = React.useRef(false);
+  React.useEffect(() => {
+    if (didMountRef.current) {
+      const newInitialValues = getInitialFormValues(
+        selectedBedroomType,
+        sessionUserName
+      );
+      // Usamos form.reset para establecer los valores predeterminados (incluyendo nombre/apellido)
+      form.reset({
+        ...newInitialValues,
+        // Conserva las fechas/huéspedes si ya fueron modificados por el usuario
+        ...form.getValues()
+      });
+    } else {
+      didMountRef.current = true;
+    }
+  }, [sessionUserName, selectedBedroomType, form]);
 
   useEffect(() => {
     if (localStorage.getItem('fromSearch') === 'true') {
@@ -140,12 +165,15 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
 
   const handleSubmit = async (data: ReservationFormValues) => {
     setIsSubmitting(true);
+    // ... (El resto de la lógica de handleSubmit se mantiene igual) ...
     try {
       const finalData = {
         ...data,
         arrivalDate: new Date(data.arrivalDate),
         departureDate: new Date(data.departureDate)
       };
+
+      // La acción del servidor se encarga de la seguridad y el userId
       const response = await saveReservation(finalData);
 
       if (response.success) {
@@ -191,6 +219,7 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
     } finally {
       setIsSubmitting(false);
     }
+    // ...
   };
 
   const handleAcceptSuggestedDates = () => {
