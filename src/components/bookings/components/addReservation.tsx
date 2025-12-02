@@ -27,18 +27,24 @@ export function AddReservation({ selectedBedroomType }: AddReservationProps) {
 
   useEffect(() => {
     const openModalParam = searchParams.get('openModal');
+    const bedroomTypeParam = searchParams.get('selectedBedroomType');
+
     if (openModalParam === 'true' && status === 'authenticated') {
-      setIsOpen(true);
-      // Clean up the URL parameter
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.delete('openModal');
-      router.replace(`${pathname}?${newSearchParams.toString()}`, { scroll: false });
+      if (!bedroomTypeParam || bedroomTypeParam === selectedBedroomType) {
+        setIsOpen(true);
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.delete('openModal');
+        newSearchParams.delete('selectedBedroomType');
+        router.replace(`${pathname}?${newSearchParams.toString()}`, { scroll: false });
+      }
     }
-  }, [searchParams, status, pathname, router]);
+  }, [searchParams, status, pathname, router, selectedBedroomType]);
 
   const handleOpenChange = (open: boolean) => {
     if (open && status === 'unauthenticated') {
-      const callbackUrl = encodeURIComponent(`${pathname}?openModal=true`);
+      const callbackUrl = encodeURIComponent(
+        `${pathname}?openModal=true&selectedBedroomType=${encodeURIComponent(selectedBedroomType || '')}`
+      );
       router.push(`/sign-in?callbackUrl=${callbackUrl}`);
       return;
     }
