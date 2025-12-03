@@ -60,7 +60,7 @@ export default function BookingFormPage() {
     }
 
     // Guardar datos del cliente
-    sessionStorage.setItem('bookingCustomerData', JSON.stringify(formData));
+    localStorage.setItem('bookingCustomerData', JSON.stringify(formData));
 
     // Redirigir a la página de resumen
     router.push('/booking/summary');

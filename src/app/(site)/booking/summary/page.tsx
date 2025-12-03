@@ -21,7 +21,6 @@ import {
   createReservation,
   getOrCreateGuestUser
 } from '@/app/actions/reservations/reservations';
-import { useSession } from 'next-auth/react';
 
 interface BedroomFromDB {
   id: string;
@@ -48,7 +47,6 @@ interface CustomerData {
 }
 
 export default function BookingSummaryPage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
   const [selectedRooms, setSelectedRooms] = React.useState<BedroomFromDB[]>([]);
@@ -65,11 +63,11 @@ export default function BookingSummaryPage() {
 
   React.useEffect(() => {
     // Cargar datos guardados
-    const savedRooms = sessionStorage.getItem('selectedRoomsForBooking');
-    const savedCustomer = sessionStorage.getItem('bookingCustomerData');
-    const savedDates = sessionStorage.getItem('selectedDates');
-    const savedGuests = sessionStorage.getItem('selectedGuests');
-    const savedRoomCount = sessionStorage.getItem('selectedRoomCount');
+    const savedRooms = localStorage.getItem('selectedRoomsForBooking');
+    const savedCustomer = localStorage.getItem('bookingCustomerData');
+    const savedDates = localStorage.getItem('selectedDates');
+    const savedGuests = localStorage.getItem('selectedGuests');
+    const savedRoomCount = localStorage.getItem('selectedRoomCount');
 
     if (!savedRooms || !savedCustomer) {
       router.push('/');
@@ -114,7 +112,7 @@ export default function BookingSummaryPage() {
     return Math.ceil(
       (searchData.dateRange.to.getTime() -
         searchData.dateRange.from.getTime()) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
   };
 
@@ -133,17 +131,6 @@ export default function BookingSummaryPage() {
         description: 'Faltan datos para completar la reserva.',
         variant: 'destructive'
       });
-      return;
-    }
-
-    if (!session) {
-      toast({
-        title: 'Inicia sesión',
-        description: 'Debes iniciar sesión para confirmar tu reserva. Te redirigiremos...',
-      });
-      // Redirigir al login con callbackUrl
-      const callbackUrl = window.location.pathname;
-      router.push(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       return;
     }
 
@@ -183,13 +170,13 @@ export default function BookingSummaryPage() {
         description: `Tu reserva #${result.reservation?.id} ha sido procesada exitosamente. Recibirás un email de confirmación.`
       });
 
-      // Limpiar sessionStorage
-      sessionStorage.removeItem('selectedRoomsForBooking');
-      sessionStorage.removeItem('bookingCustomerData');
-      sessionStorage.removeItem('filteredRooms');
-      sessionStorage.removeItem('selectedDates');
-      sessionStorage.removeItem('selectedGuests');
-      sessionStorage.removeItem('selectedRoomCount');
+      // Limpiar localStorage
+      localStorage.removeItem('selectedRoomsForBooking');
+      localStorage.removeItem('bookingCustomerData');
+      localStorage.removeItem('filteredRooms');
+      localStorage.removeItem('selectedDates');
+      localStorage.removeItem('selectedGuests');
+      localStorage.removeItem('selectedRoomCount');
 
       // Redirigir después de 2 segundos
       setTimeout(() => {
@@ -393,22 +380,22 @@ export default function BookingSummaryPage() {
                 {(customerData.country ||
                   customerData.city ||
                   customerData.address) && (
-                    <div className="flex items-start gap-3">
-                      <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-gray-600">Ubicación</p>
-                        <p className="font-semibold">
-                          {[
-                            customerData.address,
-                            customerData.city,
-                            customerData.country
-                          ]
-                            .filter(Boolean)
-                            .join(', ')}
-                        </p>
-                      </div>
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-600">Ubicación</p>
+                      <p className="font-semibold">
+                        {[
+                          customerData.address,
+                          customerData.city,
+                          customerData.country
+                        ]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </p>
                     </div>
-                  )}
+                  </div>
+                )}
                 {customerData.comments && (
                   <div className="border-t pt-3">
                     <p className="text-sm text-gray-600">Comentarios</p>

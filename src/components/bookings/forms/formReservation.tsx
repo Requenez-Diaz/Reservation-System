@@ -59,10 +59,10 @@ const getInitialFormValues = (
 
   // ... (Lógica de localStorage para fechas/huéspedes se mantiene igual) ...
   try {
-    const fromSearch = sessionStorage.getItem('fromSearch');
+    const fromSearch = localStorage.getItem('fromSearch');
     if (fromSearch === 'true') {
-      const storedDates = sessionStorage.getItem('selectedDates');
-      const storedGuests = sessionStorage.getItem('selectedGuests');
+      const storedDates = localStorage.getItem('selectedDates');
+      const storedGuests = localStorage.getItem('selectedGuests');
 
       if (storedDates) {
         const { from, to } = JSON.parse(storedDates);
@@ -142,7 +142,7 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   }, [sessionUserName, selectedBedroomType, form]);
 
   useEffect(() => {
-    if (sessionStorage.getItem('fromSearch') === 'true') {
+    if (localStorage.getItem('fromSearch') === 'true') {
       toast({
         description:
           'Las fechas y número de huéspedes se han cargado automáticamente.',
@@ -180,9 +180,9 @@ export function FormReservation({ selectedBedroomType }: FormReservationProps) {
         toast({ description: response.message, title: 'Reserva realizada' });
         form.reset();
 
-        sessionStorage.removeItem('selectedDates');
-        sessionStorage.removeItem('selectedGuests');
-        sessionStorage.removeItem('fromSearch');
+        localStorage.removeItem('selectedDates');
+        localStorage.removeItem('selectedGuests');
+        localStorage.removeItem('fromSearch');
 
         setShowConflictAlert(false);
         setAvailabilityInfo(null);
