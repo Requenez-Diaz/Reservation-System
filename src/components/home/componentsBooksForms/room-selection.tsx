@@ -148,7 +148,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
     const selectedRoomDetails = availableRooms.filter((room) =>
       selectedRooms.includes(room.id)
     );
-    localStorage.setItem(
+    sessionStorage.setItem(
       'selectedRoomsForBooking',
       JSON.stringify(selectedRoomDetails)
     );
@@ -162,7 +162,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
     return Math.ceil(
       (searchData.dateRange.to.getTime() -
         searchData.dateRange.from.getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
   };
 
@@ -284,11 +284,10 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
             return (
               <Card
                 key={room.id}
-                className={`relative overflow-hidden transition-all duration-300 ${
-                  isSelected
+                className={`relative overflow-hidden transition-all duration-300 ${isSelected
                     ? 'ring-2 ring-orange-600 shadow-lg'
                     : 'hover:shadow-md'
-                }`}
+                  }`}
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -347,11 +346,10 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
                 <CardFooter>
                   <Button
                     onClick={() => toggleRoomSelection(room.id)}
-                    className={`w-full ${
-                      isSelected
+                    className={`w-full ${isSelected
                         ? 'bg-orange-600 hover:bg-orange-700'
                         : 'bg-green-600 hover:bg-green-800'
-                    }`}
+                      }`}
                   >
                     {isSelected ? (
                       <>

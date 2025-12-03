@@ -111,10 +111,10 @@ export function BedroomSearchForm() {
         from: dateRange.from.toISOString(),
         to: dateRange.to?.toISOString() || dateRange.from.toISOString()
       };
-      localStorage.setItem('selectedDates', JSON.stringify(dateData));
-      localStorage.setItem('selectedGuests', guests.toString());
-      localStorage.setItem('selectedRoomCount', roomCount.toString());
-      localStorage.setItem('fromSearch', 'true');
+      sessionStorage.setItem('selectedDates', JSON.stringify(dateData));
+      sessionStorage.setItem('selectedGuests', guests.toString());
+      sessionStorage.setItem('selectedRoomCount', roomCount.toString());
+      sessionStorage.setItem('fromSearch', 'true');
     }
   }, [dateRange, guests, roomCount]);
 
@@ -178,7 +178,7 @@ export function BedroomSearchForm() {
     setIsLoading(false);
 
     if (limitedResults.length > 0) {
-      localStorage.setItem('filteredRooms', JSON.stringify(limitedResults));
+      sessionStorage.setItem('filteredRooms', JSON.stringify(limitedResults));
 
       toast({
         title: 'Búsqueda completada',

@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useToast } from '../ui/use-toast';
 import { saveUsers } from '@/app/actions/users/saveUsers';
@@ -44,6 +44,8 @@ const FormSchema = z
 
 const SignUpForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -68,26 +70,16 @@ const SignUpForm = () => {
       const user = await saveUsers(formDataObj);
 
       if (user) {
-        const signInResult = await signIn('credentials', {
-          email: formData.email,
-          password: formData.password,
-          redirect: false
-        });
-
-        if (signInResult?.error) {
+        if (user) {
           toast({
-            description:
-              'No se pudo iniciar sesión automáticamente. Por favor, inténtelo manualmente.',
-            title: 'Error de autenticación',
-            variant: 'destructive'
-          });
-        } else {
-          toast({
-            description: 'Será redirigido al panel de control.',
-            title: 'Usuario registrado con éxito',
+            description: 'Cuenta creada exitosamente. Por favor inicia sesión.',
+            title: 'Usuario registrado',
             variant: 'default'
           });
-          router.push('/');
+
+          // Redirigir al login, pasando el callbackUrl
+          const signInUrl = `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+          router.push(signInUrl);
         }
       }
     } catch (error: unknown) {
@@ -240,7 +232,10 @@ const SignUpForm = () => {
           <div className="mt-6 text-center">
             <p>
               ¿Ya tienes una cuenta?{' '}
-              <Link className="text-blue-400" href="/sign-in">
+              <Link
+                className="text-blue-400"
+                href={callbackUrl !== '/' ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"}
+              >
                 Inicia sesión
               </Link>
             </p>

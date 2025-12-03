@@ -49,16 +49,15 @@ export default function SearchResults({
   // });
 
   const handleRoomClick = () => {
-    localStorage.setItem('fromSearch', 'true');
+    sessionStorage.setItem('fromSearch', 'true');
   };
 
   return (
     <Card
-      className={`mx-auto max-w-4xl mt-8 transition-all duration-500 ${
-        showResults
+      className={`mx-auto max-w-4xl mt-8 transition-all duration-500 ${showResults
           ? 'animate-in fade-in slide-in-from-bottom-4 opacity-100 translate-y-0'
           : 'opacity-0 translate-y-4'
-      }`}
+        }`}
     >
       <CardHeader>
         <CardTitle className="animate-in fade-in slide-in-from-left-2 duration-300">
@@ -70,11 +69,10 @@ export default function SearchResults({
           {searchResults.map((bedroom, index) => (
             <li
               key={bedroom.id}
-              className={`border-b pb-4 transition-all duration-300 ${
-                showResults
+              className={`border-b pb-4 transition-all duration-300 ${showResults
                   ? 'animate-in fade-in slide-in-from-left-2 opacity-100 translate-x-0'
                   : 'opacity-0 translate-x-4'
-              }`}
+                }`}
               style={{
                 animationDelay: showResults ? `${index * 100}ms` : '0ms'
               }}

@@ -15,7 +15,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 
 const FormSchema = z.object({
@@ -28,6 +28,8 @@ const FormSchema = z.object({
 
 const SignInForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const { toast } = useToast();
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
@@ -52,7 +54,7 @@ const SignInForm = () => {
       });
     } else {
       router.refresh();
-      router.push('/');
+      router.push(callbackUrl);
     }
   };
 
@@ -173,7 +175,14 @@ const SignInForm = () => {
           <div className="mt-6 text-center">
             <p>
               Si no tienes una cuenta?{' '}
-              <Link className="text-blue-700  " href="/sign-up">
+              <Link
+                className="text-blue-700"
+                href={
+                  callbackUrl && callbackUrl !== '/'
+                    ? `/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                    : '/sign-up'
+                }
+              >
                 Registrate
               </Link>
             </p>
