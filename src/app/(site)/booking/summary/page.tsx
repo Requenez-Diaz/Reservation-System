@@ -21,6 +21,7 @@ import {
   createReservation,
   getOrCreateGuestUser
 } from '@/app/actions/reservations/reservations';
+import { useSession } from 'next-auth/react';
 
 interface BedroomFromDB {
   id: string;
@@ -49,6 +50,7 @@ interface CustomerData {
 export default function BookingSummaryPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { data: session, status } = useSession();
   const [selectedRooms, setSelectedRooms] = React.useState<BedroomFromDB[]>([]);
   const [customerData, setCustomerData] = React.useState<CustomerData | null>(
     null
@@ -112,7 +114,7 @@ export default function BookingSummaryPage() {
     return Math.ceil(
       (searchData.dateRange.to.getTime() -
         searchData.dateRange.from.getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
   };
 
@@ -131,6 +133,22 @@ export default function BookingSummaryPage() {
         description: 'Faltan datos para completar la reserva.',
         variant: 'destructive'
       });
+      return;
+    }
+
+    // Verificar si el usuario está autenticado
+    if (status === 'unauthenticated') {
+      // Guardar la URL de retorno en localStorage
+      localStorage.setItem('authCallbackUrl', '/booking/summary');
+
+      toast({
+        title: 'Autenticación requerida',
+        description: 'Por favor inicia sesión para confirmar tu reserva.',
+        variant: 'default'
+      });
+
+      // Redirigir al login
+      router.push('/sign-in');
       return;
     }
 
@@ -177,6 +195,7 @@ export default function BookingSummaryPage() {
       localStorage.removeItem('selectedDates');
       localStorage.removeItem('selectedGuests');
       localStorage.removeItem('selectedRoomCount');
+      localStorage.removeItem('authCallbackUrl');
 
       // Redirigir después de 2 segundos
       setTimeout(() => {
@@ -380,22 +399,22 @@ export default function BookingSummaryPage() {
                 {(customerData.country ||
                   customerData.city ||
                   customerData.address) && (
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-600">Ubicación</p>
-                      <p className="font-semibold">
-                        {[
-                          customerData.address,
-                          customerData.city,
-                          customerData.country
-                        ]
-                          .filter(Boolean)
-                          .join(', ')}
-                      </p>
+                    <div className="flex items-start gap-3">
+                      <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-600">Ubicación</p>
+                        <p className="font-semibold">
+                          {[
+                            customerData.address,
+                            customerData.city,
+                            customerData.country
+                          ]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
                 {customerData.comments && (
                   <div className="border-t pt-3">
                     <p className="text-sm text-gray-600">Comentarios</p>

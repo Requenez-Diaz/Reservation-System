@@ -68,26 +68,40 @@ const SignUpForm = () => {
       const user = await saveUsers(formDataObj);
 
       if (user) {
-        const signInResult = await signIn('credentials', {
-          email: formData.email,
-          password: formData.password,
-          redirect: false
-        });
+        // Verificar si hay una URL de callback (usuario viene de una reserva)
+        const callbackUrl = localStorage.getItem('authCallbackUrl');
 
-        if (signInResult?.error) {
+        if (callbackUrl) {
+          // Si hay callback, redirigir al login sin auto-login
           toast({
-            description:
-              'No se pudo iniciar sesión automáticamente. Por favor, inténtelo manualmente.',
-            title: 'Error de autenticación',
-            variant: 'destructive'
-          });
-        } else {
-          toast({
-            description: 'Será redirigido al panel de control.',
+            description: 'Por favor inicia sesión con tus nuevas credenciales.',
             title: 'Usuario registrado con éxito',
             variant: 'default'
           });
-          router.push('/');
+          router.push('/sign-in');
+        } else {
+          // Si no hay callback, mantener comportamiento actual (auto-login)
+          const signInResult = await signIn('credentials', {
+            email: formData.email,
+            password: formData.password,
+            redirect: false
+          });
+
+          if (signInResult?.error) {
+            toast({
+              description:
+                'No se pudo iniciar sesión automáticamente. Por favor, inténtelo manualmente.',
+              title: 'Error de autenticación',
+              variant: 'destructive'
+            });
+          } else {
+            toast({
+              description: 'Será redirigido al panel de control.',
+              title: 'Usuario registrado con éxito',
+              variant: 'default'
+            });
+            router.push('/');
+          }
         }
       }
     } catch (error: unknown) {

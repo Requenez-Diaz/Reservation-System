@@ -51,8 +51,25 @@ const SignInForm = () => {
         variant: 'destructive'
       });
     } else {
-      router.refresh();
-      router.push('/');
+      // Verificar si hay una URL de callback guardada
+      const callbackUrl = localStorage.getItem('authCallbackUrl');
+
+      if (callbackUrl) {
+        // Limpiar el callback de localStorage
+        localStorage.removeItem('authCallbackUrl');
+
+        toast({
+          title: 'Sesión iniciada',
+          description: 'Redirigiendo a tu reserva...',
+          variant: 'default'
+        });
+
+        router.refresh();
+        router.push(callbackUrl);
+      } else {
+        router.refresh();
+        router.push('/');
+      }
     }
   };
 
