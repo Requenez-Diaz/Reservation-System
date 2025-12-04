@@ -21,7 +21,6 @@ import {
   createReservation,
   getOrCreateGuestUser
 } from '@/app/actions/reservations/reservations';
-import { useSession } from 'next-auth/react';
 
 interface BedroomFromDB {
   id: string;
@@ -50,7 +49,6 @@ interface CustomerData {
 export default function BookingSummaryPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { data: session, status } = useSession();
   const [selectedRooms, setSelectedRooms] = React.useState<BedroomFromDB[]>([]);
   const [customerData, setCustomerData] = React.useState<CustomerData | null>(
     null
@@ -114,7 +112,7 @@ export default function BookingSummaryPage() {
     return Math.ceil(
       (searchData.dateRange.to.getTime() -
         searchData.dateRange.from.getTime()) /
-      (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
     );
   };
 
@@ -133,22 +131,6 @@ export default function BookingSummaryPage() {
         description: 'Faltan datos para completar la reserva.',
         variant: 'destructive'
       });
-      return;
-    }
-
-    // Verificar si el usuario está autenticado
-    if (status === 'unauthenticated') {
-      // Guardar la URL de retorno en localStorage
-      localStorage.setItem('authCallbackUrl', '/booking/summary');
-
-      toast({
-        title: 'Autenticación requerida',
-        description: 'Por favor inicia sesión para confirmar tu reserva.',
-        variant: 'default'
-      });
-
-      // Redirigir al login
-      router.push('/sign-in');
       return;
     }
 
@@ -185,7 +167,7 @@ export default function BookingSummaryPage() {
 
       toast({
         title: '¡Reserva confirmada!',
-        description: `Tu reserva #${result.reservation?.id} ha sido procesada exitosamente. Recibirás un email de confirmación.`
+        description: `Tu reserva #${result.reservation?.id} ha sido procesada exitosamente.`
       });
 
       // Limpiar localStorage
@@ -195,12 +177,10 @@ export default function BookingSummaryPage() {
       localStorage.removeItem('selectedDates');
       localStorage.removeItem('selectedGuests');
       localStorage.removeItem('selectedRoomCount');
-      localStorage.removeItem('authCallbackUrl');
 
-      // Redirigir después de 2 segundos
       setTimeout(() => {
-        router.push('/');
-      }, 2000);
+        router.push(`/reservaciones/${result.reservation?.id}`);
+      }, 1500);
     } catch (error) {
       console.error('[v0] Error confirming booking:', error);
       toast({
@@ -219,7 +199,7 @@ export default function BookingSummaryPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-yellow-600" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-teal-600" />
       </div>
     );
   }
@@ -230,9 +210,9 @@ export default function BookingSummaryPage() {
       <header className="border-b bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="text-2xl font-bold text-gray-900">
-            Hotel
+            Barceló
             <span className="ml-1 text-sm font-normal text-gray-600">
-              Madroño
+              HOTEL GROUP
             </span>
           </div>
           <Button
@@ -251,19 +231,17 @@ export default function BookingSummaryPage() {
         <div className="mx-auto max-w-4xl px-4 py-6">
           <div className="flex items-center justify-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-sm font-semibold text-white">
                 ✓
               </div>
               <span className="text-sm text-gray-600">Datos personales</span>
             </div>
             <div className="h-px w-16 bg-gray-300" />
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-sm font-semibold text-white">
                 2
               </div>
-              <span className="text-sm font-medium text-orange-600">
-                Resumen
-              </span>
+              <span className="text-sm font-medium text-teal-600">Resumen</span>
             </div>
             <div className="h-px w-16 bg-gray-300" />
             <div className="flex items-center gap-2">
@@ -293,7 +271,7 @@ export default function BookingSummaryPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-yellow-600" />
+                  <Calendar className="h-5 w-5 text-teal-600" />
                   Información de estadía
                 </CardTitle>
               </CardHeader>
@@ -399,22 +377,22 @@ export default function BookingSummaryPage() {
                 {(customerData.country ||
                   customerData.city ||
                   customerData.address) && (
-                    <div className="flex items-start gap-3">
-                      <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-gray-600">Ubicación</p>
-                        <p className="font-semibold">
-                          {[
-                            customerData.address,
-                            customerData.city,
-                            customerData.country
-                          ]
-                            .filter(Boolean)
-                            .join(', ')}
-                        </p>
-                      </div>
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-600">Ubicación</p>
+                      <p className="font-semibold">
+                        {[
+                          customerData.address,
+                          customerData.city,
+                          customerData.country
+                        ]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </p>
                     </div>
-                  )}
+                  </div>
+                )}
                 {customerData.comments && (
                   <div className="border-t pt-3">
                     <p className="text-sm text-gray-600">Comentarios</p>
@@ -428,7 +406,7 @@ export default function BookingSummaryPage() {
           )}
 
           {/* Total */}
-          <Card className="border-orange-600 bg-yellow-50">
+          <Card className="border-teal-600 bg-teal-50">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -457,10 +435,10 @@ export default function BookingSummaryPage() {
               Editar datos
             </Button>
             <Button
-              disabled={isConfirming}
               onClick={handleConfirmBooking}
               size="lg"
-              variant={'save'}
+              className="bg-teal-600 hover:bg-teal-700 gap-2"
+              disabled={isConfirming}
             >
               {isConfirming ? (
                 <>
