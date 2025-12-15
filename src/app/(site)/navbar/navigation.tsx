@@ -12,7 +12,7 @@ import { useSession } from 'next-auth/react';
 const navItems = [
   { path: '/', text: 'Inicio' },
   { path: '/ofertas', text: 'Ofertas' },
-  { path: '/habitaciones', text: 'Habitaciones' },
+  { path: '/bedrooms', text: 'bedrooms' },
   { path: '/reservaciones', text: 'Reservaciones' }
 ];
 
