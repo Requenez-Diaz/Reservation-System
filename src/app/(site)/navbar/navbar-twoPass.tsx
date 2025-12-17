@@ -13,7 +13,7 @@ import { Session } from 'next-auth';
 const navItems = [
   { path: '/', text: 'Inicio' },
   { path: '/ofertas', text: 'Ofertas' },
-  { path: '/habitaciones', text: 'Habitaciones' },
+  { path: '/bedrooms', text: 'Habitaciones' },
   { path: '/reservaciones', text: 'Reservaciones' }
 ];
 

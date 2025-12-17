@@ -69,8 +69,23 @@ export default function BookingSummaryPage() {
     const savedGuests = localStorage.getItem('selectedGuests');
     const savedRoomCount = localStorage.getItem('selectedRoomCount');
 
-    if (!savedRooms || !savedCustomer) {
-      router.push('/');
+    if (!savedRooms) {
+      toast({
+        title: 'No hay habitaciones seleccionadas',
+        description: 'Por favor selecciona una habitación primero.',
+        variant: 'destructive'
+      });
+      router.push('/habitaciones');
+      return;
+    }
+
+    if (!savedCustomer) {
+      toast({
+        title: 'Faltan datos personales',
+        description: 'Por favor completa tus datos primero.',
+        variant: 'destructive'
+      });
+      router.push('/booking/form');
       return;
     }
 
@@ -178,9 +193,7 @@ export default function BookingSummaryPage() {
       localStorage.removeItem('selectedGuests');
       localStorage.removeItem('selectedRoomCount');
 
-      setTimeout(() => {
-        router.push(`/reservaciones/${result.reservation?.id}`);
-      }, 1500);
+      router.push(`/reservaciones/${result.reservation?.id}`);
     } catch (error) {
       console.error('[v0] Error confirming booking:', error);
       toast({

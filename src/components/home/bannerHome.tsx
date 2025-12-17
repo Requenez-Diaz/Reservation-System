@@ -11,7 +11,6 @@ import {
   MapPin,
   Clock
 } from 'lucide-react';
-import Image from 'next/image';
 
 const slides = [
   {
@@ -106,18 +105,15 @@ export function BannerHome() {
                 <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-primary-foreground mb-4 text-balance leading-tight">
                   {slide.title}
                 </h1>
-
                 {/* Subtitle */}
                 <p className="text-lg md:text-2xl lg:text-3xl text-primary-foreground/90 mb-4 md:mb-6 text-pretty">
                   {slide.subtitle}
                 </p>
-
                 {/* Description */}
                 <p className="text-base md:text-xl text-primary-foreground/80 mb-6 md:mb-8">
                   {slide.description}
                 </p>
-
-                {/* Features */}
+                Features
                 {slide.features && (
                   <div className="space-y-2 md:space-y-3 mb-6 md:mb-8">
                     {slide.features.map((feature, idx) => (
@@ -138,7 +134,6 @@ export function BannerHome() {
                     ))}
                   </div>
                 )}
-
                 {/* CTA Section */}
                 {slide.cta && (
                   <div className="space-y-4 md:space-y-6">
@@ -171,7 +166,7 @@ export function BannerHome() {
                         >
                           <Phone className="w-4 h-4 md:w-5 md:h-5" />
                           <span className="text-base md:text-lg font-semibold">
-                            505 647 7819
+                            505 8647 7819
                           </span>
                         </a>
                       </div>
@@ -215,17 +210,6 @@ export function BannerHome() {
             onClick={() => goToSlide(index)}
           />
         ))}
-      </div>
-
-      <div className="absolute top-4 left-4 md:top-6 md:left-8 lg:top-8 z-20">
-        <Image
-          alt="Hotel Madroño"
-          className="object-contain w-24 h-auto md:w-32 lg:w-40"
-          height={50}
-          src="/hotel madroño.png"
-          width={150}
-          priority
-        />
       </div>
     </div>
   );

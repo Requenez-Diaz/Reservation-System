@@ -26,7 +26,8 @@
     "ignorePatterns": [
         "**/*.prisma",
         "node_modules/",
-        "dist/"
+        "dist/",
+        "**/*.ico"
     ],
     "rules": {
         "dot-notation": "error",
