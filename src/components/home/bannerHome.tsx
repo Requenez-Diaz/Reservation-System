@@ -113,7 +113,7 @@ export function BannerHome() {
                 <p className="text-base md:text-xl text-primary-foreground/80 mb-6 md:mb-8">
                   {slide.description}
                 </p>
-                Features
+
                 {slide.features && (
                   <div className="space-y-2 md:space-y-3 mb-6 md:mb-8">
                     {slide.features.map((feature, idx) => (
@@ -149,9 +149,9 @@ export function BannerHome() {
                         Reservaciones
                       </p>
 
-                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                      <div className="flex flex-col bg-slate-50 sm:flex-row gap-3 md:gap-4">
                         <a
-                          className="flex items-center justify-center gap-3 bg-blue hover:bg-blue/90 text-blue-foreground px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg"
+                          className="flex items-center justify-center gap-3 bg-white hover:bg-blue/90 text-blue-foreground px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg"
                           href="tel:084383204"
                         >
                           <Phone className="w-4 h-4 md:w-5 md:h-5" />
@@ -161,7 +161,7 @@ export function BannerHome() {
                         </a>
 
                         <a
-                          className="flex items-center justify-center gap-3 bg-blue hover:bg-blue/90 text-blue-foreground px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg"
+                          className="flex items-center justify-center gap-3 bg-white hover:bg-blue/90 text-blue-foreground px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg"
                           href="tel:086477819"
                         >
                           <Phone className="w-4 h-4 md:w-5 md:h-5" />
