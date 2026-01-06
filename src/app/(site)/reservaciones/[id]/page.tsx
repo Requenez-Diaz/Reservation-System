@@ -91,7 +91,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             </div>
           </div>
           <h1 className="text-black mb-2 text-3xl font-bold">
-            ¡Reserva Confirmada!
+            ¡Reservación en proceso!
           </h1>
           <p className="text-pretty text-black">
             Tu reserva #{reservation.id} ha sido procesada exitosamente

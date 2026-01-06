@@ -82,7 +82,7 @@ export default function SearchResults({
               <Link
                 className="block group hover:bg-accent/50 hover:scale-[1.02] hover:shadow-md onClick={handleRoomClick} p-4 rounded-lg transition-all duration-200" // CORREGIDO (Línea 76)
                 href={`/habitaciones-detail/${generateSlug(bedroom.typeBedroom)}`}
-                onClick={handleRoomClick} // Mantenido aquí para claridad, aunque se incluyó arriba
+                onClick={handleRoomClick} 
               >
                 <h3 className="text-lg font-semibold group-hover:text-primary transition-colors duration-200">
                   {bedroom.typeBedroom}

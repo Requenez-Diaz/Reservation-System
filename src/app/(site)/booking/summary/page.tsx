@@ -36,7 +36,7 @@ interface BedroomFromDB {
 }
 
 interface CustomerData {
-  firstName: string;
+  username: string;
   lastName: string;
   email: string;
   phone: string;
@@ -155,7 +155,7 @@ export default function BookingSummaryPage() {
       // Paso 1: Obtener o crear usuario
       const userResult = await getOrCreateGuestUser(
         customerData.email,
-        `${customerData.firstName} ${customerData.lastName}`
+        `${customerData.username} ${customerData.lastName}`
       );
 
       if (!userResult.success || !userResult.user) {
@@ -181,7 +181,7 @@ export default function BookingSummaryPage() {
       }
 
       toast({
-        title: '¡Reserva confirmada!',
+        title: '¡Reserva en proceso!',
         description: `Tu reserva #${result.reservation?.id} ha sido procesada exitosamente.`
       });
 
@@ -195,7 +195,6 @@ export default function BookingSummaryPage() {
 
       router.push(`/reservaciones/${result.reservation?.id}`);
     } catch (error) {
-      console.error('[v0] Error confirming booking:', error);
       toast({
         title: 'Error al confirmar reserva',
         description:
@@ -223,9 +222,9 @@ export default function BookingSummaryPage() {
       <header className="border-b bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="text-2xl font-bold text-gray-900">
-            Barceló
+            Madroño
             <span className="ml-1 text-sm font-normal text-gray-600">
-              HOTEL GROUP
+              HOTEL
             </span>
           </div>
           <Button
@@ -369,7 +368,7 @@ export default function BookingSummaryPage() {
                   <div>
                     <p className="text-sm text-gray-600">Nombre completo</p>
                     <p className="font-semibold">
-                      {customerData.firstName} {customerData.lastName}
+                      {customerData.username} {customerData.lastName}
                     </p>
                   </div>
                 </div>
