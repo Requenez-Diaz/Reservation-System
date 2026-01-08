@@ -37,12 +37,6 @@ export async function getReservationsByUsers(userId: number) {
       orderBy: { createdAt: 'desc' }, // Más recientes primero
       select: {
         id: true,
-        arrivalDate: true,
-        departureDate: true,
-        rooms: true,
-        bedroomsType: true,
-        guests: true,
-        status: true,
         createdAt: true
       }
     });
