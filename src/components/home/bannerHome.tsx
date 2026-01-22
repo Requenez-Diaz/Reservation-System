@@ -149,7 +149,7 @@ export function BannerHome() {
                         Reservaciones
                       </p>
 
-                      <div className="flex flex-col bg-slate-50 sm:flex-row gap-3 md:gap-4">
+                      <div className="flex flex-col  sm:flex-row gap-3 md:gap-4">
                         <a
                           className="flex items-center justify-center gap-3 bg-white hover:bg-blue/90 text-blue-foreground px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg"
                           href="tel:084383204"
