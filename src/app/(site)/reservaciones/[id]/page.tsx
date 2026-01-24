@@ -215,7 +215,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                         </div>
                         <div className="flex items-center justify-between border-t pt-2 mt-2">
                           <span className="text-gray-600">Subtotal:</span>
-                          <span className="text-xl font-bold text-teal-600">
+                          <span className="text-xl font-bold text-orange-600">
                             C${detail.price.toLocaleString()}
                           </span>
                         </div>
@@ -247,7 +247,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-lg font-semibold text-gray-900">
-                    Total pagado
+                    Total a pagar
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
                     {reservation.reservationDetails.length} habitación(es)

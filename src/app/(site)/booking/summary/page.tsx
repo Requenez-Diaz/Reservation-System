@@ -222,9 +222,9 @@ export default function BookingSummaryPage() {
       <header className="border-b bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="text-2xl font-bold text-gray-900">
-            Madroño
+            Hotel
             <span className="ml-1 text-sm font-normal text-gray-600">
-              HOTEL
+              MADROÑO
             </span>
           </div>
           <Button
@@ -243,17 +243,17 @@ export default function BookingSummaryPage() {
         <div className="mx-auto max-w-4xl px-4 py-6">
           <div className="flex items-center justify-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-sm font-semibold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
                 ✓
               </div>
               <span className="text-sm text-gray-600">Datos personales</span>
             </div>
             <div className="h-px w-16 bg-gray-300" />
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-600 text-sm font-semibold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
                 2
               </div>
-              <span className="text-sm font-medium text-teal-600">Resumen</span>
+              <span className="text-sm font-medium text-orange-600">Resumen</span>
             </div>
             <div className="h-px w-16 bg-gray-300" />
             <div className="flex items-center gap-2">
@@ -418,7 +418,7 @@ export default function BookingSummaryPage() {
           )}
 
           {/* Total */}
-          <Card className="border-teal-600 bg-teal-50">
+          <Card className="border-orange-600 bg-orange-50">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -447,10 +447,10 @@ export default function BookingSummaryPage() {
               Editar datos
             </Button>
             <Button
+              disabled={isConfirming}
               onClick={handleConfirmBooking}
               size="lg"
-              className="bg-teal-600 hover:bg-teal-700 gap-2"
-              disabled={isConfirming}
+              variant="save"
             >
               {isConfirming ? (
                 <>

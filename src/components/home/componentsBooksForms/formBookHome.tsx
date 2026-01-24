@@ -409,7 +409,7 @@ export function BedroomSearchForm() {
             <Button
               onClick={handleSearch}
               disabled={isLoading}
-              className="bg-teal-600 hover:bg-teal-700 md:mt-8 relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100"
+              variant="save"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
@@ -479,7 +479,7 @@ export function BedroomSearchForm() {
             </Button>
             <Button
               onClick={applyDistribution}
-              className="bg-teal-600 hover:bg-teal-700"
+              variant="save"
             >
               Aplicar distribución
             </Button>

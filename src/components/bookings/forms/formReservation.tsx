@@ -90,7 +90,6 @@ const getInitialFormValues = (
   return initialValues;
 };
 
-// ... (calculateSuggestedDates se mantiene igual) ...
 
 export function FormReservation({ selectedBedroomType }: FormReservationProps) {
   const { toast } = useToast();
