@@ -14,7 +14,6 @@ import {
   Users,
   Mail,
   Phone,
-  MapPin,
   CheckCircle
 } from 'lucide-react';
 import {
@@ -62,7 +61,6 @@ export default function BookingSummaryPage() {
   const [isConfirming, setIsConfirming] = React.useState(false);
 
   React.useEffect(() => {
-    // Cargar datos guardados
     const savedRooms = localStorage.getItem('selectedRoomsForBooking');
     const savedCustomer = localStorage.getItem('bookingCustomerData');
     const savedDates = localStorage.getItem('selectedDates');
@@ -118,25 +116,25 @@ export default function BookingSummaryPage() {
     }
 
     setIsLoading(false);
-  }, [router]);
+  }, [router, toast]);
 
   const calculateNights = () => {
     if (!searchData.dateRange) {
       return 0;
     }
-    return Math.ceil(
-      (searchData.dateRange.to.getTime() -
-        searchData.dateRange.from.getTime()) /
-        (1000 * 60 * 60 * 24)
+    const diffTime = Math.abs(
+      searchData.dateRange.to.getTime() - searchData.dateRange.from.getTime()
     );
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   const getTotalPrice = () => {
+    const nights = calculateNights() || 1;
     const nightlyTotal = selectedRooms.reduce(
       (sum, room) => sum + room.lowSeasonPrice,
       0
     );
-    return nightlyTotal * (calculateNights() || 1);
+    return nightlyTotal * nights;
   };
 
   const handleConfirmBooking = async () => {
@@ -152,7 +150,6 @@ export default function BookingSummaryPage() {
     setIsConfirming(true);
 
     try {
-      // Paso 1: Obtener o crear usuario
       const userResult = await getOrCreateGuestUser(
         customerData.email,
         `${customerData.username} ${customerData.lastName}`
@@ -162,16 +159,30 @@ export default function BookingSummaryPage() {
         throw new Error(userResult.error || 'Error al procesar el usuario');
       }
 
-      // Paso 2: Crear la reserva con todos los detalles
+      const totalGuests = searchData.guests;
+      const roomCount = selectedRooms.length;
+      const nights = calculateNights();
+
+      const guestsPerRoomBase = Math.floor(totalGuests / roomCount);
+      let remainingGuests = totalGuests % roomCount;
+
       const reservationData = {
         userId: userResult.user.id,
-        rooms: selectedRooms.map((room) => ({
-          bedroomId: Number.parseInt(room.id, 10),
-          dateStart: searchData.dateRange!.from,
-          dateEnd: searchData.dateRange!.to,
-          price: room.lowSeasonPrice * calculateNights(),
-          guestQuantity: searchData.guests
-        }))
+        rooms: selectedRooms.map((room) => {
+          const assignedGuests =
+            guestsPerRoomBase + (remainingGuests > 0 ? 1 : 0);
+          if (remainingGuests > 0) {
+            remainingGuests--;
+          }
+
+          return {
+            bedroomId: Number.parseInt(room.id, 10),
+            dateStart: searchData.dateRange!.from,
+            dateEnd: searchData.dateRange!.to,
+            price: room.lowSeasonPrice * nights,
+            guestQuantity: assignedGuests
+          };
+        })
       };
 
       const result = await createReservation(reservationData);
@@ -185,7 +196,6 @@ export default function BookingSummaryPage() {
         description: `Tu reserva #${result.reservation?.id} ha sido procesada exitosamente.`
       });
 
-      // Limpiar localStorage
       localStorage.removeItem('selectedRoomsForBooking');
       localStorage.removeItem('bookingCustomerData');
       localStorage.removeItem('filteredRooms');
@@ -218,11 +228,10 @@ export default function BookingSummaryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Header */}
       <header className="border-b bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="text-2xl font-bold text-gray-900">
-            Hotel
+            Hotel{' '}
             <span className="ml-1 text-sm font-normal text-gray-600">
               MADROÑO
             </span>
@@ -232,13 +241,12 @@ export default function BookingSummaryPage() {
             onClick={() => router.back()}
             className="gap-2"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Volver
+            <ArrowLeft className="h-4 w-4" /> Volver
           </Button>
         </div>
       </header>
 
-      {/* Progress Steps */}
+      {/* Progress Bar */}
       <div className="border-b bg-white">
         <div className="mx-auto max-w-4xl px-4 py-6">
           <div className="flex items-center justify-center gap-4">
@@ -253,7 +261,9 @@ export default function BookingSummaryPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
                 2
               </div>
-              <span className="text-sm font-medium text-orange-600">Resumen</span>
+              <span className="text-sm font-medium text-orange-600">
+                Resumen
+              </span>
             </div>
             <div className="h-px w-16 bg-gray-300" />
             <div className="flex items-center gap-2">
@@ -266,25 +276,24 @@ export default function BookingSummaryPage() {
         </div>
       </div>
 
-      {/* Summary Content */}
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-balance text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Resumen de tu reserva
           </h1>
-          <p className="text-pretty text-gray-600">
+          <p className="text-gray-600">
             Verifica que toda la información sea correcta antes de confirmar
           </p>
         </div>
 
         <div className="grid gap-6">
-          {/* Información de estadía */}
+          {/* Info Estadía */}
           {searchData.dateRange && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-teal-600" />
-                  Información de estadía
+                  <Calendar className="h-5 w-5 text-teal-600" /> Información de
+                  estadía
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -311,55 +320,66 @@ export default function BookingSummaryPage() {
                   </Badge>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Huéspedes:</span>
+                  <span className="text-gray-600">Huéspedes totales:</span>
                   <span className="font-semibold">{searchData.guests}</span>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Habitaciones seleccionadas */}
+          {/* Habitaciones Seleccionadas con Subtotales */}
           <Card>
             <CardHeader>
               <CardTitle>Habitaciones seleccionadas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {selectedRooms.map((room) => (
-                <div
-                  key={room.id}
-                  className="flex gap-4 border-b pb-4 last:border-0 last:pb-0"
-                >
-                  <img
-                    src={room.image || '/placeholder.svg'}
-                    alt={room.name}
-                    className="h-24 w-24 rounded-lg object-cover"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{room.name}</h3>
-                    <p className="text-sm text-gray-600">{room.description}</p>
-                    <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
-                      <Users className="h-4 w-4" />
-                      <span>Hasta {room.capacity} personas</span>
+              {selectedRooms.map((room) => {
+                const nights = calculateNights() || 1;
+                const subtotal = room.lowSeasonPrice * nights;
+
+                return (
+                  <div
+                    key={room.id}
+                    className="flex flex-col sm:flex-row gap-4 border-b pb-4 last:border-0 last:pb-0"
+                  >
+                    <img
+                      src={room.image || '/placeholder.svg'}
+                      alt={room.name}
+                      className="h-24 w-24 rounded-lg object-cover mx-auto sm:mx-0"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">
+                        {room.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 line-clamp-1">
+                        {room.description}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                        <Users className="h-3 w-3" />
+                        <span>Capacidad: {room.capacity} pers.</span>
+                      </div>
+                    </div>
+                    <div className="text-right flex flex-col justify-center">
+                      <p className="text-xs text-gray-500">
+                        C${room.lowSeasonPrice} × {nights}{' '}
+                        {nights > 1 ? 'noches' : 'noche'}
+                      </p>
+                      <p className="text-lg font-bold text-teal-700">
+                        Subtotal: C${subtotal.toLocaleString()}
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-600">Por noche</p>
-                    <p className="text-xl font-bold text-gray-900">
-                      C${room.lowSeasonPrice}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
 
-          {/* Datos del huésped */}
+          {/* Datos Cliente */}
           {customerData && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-teal-600" />
-                  Datos del huésped
+                  <Users className="h-5 w-5 text-teal-600" /> Datos del huésped
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -386,46 +406,20 @@ export default function BookingSummaryPage() {
                     <p className="font-semibold">{customerData.phone}</p>
                   </div>
                 </div>
-                {(customerData.country ||
-                  customerData.city ||
-                  customerData.address) && (
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-600">Ubicación</p>
-                      <p className="font-semibold">
-                        {[
-                          customerData.address,
-                          customerData.city,
-                          customerData.country
-                        ]
-                          .filter(Boolean)
-                          .join(', ')}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {customerData.comments && (
-                  <div className="border-t pt-3">
-                    <p className="text-sm text-gray-600">Comentarios</p>
-                    <p className="mt-1 text-sm text-gray-900">
-                      {customerData.comments}
-                    </p>
-                  </div>
-                )}
               </CardContent>
             </Card>
           )}
 
-          {/* Total */}
+          {/* Gran Total */}
           <Card className="border-orange-600 bg-orange-50">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total a pagar</p>
+                  <p className="text-sm text-gray-600 font-medium">
+                    Total Final
+                  </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {selectedRooms.length} habitación(es) × {calculateNights()}{' '}
-                    noche(s)
+                    Impuestos y tasas incluidos
                   </p>
                 </div>
                 <p className="text-4xl font-bold text-teal-900">
@@ -435,16 +429,14 @@ export default function BookingSummaryPage() {
             </CardContent>
           </Card>
 
-          {/* Botones de acción */}
+          {/* Acciones */}
           <div className="flex items-center justify-between pt-4">
             <Button
               variant="outline"
               onClick={() => router.back()}
-              className="gap-2"
               disabled={isConfirming}
             >
-              <ArrowLeft className="h-4 w-4" />
-              Editar datos
+              <ArrowLeft className="h-4 w-4 mr-2" /> Editar datos
             </Button>
             <Button
               disabled={isConfirming}
@@ -454,13 +446,12 @@ export default function BookingSummaryPage() {
             >
               {isConfirming ? (
                 <>
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent mr-2" />{' '}
                   Procesando...
                 </>
               ) : (
                 <>
-                  <CheckCircle className="h-5 w-5" />
-                  Confirmar reserva
+                  <CheckCircle className="h-5 w-5 mr-2" /> Confirmar reserva
                 </>
               )}
             </Button>
