@@ -11,6 +11,12 @@ interface BedroomDB {
   status: boolean;
   lowSeasonPrice: number;
   highSeasonPrice: number;
+  Seasons?: {
+    id: number;
+    nameSeason: string;
+    dateStart: Date;
+    dateEnd: Date;
+  } | null;
   BedroomImages?: Array<{
     imageContent: string | null;
     fileName?: string;
@@ -52,13 +58,14 @@ export default async function RoomsPage() {
             : String(d?.dateStart ?? ''),
         ...(d?.dateEnd
           ? {
-              dateEnd:
-                d.dateEnd instanceof Date
-                  ? d.dateEnd.toISOString()
-                  : String(d.dateEnd)
-            }
+            dateEnd:
+              d.dateEnd instanceof Date
+                ? d.dateEnd.toISOString()
+                : String(d.dateEnd)
+          }
           : {})
-      }))
+      })),
+      seasonName: bedroom.Seasons?.nameSeason
     };
   });
 

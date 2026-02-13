@@ -36,6 +36,7 @@ interface BedroomFromDB {
     dateStart: string;
     dateEnd?: string;
   }>;
+  seasonName?: string | null;
 }
 
 interface RoomSelectionProps {
@@ -162,7 +163,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
     return Math.ceil(
       (searchData.dateRange.to.getTime() -
         searchData.dateRange.from.getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     );
   };
 
@@ -170,10 +171,11 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
     const selectedRoomDetails = availableRooms.filter((room) =>
       selectedRooms.includes(room.id)
     );
-    const nightlyTotal = selectedRoomDetails.reduce(
-      (sum, room) => sum + room.lowSeasonPrice,
-      0
-    );
+    const nightlyTotal = selectedRoomDetails.reduce((sum, room) => {
+      const isHigh = room.seasonName?.toLowerCase().includes('alta');
+      const price = isHigh ? room.highSeasonPrice : room.lowSeasonPrice;
+      return sum + price;
+    }, 0);
     return nightlyTotal * (calculateNights() || 1);
   };
 
@@ -280,15 +282,17 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
           {availableRooms.map((room) => {
             const isSelected = selectedRooms.includes(room.id);
             const _isExpanded = expandedRoom === room.id;
+            const isHighSeason = room.seasonName
+              ?.toLowerCase()
+              .includes('alta');
 
             return (
               <Card
                 key={room.id}
-                className={`relative overflow-hidden transition-all duration-300 ${
-                  isSelected
+                className={`relative overflow-hidden transition-all duration-300 ${isSelected
                     ? 'ring-2 ring-orange-600 shadow-lg'
                     : 'hover:shadow-md'
-                }`}
+                  }`}
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -299,6 +303,11 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
                   {room.status && (
                     <Badge className="absolute bg-green-600 left-4 top-4 ">
                       Disponible
+                    </Badge>
+                  )}
+                  {room.seasonName && (
+                    <Badge className="absolute bg-orange-600 left-4 bottom-4 ">
+                      {room.seasonName}
                     </Badge>
                   )}
                   {isSelected && (
@@ -329,29 +338,36 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
                   <div className="border-t pt-4">
                     <div className="flex items-baseline gap-2">
                       <span className="text-sm text-gray-600">
-                        Temporada baja
+                        {isHighSeason ? 'Temporada alta' : 'Temporada baja'}
                       </span>
-                      <span className="text-2xl font-bold text-gray-900">
-                        C${room.lowSeasonPrice}
+                      <span
+                        className={`text-2xl font-bold ${isHighSeason ? 'text-orange-600' : 'text-gray-900'
+                          }`}
+                      >
+                        C$
+                        {isHighSeason
+                          ? room.highSeasonPrice
+                          : room.lowSeasonPrice}
                       </span>
                       <span className="text-sm text-gray-600">/noche</span>
                     </div>
-                    <div className="flex items-baseline gap-2 mt-1">
-                      <span className="text-xs text-gray-500">
-                        Temporada alta: C${room.highSeasonPrice}/noche
-                      </span>
-                    </div>
+                    {!isHighSeason && (
+                      <div className="flex items-baseline gap-2 mt-1">
+                        <span className="text-xs text-gray-500">
+                          Temporada alta: C${room.highSeasonPrice}/noche
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
 
                 <CardFooter>
                   <Button
                     onClick={() => toggleRoomSelection(room.id)}
-                    className={`w-full ${
-                      isSelected
+                    className={`w-full ${isSelected
                         ? 'bg-orange-600 hover:bg-orange-700'
                         : 'bg-green-600 hover:bg-green-800'
-                    }`}
+                      }`}
                   >
                     {isSelected ? (
                       <>

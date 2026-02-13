@@ -56,6 +56,12 @@ interface Bedroom {
     dateEnd?: string;
   }>;
   image?: string;
+  Seasons?: {
+    id: number;
+    nameSeason: string;
+    dateStart: Date;
+    dateEnd: Date;
+  } | null;
 }
 
 export default function HabitacionesPage({
@@ -79,7 +85,28 @@ export default function HabitacionesPage({
     async function fetchBedrooms() {
       try {
         const data = await getAllBedrooms();
-        setBedrooms(data as Bedroom[]);
+        const mappedBedrooms: Bedroom[] = data.map((b) => ({
+          id: String(b.id),
+          name: b.typeBedroom, // Mapping typeBedroom to name
+          description: b.description,
+          capacity: b.capacity,
+          numberBedroom: b.numberBedroom,
+          status: b.status,
+          lowSeasonPrice: b.lowSeasonPrice,
+          highSeasonPrice: b.highSeasonPrice,
+          slug: b.slug,
+          image: b.image,
+          BedroomImages: b.BedroomImages?.map((img) => ({
+            id: String(img.fileName || Math.random()), // fallback id
+            image: img.imageContent || ''
+          })) || [],
+          bookingsDetails: b.reservationDetails?.map((r) => ({
+            dateStart: new Date(r.dateStart).toISOString(),
+            dateEnd: new Date(r.dateEnd).toISOString()
+          })) || [],
+          Seasons: b.Seasons
+        }));
+        setBedrooms(mappedBedrooms);
       } finally {
         setIsLoading(false);
       }

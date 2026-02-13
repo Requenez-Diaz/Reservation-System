@@ -33,6 +33,12 @@ interface Bedroom {
     dateStart: string;
     dateEnd?: string;
   }>;
+  Seasons?: {
+    id: number;
+    nameSeason: string;
+    dateStart: Date;
+    dateEnd: Date;
+  } | null;
 }
 
 interface BookingModalProps {
@@ -52,6 +58,10 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
   const [clientEmail, setClientEmail] = React.useState('');
   const [clientPhone, _setClientPhone] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+
+  // Determine active season and price
+  const activeSeasonName = bedroom.Seasons?.nameSeason;
+  const isHighSeason = activeSeasonName?.toLowerCase().includes('alta');
 
   const { toast } = useToast();
   const router = useRouter();
@@ -193,7 +203,14 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-6 left-6 text-white">
             <h2 className="text-3xl font-bold">{bedroom.name}</h2>
-            <p className="mt-1 text-white/90">{bedroom.description}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-white/90">{bedroom.description}</p>
+              {activeSeasonName && (
+                <span className="bg-orange-600 px-2 py-1 rounded text-xs font-semibold uppercase tracking-wider">
+                  {activeSeasonName}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -313,13 +330,19 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
             <div className="flex items-baseline justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-600">Temporada baja</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p
+                  className={`text-2xl font-bold ${!isHighSeason ? 'text-teal-600' : 'text-gray-400'
+                    }`}
+                >
                   ${bedroom.lowSeasonPrice}/noche
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-600">Temporada alta</p>
-                <p className="text-xl font-semibold text-teal-600">
+                <p
+                  className={`text-xl font-semibold ${isHighSeason ? 'text-teal-600' : 'text-gray-400'
+                    }`}
+                >
                   ${bedroom.highSeasonPrice}/noche
                 </p>
               </div>

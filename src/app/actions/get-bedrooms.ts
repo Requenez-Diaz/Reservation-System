@@ -21,7 +21,8 @@ export const getAllBedrooms = async () => {
             mimeType: true,
             imageContent: true
           }
-        }
+        },
+        Seasons: true
       }
     });
     // bedrooms.forEach((bedroom) => {
