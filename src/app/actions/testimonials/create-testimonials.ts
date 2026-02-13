@@ -131,7 +131,9 @@ export const getTestimonials = async (limit?: number) => {
       where: { isApproved: true },
       orderBy: { createdAt: 'desc' },
       ...(limit && { take: limit }),
-      include: { User: { select: { id: true, username: true, email: true } } }
+      include: {
+        User: { select: { id: true, username: true, email: true, image: true } }
+      }
     });
 
     return { success: true, testimonials };
@@ -147,7 +149,9 @@ export const getTestimonialsByUser = async (userId: number) => {
     const testimonials = await prisma.testimonials.findMany({
       where: { userId, isApproved: true },
       orderBy: { createdAt: 'desc' },
-      include: { User: { select: { id: true, username: true, email: true } } }
+      include: {
+        User: { select: { id: true, username: true, email: true, image: true } }
+      }
     });
 
     return { success: true, testimonials };
