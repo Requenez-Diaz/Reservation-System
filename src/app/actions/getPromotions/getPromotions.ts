@@ -5,24 +5,22 @@ import prisma from '@/lib/db';
 export async function getPromotions() {
   try {
     const promotions = await prisma.promotions.findMany({
-      where: {
-        dateEnd: { gte: new Date() }
-      },
       include: {
         Seasons: true,
-
         BedroomsPromotions: {
           include: {
-            Bedrooms: true,
-            Promotions: true
+            Bedrooms: true // Aquí viene la imagen: Bedrooms.image
           }
         }
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     });
-    console.log('Promotions:', promotions);
-    return { success: true, data: promotions };
+
+    // Serialización para evitar errores de objetos Date en Next.js
+    const safeData = JSON.parse(JSON.stringify(promotions));
+    return { success: true, data: safeData };
   } catch (error) {
-    throw new Error('Error fetching promotions');
-    return [];
+    console.error('Error:', error);
+    return { success: false, data: [] };
   }
 }
