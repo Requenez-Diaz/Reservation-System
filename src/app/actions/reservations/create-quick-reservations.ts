@@ -15,7 +15,6 @@ export type QuickReservationData = {
 
 export async function createQuickReservation(data: QuickReservationData) {
   try {
-    // 1. Buscar o crear usuario guest
     let user = await prisma.user.findUnique({
       where: { email: data.clientEmail }
     });
@@ -32,21 +31,21 @@ export async function createQuickReservation(data: QuickReservationData) {
     }
 
     // 2. Buscar la habitación para obtener el precio
+    const bedroomIdNumber = Number.parseInt(data.bedroomId);
     const bedroom = await prisma.bedrooms.findUnique({
-      where: { id: Number.parseInt(data.bedroomId) }
+      where: { id: bedroomIdNumber }
     });
 
     if (!bedroom) {
       throw new Error('Habitación no encontrada');
     }
 
-    // 3. Calcular precio (usar temporada baja por defecto)
-    const nights = Math.ceil(
-      (data.dateEnd.getTime() - data.dateStart.getTime()) /
-        (1000 * 60 * 60 * 24)
-    );
+    // 3. Calcular precio (noches)
+    const diffInTime = data.dateEnd.getTime() - data.dateStart.getTime();
+    const nights = Math.max(1, Math.ceil(diffInTime / (1000 * 60 * 60 * 24)));
     const totalPrice = bedroom.lowSeasonPrice * nights;
 
+    // 4. Buscar o crear promoción por defecto
     let defaultPromotion = await prisma.promotions.findFirst({
       where: { codePromotions: 'NO_PROMOTION' }
     });
@@ -54,14 +53,16 @@ export async function createQuickReservation(data: QuickReservationData) {
     if (!defaultPromotion) {
       const season = await prisma.seasons.findFirst();
       if (!season) {
-        throw new Error('No hay temporadas disponibles');
+        throw new Error(
+          'No hay temporadas disponibles para asignar a la promoción'
+        );
       }
 
       defaultPromotion = await prisma.promotions.create({
         data: {
           codePromotions: 'NO_PROMOTION',
           porcentageDescuent: 0,
-          dateStart: new Date(),
+          dateStart: new Date(2000, 0, 1),
           dateEnd: new Date(2099, 11, 31),
           description: 'Sin promoción aplicada',
           updatedAt: new Date(),
@@ -70,33 +71,38 @@ export async function createQuickReservation(data: QuickReservationData) {
       });
     }
 
-    // 5. Crear la reserva
+    // 5. Crear la reserva corregida según tu Schema
     const reservation = await prisma.reservation.create({
       data: {
-        userId: user.id,
+        // En tu modelo Reservation, el campo de relación se llama "User"
+        User: {
+          connect: { id: user.id }
+        },
         status: 'PENDING',
         isRead: false,
-        reservationDetails: {
+        // En tu modelo Bedrooms, la relación se llama "ReservationDetails"
+        ReservationDetails: {
           create: {
-            bedrooms: {
-              connect: { id: Number.parseInt(data.bedroomId) }
-            },
-            promotions: {
-              connect: { id: defaultPromotion.id }
-            },
             dateStart: data.dateStart,
             dateEnd: data.dateEnd,
             price: totalPrice,
             guestQuantity: data.guests,
-            status: 'PENDING'
+            status: 'PENDING',
+            // Usamos las relaciones definidas en el modelo ReservationDetails
+            Bedrooms: {
+              connect: { id: bedroomIdNumber }
+            },
+            Promotions: {
+              connect: { id: defaultPromotion.id }
+            }
           }
         }
       },
       include: {
-        reservationDetails: {
+        ReservationDetails: {
           include: {
-            bedrooms: true,
-            promotions: true
+            Bedrooms: true,
+            Promotions: true
           }
         }
       }

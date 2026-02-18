@@ -8,52 +8,29 @@ export const getAllBedrooms = async () => {
       where: {
         status: true
       },
-
       include: {
-        reservationDetails: {
+        ReservationDetails: {
           where: {
             dateStart: new Date()
           }
         },
-        BedroomImages: {
+
+        galleryImages: {
           select: {
             fileName: true,
             mimeType: true,
             imageContent: true
           }
         },
-        Seasons: true
+        Seasons: true,
+        TypeBedrooms: true
       }
     });
-    // bedrooms.forEach((bedroom) => {
-    //   console.log('imagen de la habitacion ', bedroom.image);
-    // });
 
-    console.log('Habitaciónes obtenidas', { bedrooms });
+    console.log('Habitaciones obtenidas con éxito');
     return bedrooms;
   } catch (error) {
-    console.error('Error al obtener las habitaciones', error);
-
+    console.error('Error al obtener las habitaciones:', error);
     return [];
-  }
-};
-
-export const getBedroomsById = async (id: number) => {
-  try {
-    const bedroom = await prisma.bedrooms.findUnique({
-      where: {
-        id
-      },
-      include: {
-        reservationDetails: true,
-        BedroomImages: true
-      }
-    });
-    console.log('Habitaciónes obtenidas por id', { bedroom });
-    return bedroom;
-  } catch (error) {
-    console.error('Error al obtener la habitación', error);
-
-    return null;
   }
 };

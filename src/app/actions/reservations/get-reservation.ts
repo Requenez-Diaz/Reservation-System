@@ -8,14 +8,15 @@ export async function getReservationById(id: number) {
       where: { id },
       include: {
         User: true,
-        reservationDetails: {
+        ReservationDetails: {
           include: {
-            bedrooms: {
+            Bedrooms: {
               include: {
-                BedroomImages: true
+                galleryImages: true,
+                TypeBedrooms: true
               }
             },
-            promotions: true
+            Promotions: true
           }
         }
       }

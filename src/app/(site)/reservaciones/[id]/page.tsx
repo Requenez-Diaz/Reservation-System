@@ -68,13 +68,17 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   };
 
   const calculateNights = (dateStart: Date, dateEnd: Date) => {
-    return Math.ceil(
-      (dateEnd.getTime() - dateStart.getTime()) / (1000 * 60 * 60 * 24)
+    return Math.max(
+      1,
+      Math.ceil(
+        (new Date(dateEnd).getTime() - new Date(dateStart).getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
     );
   };
 
   const getTotalPrice = () => {
-    return reservation.reservationDetails.reduce(
+    return reservation.ReservationDetails.reduce(
       (sum, detail) => sum + detail.price,
       0
     );
@@ -99,7 +103,6 @@ export default async function ReservationDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Reservation Details */}
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
@@ -141,30 +144,30 @@ export default async function ReservationDetailPage({ params }: PageProps) {
           </Card>
 
           {/* Habitaciones reservadas */}
-          {reservation.reservationDetails.map((detail, index) => {
-            const bedroom = detail.bedrooms;
-            const nights = calculateNights(
-              new Date(detail.dateStart),
-              new Date(detail.dateEnd)
-            );
+          {reservation.ReservationDetails.map((detail, _index) => {
+            const bedroom = detail.Bedrooms;
+            const nights = calculateNights(detail.dateStart, detail.dateEnd);
+
             const imageUrl =
-              bedroom.BedroomImages && bedroom.BedroomImages.length > 0
-                ? bedroom.BedroomImages[0].imageContent
+              bedroom.galleryImages && bedroom.galleryImages.length > 0
+                ? bedroom.galleryImages[0].imageContent
                 : null;
 
             return (
               <Card key={detail.id}>
                 <CardHeader>
                   <CardTitle>
-                    Habitación {index + 1} - {bedroom.typeBedroom}
+                    {/* CORRECCIÓN: nameType jalado desde la relación TypeBedrooms */}
+                    Habitación {bedroom.numberBedroom} -{' '}
+                    {bedroom.TypeBedrooms?.nameType || 'Tipo N/A'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex gap-4">
                     {imageUrl && (
                       <img
-                        src={imageUrl || '/placeholder.svg'}
-                        alt={bedroom.image}
+                        src={imageUrl}
+                        alt={`Habitación ${bedroom.numberBedroom}`}
                         className="h-32 w-32 rounded-lg object-cover"
                       />
                     )}
@@ -176,8 +179,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                       <div className="grid gap-2 text-sm">
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600 flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            Check-in:
+                            <Calendar className="h-4 w-4" /> Check-in:
                           </span>
                           <span className="font-semibold">
                             {format(
@@ -189,8 +191,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600 flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            Check-out:
+                            <Calendar className="h-4 w-4" /> Check-out:
                           </span>
                           <span className="font-semibold">
                             {format(
@@ -204,33 +205,22 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                           <span className="text-gray-600">Noches:</span>
                           <Badge variant="secondary">{nights} noche(s)</Badge>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            Huéspedes:
-                          </span>
-                          <span className="font-semibold">
-                            {detail.guestQuantity}
-                          </span>
-                        </div>
                         <div className="flex items-center justify-between border-t pt-2 mt-2">
-                          <span className="text-gray-600">Subtotal:</span>
+                          <span className="text-gray-600 font-bold">
+                            Subtotal:
+                          </span>
                           <span className="text-xl font-bold text-orange-600">
                             C${detail.price.toLocaleString()}
                           </span>
                         </div>
                       </div>
 
-                      {detail.promotions &&
-                        detail.promotions.codePromotions !== 'NO_PROMOTION' && (
+                      {detail.Promotions &&
+                        detail.Promotions.codePromotions !== 'NO_PROMOTION' && (
                           <div className="rounded-lg bg-green-50 border border-green-200 p-3">
                             <p className="text-sm font-semibold text-green-800">
                               Promoción aplicada:{' '}
-                              {detail.promotions.codePromotions}
-                            </p>
-                            <p className="text-xs text-green-600">
-                              {detail.promotions.porcentageDescuent}% de
-                              descuento
+                              {detail.Promotions.codePromotions}
                             </p>
                           </div>
                         )}
@@ -241,16 +231,13 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             );
           })}
 
-          {/* Total */}
+          {/* Total a pagar */}
           <Card className="border-orange-600 bg-orange-50">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-lg font-semibold text-gray-900">
                     Total a pagar
-                  </p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    {reservation.reservationDetails.length} habitación(es)
                   </p>
                 </div>
                 <p className="text-4xl font-bold text-orange-900">
@@ -260,33 +247,6 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             </CardContent>
           </Card>
 
-          {/* Fecha de creación */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>Fecha de reserva:</span>
-                <span className="font-semibold">
-                  {format(
-                    new Date(reservation.createdAt),
-                    "dd 'de' MMMM yyyy 'a las' HH:mm",
-                    { locale: es }
-                  )}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Información adicional */}
-          <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
-            <p className="text-sm text-blue-900">
-              <strong>Importante:</strong> Hemos enviado un correo de
-              confirmación a <strong>{reservation.User.email}</strong> con todos
-              los detalles de tu reserva. Por favor revisa tu bandeja de entrada
-              y spam.
-            </p>
-          </div>
-
-          {/* Botón volver al inicio */}
           <div className="flex justify-center pt-4">
             <Link href="/">
               <Button
@@ -294,8 +254,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                 variant="outline"
                 className="gap-2 bg-transparent"
               >
-                <ArrowLeft className="h-5 w-5" />
-                Volver al inicio
+                <ArrowLeft className="h-5 w-5" /> Volver al inicio
               </Button>
             </Link>
           </div>
