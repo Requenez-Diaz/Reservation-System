@@ -5,31 +5,26 @@ import prisma from '@/lib/db';
 export async function getUserReservations(userId: number) {
   try {
     const reservations = await prisma.reservation.findMany({
-      where: { userId },
+      where: { user_id: userId },
       include: {
-        reservationDetails: {
+        ReservationDetails: {
           include: {
-            bedrooms: true,
-            promotions: true
+            Bedrooms: {
+              include: {
+                galleryImages: true,
+                TypeBedrooms: true
+              }
+            },
+            Promotions: true
           }
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: { createdAt: 'desc' }
     });
 
-    console.log('reservations', { reservations });
-
-    return {
-      success: true,
-      reservations
-    };
+    return { success: true, reservations };
   } catch (error) {
     console.error(error);
-    return {
-      success: false,
-      reservations: []
-    };
+    return { success: false, reservations: [] };
   }
 }
