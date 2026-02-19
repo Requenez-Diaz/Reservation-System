@@ -1,3 +1,4 @@
+// @/app/actions/get-bedrooms.ts
 'use server';
 
 import prisma from '@/lib/db';
@@ -9,12 +10,9 @@ export const getAllBedrooms = async () => {
         status: true
       },
       include: {
-        ReservationDetails: {
-          where: {
-            dateStart: new Date()
-          }
-        },
-
+        // Quitamos el filtro exacto de dateStart para que el
+        // calendario pueda mostrar disponibilidad real
+        ReservationDetails: true,
         galleryImages: {
           select: {
             fileName: true,
@@ -23,7 +21,7 @@ export const getAllBedrooms = async () => {
           }
         },
         Seasons: true,
-        TypeBedrooms: true
+        TypeBedrooms: true // Relación necesaria para el nombre del tipo
       }
     });
 

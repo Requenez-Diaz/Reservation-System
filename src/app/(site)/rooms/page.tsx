@@ -1,43 +1,54 @@
+// @/app/(site)/rooms/page.tsx
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import { RoomSelection } from '@/components/home/componentsBooksForms/room-selection';
 
-// Definición de tipo simplificada basada en tu mapeo
-interface BedroomDB {
+interface GalleryImage {
+  imageContent: string | null;
+  fileName?: string;
+  mimeType?: string;
+}
+
+interface ReservationDetail {
+  dateStart: Date | string;
+  dateEnd: Date | string;
+}
+
+interface RawBedroom {
   id: string | number;
-  typeBedroom: string;
-  description?: string;
-  capacity?: number;
+  description: string | null;
+  capacity: number;
   numberBedroom: number;
   status: boolean;
   lowSeasonPrice: number;
   highSeasonPrice: number;
+  slug: string | null;
+  TypeBedrooms?: {
+    nameType?: string;
+    typeBedroom?: string;
+  } | null;
   Seasons?: {
     id: number;
     nameSeason: string;
-    dateStart: Date;
-    dateEnd: Date;
   } | null;
-  BedroomImages?: Array<{
-    imageContent: string | null;
-    fileName?: string;
-    mimeType?: string;
-  }>;
-  slug?: string;
-  reservationDetails?: Array<{
-    dateStart: Date | string;
-    dateEnd?: Date | string;
-  }>;
+  galleryImages?: GalleryImage[];
+  ReservationDetails?: ReservationDetail[];
 }
 
 export default async function RoomsPage() {
-  const bedroomData: BedroomDB[] = await getAllBedrooms();
+  const rawData = await getAllBedrooms();
+  const rawBedrooms = (rawData || []) as RawBedroom[];
 
-  const mappedRooms = bedroomData.map((bedroom) => {
-    const firstImage = bedroom.BedroomImages?.[0];
+  const mappedRooms = rawBedrooms.map((bedroom) => {
+    const firstImage = bedroom.galleryImages?.[0];
+
+    const typeName =
+      bedroom.TypeBedrooms?.nameType ||
+      bedroom.TypeBedrooms?.typeBedroom ||
+      'Habitación Estándar';
 
     return {
       id: String(bedroom.id),
-      name: bedroom.typeBedroom,
+      name: typeName,
       description: bedroom.description || '',
       capacity: bedroom.capacity || 2,
       numberBedroom: bedroom.numberBedroom,
@@ -47,27 +58,27 @@ export default async function RoomsPage() {
       image: firstImage?.imageContent || '/placeholder.svg',
       slug:
         bedroom.slug ||
-        bedroom.typeBedroom
+        typeName
           .toLowerCase()
           .replace(/\s+/g, '_')
           .replace(/[^a-z0-9_]/g, ''),
-      bookingsDetails: (bedroom.reservationDetails || []).map((d) => ({
+      bookingsDetails: (bedroom.ReservationDetails || []).map((d) => ({
         dateStart:
-          d?.dateStart instanceof Date
+          d.dateStart instanceof Date
             ? d.dateStart.toISOString()
-            : String(d?.dateStart ?? ''),
-        ...(d?.dateEnd
-          ? {
-            dateEnd:
-              d.dateEnd instanceof Date
-                ? d.dateEnd.toISOString()
-                : String(d.dateEnd)
-          }
-          : {})
+            : String(d.dateStart),
+        dateEnd:
+          d.dateEnd instanceof Date
+            ? d.dateEnd.toISOString()
+            : String(d.dateEnd)
       })),
-      seasonName: bedroom.Seasons?.nameSeason
+      seasonName: bedroom.Seasons?.nameSeason || 'Temporada Regular'
     };
   });
 
-  return <RoomSelection allBedrooms={mappedRooms} />;
+  return (
+    <div className="container mx-auto py-10">
+      <RoomSelection allBedrooms={mappedRooms} />
+    </div>
+  );
 }

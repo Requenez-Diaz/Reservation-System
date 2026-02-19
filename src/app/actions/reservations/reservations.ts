@@ -3,7 +3,6 @@
 import prisma from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-// Se cambió promotionId por promotionsId para que coincida con el schema
 export type ReservationData = {
   userId: number;
   rooms: {
@@ -20,20 +19,19 @@ export async function createReservation(data: ReservationData) {
   try {
     const reservation = await prisma.reservation.create({
       data: {
-        userId: data.userId,
+        user_id: data.userId,
         status: 'PENDING',
         isRead: false,
-        reservationDetails: {
+        ReservationDetails: {
           create: data.rooms.map((room) => {
-            // Construimos el payload de conexión para la promoción
             const promotionPayload = room.promotionsId
-              ? { promotionsId: room.promotionsId } // ⭐️ CLAVE: Pasamos el ID escalar directamente
+              ? { promotionsId: room.promotionsId }
               : {};
 
             return {
-              bedrooms: { connect: { id: room.bedroomId } },
+              Bedrooms: { connect: { id: room.bedroomId } },
 
-              ...promotionPayload, // Agregamos { promotionsId: X } o {}
+              ...promotionPayload,
 
               dateStart: room.dateStart,
               dateEnd: room.dateEnd,
@@ -45,9 +43,9 @@ export async function createReservation(data: ReservationData) {
         }
       },
       include: {
-        reservationDetails: {
+        ReservationDetails: {
           include: {
-            bedrooms: true
+            Bedrooms: true
           }
         }
       }
@@ -71,26 +69,23 @@ export async function createReservation(data: ReservationData) {
 
 export async function getOrCreateGuestUser(email: string, username: string) {
   try {
-    // Buscar usuario existente por email
     let user = await prisma.user.findUnique({
       where: { email }
     });
 
-    // Si no existe, crear uno nuevo con rol "User"
     if (!user) {
       user = await prisma.user.create({
         data: {
           email,
           username,
-          password: '', // Usuario invitado sin password
-          roleName: 'User' // Asegúrate de tener este rol en tu DB
+          password: '',
+          roleName: 'User'
         }
       });
     }
 
     return { success: true, user };
   } catch (error) {
-    console.error('[v0] Error getting/creating user:', error);
     return {
       success: false,
       error: 'Error al procesar el usuario'

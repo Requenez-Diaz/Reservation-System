@@ -58,10 +58,13 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
   const bedroom = firstDetail?.Bedrooms;
   const imageUrl = bedroom?.galleryImages?.[0]?.imageContent;
 
-  const totalPrice = details.reduce(
-    (sum: number, d: ReservationDetail) => sum + (d.price || 0),
+  // Calculamos totales de la reserva completa
+  const totalGuests = details.reduce(
+    (sum, d) => sum + (d.guestQuantity || 0),
     0
   );
+  const totalPrice = details.reduce((sum, d) => sum + (d.price || 0), 0);
+  const extraRooms = details.length - 1;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -77,7 +80,7 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-all border-slate-200">
+    <Card className="overflow-hidden hover:shadow-lg transition-all border-slate-200 bg-white">
       <div className="relative h-48 w-full bg-slate-100">
         {imageUrl ? (
           <img
@@ -90,8 +93,19 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
             Sin imagen disponible
           </div>
         )}
+
+        {/* Indicador de habitaciones adicionales (+1, +2...) */}
+        {extraRooms > 0 && (
+          <div className="absolute bottom-3 left-3">
+            <Badge className="bg-orange-700/80 text-white border-none backdrop-blur-md font-bold px-2 py-1">
+              +{extraRooms}{' '}
+              {extraRooms === 1 ? 'habitación extra' : 'habitaciones extras'}
+            </Badge>
+          </div>
+        )}
+
         <Badge
-          className={`absolute top-3 right-3 ${getStatusColor(reservation.status)} border shadow-sm uppercase text-[10px]`}
+          className={`absolute top-3 right-3 ${getStatusColor(reservation.status)} border shadow-sm uppercase text-[10px] px-2 py-1`}
         >
           {reservation.status === 'PENDING'
             ? 'Pendiente'
@@ -106,32 +120,34 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
           {bedroom?.TypeBedrooms?.nameType || 'Habitación'} #
           {bedroom?.numberBedroom || 'N/A'}
         </h3>
-        <p className="text-xs text-gray-500 line-clamp-1">
-          {bedroom?.description}
+        <p className="text-xs text-gray-500 line-clamp-1 italic">
+          {bedroom?.description || 'Sin descripción disponible'}
         </p>
       </CardHeader>
 
-      <CardContent className="p-4 pt-0 space-y-3">
-        <div className="flex items-center gap-4 text-sm text-gray-600">
-          <div className="flex items-center gap-1">
+      <CardContent className="p-4 pt-0 space-y-4">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-1.5 text-slate-600">
             <Calendar className="h-4 w-4 text-orange-600" />
-            <span>
+            <span className="font-medium">
               {firstDetail?.dateStart
-                ? format(new Date(firstDetail.dateStart), 'dd MMM', {
+                ? format(new Date(firstDetail.dateStart), 'dd MMM yyyy', {
                     locale: es
                   })
                 : '--'}
             </span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5 text-slate-600">
             <Users className="h-4 w-4 text-orange-600" />
-            <span>{firstDetail?.guestQuantity || 0} pers.</span>
+            <span className="font-medium">{totalGuests} pers. total</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t pt-3 mt-2">
-          <span className="text-sm text-gray-500 font-medium">Total:</span>
-          <span className="text-xl font-bold text-orange-600">
+        <div className="flex items-center justify-between border-t border-slate-100 pt-3 mt-2">
+          <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">
+            Total Estancia:
+          </span>
+          <span className="text-xl font-black text-orange-600">
             C$ {totalPrice.toLocaleString()}
           </span>
         </div>
@@ -141,10 +157,10 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
         <Link href={`/reservaciones/${reservation.id}`} className="w-full">
           <Button
             variant="outline"
-            className="w-full gap-2 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200"
+            className="w-full gap-2 border-slate-200 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 transition-colors"
           >
             <Info className="h-4 w-4" />
-            Detalles de reserva
+            Ver detalles completos
           </Button>
         </Link>
       </CardFooter>
@@ -163,23 +179,26 @@ export default async function ReservationsPage() {
   const userId = Number(session.user.id);
   const { success, reservations } = await getUserReservations(userId);
 
-  // Aseguramos que reservations sea tratado como el tipo definido
+  // Casteo seguro de datos de Prisma
   const typedReservations = (reservations || []) as unknown as Reservation[];
 
   if (!success || typedReservations.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center px-4 max-w-md">
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+          <div className="bg-white p-10 rounded-3xl shadow-sm border border-slate-200">
+            <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Calendar className="text-orange-600 h-8 w-8" />
+            </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              No hay reservaciones
+              No tienes reservas aún
             </h1>
-            <p className="text-gray-500 mb-6">
-              Parece que aún no has planeado tu próxima estancia con nosotros.
+            <p className="text-gray-500 mb-8">
+              Parece que no has realizado ninguna reservación en Hotel Madroño.
             </p>
             <Link href="/">
-              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
-                Explorar Habitaciones
+              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-6 text-lg">
+                Reservar ahora
               </Button>
             </Link>
           </div>
@@ -189,24 +208,27 @@ export default async function ReservationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
       <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
-            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">
+            <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-3">
               Mis Reservaciones
             </h1>
-            <p className="text-lg text-gray-600">
-              Historial de tus estancias en{' '}
-              <span className="font-semibold text-orange-600">
+            <p className="text-lg text-slate-600">
+              Gestiona tus estancias en{' '}
+              <span className="font-bold text-orange-600 underline underline-offset-4 decoration-orange-200">
                 Hotel Madroño
               </span>
               .
             </p>
           </div>
           <Link href="/">
-            <Button variant="ghost" className="gap-2 text-gray-600">
-              <ArrowLeft className="h-4 w-4" /> Volver al hotel
+            <Button
+              variant="ghost"
+              className="gap-2 text-slate-600 hover:text-orange-600 hover:bg-orange-50"
+            >
+              <ArrowLeft className="h-4 w-4" /> Volver al inicio
             </Button>
           </Link>
         </div>

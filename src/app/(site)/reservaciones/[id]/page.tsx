@@ -11,11 +11,42 @@ import {
   ArrowLeft,
   CheckCircle,
   Clock,
-  XCircle
+  XCircle,
+  Info,
+  BedDouble
 } from 'lucide-react';
 
 import Link from 'next/link';
 import { getReservationById } from '@/app/actions/reservations/get-reservation';
+
+interface Bedroom {
+  numberBedroom: number | string;
+  description?: string | null;
+  TypeBedrooms?: {
+    nameType: string;
+  } | null;
+  galleryImages?: { imageContent: string }[];
+}
+
+interface ReservationDetail {
+  id: number;
+  price: number;
+  dateStart: Date | string;
+  dateEnd: Date | string;
+  guestQuantity: number;
+  Bedrooms: Bedroom;
+}
+
+interface ReservationResult {
+  id: number;
+  status: string;
+  createdAt: Date | string;
+  User: {
+    username: string;
+    email: string;
+  };
+  ReservationDetails: ReservationDetail[];
+}
 
 interface PageProps {
   params: Promise<{
@@ -37,37 +68,43 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const { reservation } = result;
+  const reservation = result.reservation as ReservationResult;
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'PENDING':
-        return (
-          <Badge variant="secondary" className="gap-1">
-            <Clock className="h-3 w-3" />
-            Pendiente
-          </Badge>
-        );
-      case 'CONFIRMED':
-        return (
-          <Badge className="gap-1 bg-green-600 hover:bg-green-700">
-            <CheckCircle className="h-3 w-3" />
-            Confirmada
-          </Badge>
-        );
-      case 'CANCELLED':
-        return (
-          <Badge variant="destructive" className="gap-1">
-            <XCircle className="h-3 w-3" />
-            Cancelada
-          </Badge>
-        );
-      default:
-        return <Badge>{status}</Badge>;
-    }
+    const config = {
+      PENDING: {
+        color: 'bg-amber-100 text-amber-700 border-amber-200',
+        icon: Clock,
+        label: 'Pendiente'
+      },
+      CONFIRMED: {
+        color: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+        icon: CheckCircle,
+        label: 'Confirmada'
+      },
+      CANCELLED: {
+        color: 'bg-red-100 text-red-700 border-red-200',
+        icon: XCircle,
+        label: 'Cancelada'
+      }
+    };
+    const current = config[status as keyof typeof config] || config.PENDING;
+    const Icon = current.icon;
+
+    return (
+      <Badge
+        variant="outline"
+        className={`px-3 py-1 gap-1.5 font-medium ${current.color}`}
+      >
+        <Icon className="h-3.5 w-3.5" /> {current.label}
+      </Badge>
+    );
   };
 
-  const calculateNights = (dateStart: Date, dateEnd: Date) => {
+  const calculateNights = (
+    dateStart: Date | string,
+    dateEnd: Date | string
+  ) => {
     return Math.max(
       1,
       Math.ceil(
@@ -77,187 +114,203 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     );
   };
 
-  const getTotalPrice = () => {
-    return reservation.ReservationDetails.reduce(
-      (sum, detail) => sum + detail.price,
-      0
-    );
-  };
+  const totalPrice = (reservation.ReservationDetails || []).reduce(
+    (sum: number, detail: ReservationDetail) => sum + detail.price,
+    0
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Success Banner */}
-      <div className="bg-gradient-to-r from-white-200 to-orange-300 py-8">
-        <div className="mx-auto max-w-4xl px-4 text-center text-white">
-          <div className="mb-4 flex justify-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white">
-              <CheckCircle className="h-10 w-10 text-orange-600" />
+    <div className="min-h-screen bg-slate-50/50 pb-20">
+      <div className="bg-white border-b shadow-sm">
+        <div className="mx-auto max-w-5xl px-4 py-8">
+          <Link
+            href="/reservaciones"
+            className="inline-flex items-center text-sm text-slate-500 hover:text-orange-600 transition-colors mb-6 group"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+            Volver a mis reservaciones
+          </Link>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                  Reserva #{reservation.id}
+                </h1>
+                {getStatusBadge(reservation.status)}
+              </div>
+              <p className="text-slate-500 flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Registrada el{' '}
+                {format(new Date(reservation.createdAt), 'PPP', { locale: es })}
+              </p>
+            </div>
+            <div className="md:text-right">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+                Inversión total
+              </p>
+              <p className="text-4xl font-black text-orange-600">
+                C${totalPrice.toLocaleString()}
+              </p>
             </div>
           </div>
-          <h1 className="text-black mb-2 text-3xl font-bold">
-            ¡Reservación en proceso!
-          </h1>
-          <p className="text-pretty text-black">
-            Tu reserva #{reservation.id} ha sido procesada exitosamente
-          </p>
         </div>
       </div>
 
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-balance text-2xl font-bold text-gray-900">
-              Detalles de la reserva
-            </h2>
-            <p className="text-pretty text-gray-600">
-              Número de reserva: #{reservation.id}
-            </p>
-          </div>
-          {getStatusBadge(reservation.status)}
-        </div>
+      <div className="mx-auto max-w-5xl px-4 mt-8 grid gap-8 md:grid-cols-3">
+        <div className="md:col-span-2 space-y-6">
+          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <BedDouble className="h-5 w-5 text-orange-600" />
+            Configuración de Habitaciones
+          </h2>
 
-        <div className="grid gap-6">
-          {/* Información del huésped */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-teal-600" />
-                Información del huésped
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-start gap-3">
-                <Users className="h-5 w-5 text-gray-400 mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-600">Nombre</p>
-                  <p className="font-semibold">{reservation.User.username}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-gray-400 mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-600">Email</p>
-                  <p className="font-semibold">{reservation.User.email}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Habitaciones reservadas */}
-          {reservation.ReservationDetails.map((detail, _index) => {
+          {reservation.ReservationDetails.map((detail: ReservationDetail) => {
             const bedroom = detail.Bedrooms;
             const nights = calculateNights(detail.dateStart, detail.dateEnd);
-
-            const imageUrl =
-              bedroom.galleryImages && bedroom.galleryImages.length > 0
-                ? bedroom.galleryImages[0].imageContent
-                : null;
+            const imageUrl = bedroom.galleryImages?.[0]?.imageContent;
 
             return (
-              <Card key={detail.id}>
-                <CardHeader>
-                  <CardTitle>
-                    {/* CORRECCIÓN: nameType jalado desde la relación TypeBedrooms */}
-                    Habitación {bedroom.numberBedroom} -{' '}
-                    {bedroom.TypeBedrooms?.nameType || 'Tipo N/A'}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-4">
-                    {imageUrl && (
+              <Card
+                key={detail.id}
+                className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="flex flex-col sm:flex-row">
+                  <div className="sm:w-56 h-48 sm:h-auto relative bg-slate-200">
+                    {imageUrl ? (
                       <img
                         src={imageUrl}
-                        alt={`Habitación ${bedroom.numberBedroom}`}
-                        className="h-32 w-32 rounded-lg object-cover"
+                        alt="Room"
+                        className="absolute inset-0 w-full h-full object-cover"
                       />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-slate-400 bg-slate-100">
+                        <BedDouble className="h-8 w-8 opacity-20" />
+                      </div>
                     )}
-                    <div className="flex-1 space-y-3">
-                      <p className="text-sm text-gray-600">
-                        {bedroom.description}
-                      </p>
+                  </div>
 
-                      <div className="grid gap-2 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 flex items-center gap-2">
-                            <Calendar className="h-4 w-4" /> Check-in:
-                          </span>
-                          <span className="font-semibold">
-                            {format(
-                              new Date(detail.dateStart),
-                              "dd 'de' MMMM yyyy",
-                              { locale: es }
-                            )}
-                          </span>
+                  <CardContent className="flex-1 p-6">
+                    <div className="flex flex-col h-full">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <Badge className="mb-2 bg-orange-100 text-orange-700 hover:bg-orange-100 border-none rounded-sm px-2 text-[10px] uppercase tracking-wider font-bold">
+                            {bedroom.TypeBedrooms?.nameType || 'Habitación'}
+                          </Badge>
+                          <CardTitle className="text-xl font-bold text-slate-900">
+                            Unidad #{bedroom.numberBedroom}
+                          </CardTitle>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 flex items-center gap-2">
-                            <Calendar className="h-4 w-4" /> Check-out:
-                          </span>
-                          <span className="font-semibold">
-                            {format(
-                              new Date(detail.dateEnd),
-                              "dd 'de' MMMM yyyy",
-                              { locale: es }
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600">Noches:</span>
-                          <Badge variant="secondary">{nights} noche(s)</Badge>
-                        </div>
-                        <div className="flex items-center justify-between border-t pt-2 mt-2">
-                          <span className="text-gray-600 font-bold">
-                            Subtotal:
-                          </span>
-                          <span className="text-xl font-bold text-orange-600">
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-slate-900">
                             C${detail.price.toLocaleString()}
-                          </span>
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase">
+                            {nights} Noches
+                          </p>
                         </div>
                       </div>
 
-                      {detail.Promotions &&
-                        detail.Promotions.codePromotions !== 'NO_PROMOTION' && (
-                          <div className="rounded-lg bg-green-50 border border-green-200 p-3">
-                            <p className="text-sm font-semibold text-green-800">
-                              Promoción aplicada:{' '}
-                              {detail.Promotions.codePromotions}
-                            </p>
-                          </div>
-                        )}
+                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4">
+                        <div className="flex gap-2 items-start text-slate-600">
+                          <Info className="h-4 w-4 mt-0.5 text-orange-500 shrink-0" />
+                          <p className="text-sm leading-relaxed italic">
+                            {bedroom.description ||
+                              'Sin descripción adicional disponible para esta habitación.'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 py-3 border-t border-slate-100 mt-auto">
+                        <div className="flex flex-col">
+                          <span className="text-[9px] uppercase font-bold text-slate-400 tracking-tighter">
+                            Entrada
+                          </span>
+                          <span className="text-sm font-semibold text-slate-700">
+                            {format(
+                              new Date(detail.dateStart),
+                              'dd MMM, yyyy',
+                              { locale: es }
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[9px] uppercase font-bold text-slate-400 tracking-tighter">
+                            Salida
+                          </span>
+                          <span className="text-sm font-semibold text-slate-700">
+                            {format(new Date(detail.dateEnd), 'dd MMM, yyyy', {
+                              locale: es
+                            })}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
+                </div>
               </Card>
             );
           })}
+        </div>
 
-          {/* Total a pagar */}
-          <Card className="border-orange-600 bg-orange-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
+        <div className="space-y-6">
+          <Card className="border-none shadow-sm bg-orange-500 text-white overflow-hidden">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm uppercase tracking-widest opacity-70">
+                Titular de Reserva
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center font-black text-white text-xl shadow-inner">
+                  {reservation.User.username[0].toUpperCase()}
+                </div>
                 <div>
-                  <p className="text-lg font-semibold text-gray-900">
-                    Total a pagar
+                  <p className="text-lg font-bold">
+                    {reservation.User.username}
+                  </p>
+                  <p className="text-xs text-orange-100/70 flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5" /> {reservation.User.email}
                   </p>
                 </div>
-                <p className="text-4xl font-bold text-orange-900">
-                  C${getTotalPrice().toLocaleString()}
-                </p>
               </div>
             </CardContent>
           </Card>
 
-          <div className="flex justify-center pt-4">
-            <Link href="/">
-              <Button
-                size="lg"
-                variant="outline"
-                className="gap-2 bg-transparent"
-              >
-                <ArrowLeft className="h-5 w-5" /> Volver al inicio
-              </Button>
+          <Card className="border-none shadow-sm overflow-hidden">
+            <div className="h-2 bg-orange-500" />
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Users className="h-4 w-4 text-orange-600" />
+                Ocupación
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-500">
+                La capacidad total de esta reserva está configurada para recibir
+                a un total de
+                <span className="font-bold text-slate-900">
+                  {' '}
+                  {reservation.ReservationDetails.reduce(
+                    (acc: number, detail: ReservationDetail) =>
+                      acc + detail.guestQuantity,
+                    0
+                  )}{' '}
+                  huéspedes
+                </span>
+                .
+              </p>
+            </CardContent>
+          </Card>
+
+          <Button
+            variant="outline"
+            className="w-full border-dashed border-slate-300 text-slate-500"
+            asChild
+          >
+            <Link href="mailto:alfredorequenez57libra@gmail.com">
+              ¿Problemas con los datos?
             </Link>
-          </div>
+          </Button>
         </div>
       </div>
     </div>

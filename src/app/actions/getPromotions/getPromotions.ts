@@ -6,21 +6,27 @@ export async function getPromotions() {
   try {
     const promotions = await prisma.promotions.findMany({
       include: {
-        Seasons: true,
+        // CAMBIO 1: Debe ser "seasons" en minúscula según tu modelo
+        seasons: true,
         BedroomsPromotions: {
           include: {
-            Bedrooms: true // Aquí viene la imagen: Bedrooms.image
+            bedroom: {
+              include: {
+                // CAMBIO 2: Cargamos galleryImages para tener acceso a la imagen real
+                galleryImages: true
+              }
+            }
           }
         }
       },
       orderBy: { createdAt: 'desc' }
     });
 
-    // Serialización para evitar errores de objetos Date en Next.js
+    // Serialización segura
     const safeData = JSON.parse(JSON.stringify(promotions));
     return { success: true, data: safeData };
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error al obtener promociones:', error);
     return { success: false, data: [] };
   }
 }

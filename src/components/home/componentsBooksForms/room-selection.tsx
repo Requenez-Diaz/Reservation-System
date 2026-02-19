@@ -16,7 +16,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
+// --- INTERFACES ---
 interface SavedRoomData {
   id: string | number;
 }
@@ -45,7 +47,6 @@ interface RoomSelectionProps {
 
 export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
   const [selectedRooms, setSelectedRooms] = React.useState<string[]>([]);
-  const [expandedRoom, _setExpandedRoom] = React.useState<string | null>(null);
   const [searchData, setSearchData] = React.useState<{
     dateRange?: { from: Date; to: Date };
     guests: number;
@@ -94,11 +95,6 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
         const filteredIds = JSON.parse(savedFilteredRooms).map(
           (r: SavedRoomData) => String(r.id)
         );
-        allBedrooms.forEach((bedroom) => {
-          console.log(
-            `  - Bedroom ID: "${bedroom.id}" (${typeof bedroom.id}) - Includes check: ${filteredIds.includes(String(bedroom.id))}`
-          );
-        });
 
         const matchedRooms = allBedrooms.filter((bedroom) =>
           filteredIds.includes(String(bedroom.id))
@@ -111,10 +107,11 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
 
       setIsLoading(false);
     } catch (error) {
+      console.error('Error loading selection data:', error);
       setAvailableRooms([]);
       setIsLoading(false);
     }
-  }, [allBedrooms, router]);
+  }, [allBedrooms]);
 
   const toggleRoomSelection = (roomId: string) => {
     setSelectedRooms((prev) => {
@@ -158,13 +155,11 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
 
   const calculateNights = () => {
     if (!searchData.dateRange) {
-      return 0;
+      return 1;
     }
-    return Math.ceil(
-      (searchData.dateRange.to.getTime() -
-        searchData.dateRange.from.getTime()) /
-      (1000 * 60 * 60 * 24)
-    );
+    const diff =
+      searchData.dateRange.to.getTime() - searchData.dateRange.from.getTime();
+    return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   };
 
   const getTotalPrice = () => {
@@ -176,7 +171,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
       const price = isHigh ? room.highSeasonPrice : room.lowSeasonPrice;
       return sum + price;
     }, 0);
-    return nightlyTotal * (calculateNights() || 1);
+    return nightlyTotal * calculateNights();
   };
 
   if (isLoading) {
@@ -184,21 +179,18 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-teal-600 mx-auto mb-4" />
-          <p className="text-gray-600">Cargando habitaciones disponibles...</p>
+          <p className="text-gray-600">Cargando habitaciones...</p>
         </div>
       </div>
     );
   }
+
   if (availableRooms.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="text-xl font-semibold text-gray-900 mb-2">
             No hay habitaciones disponibles
-          </p>
-          <p className="text-gray-600 mb-4">
-            No se encontraron habitaciones que cumplan con tus criterios de
-            búsqueda
           </p>
           <Button
             onClick={() => router.push('/')}
@@ -217,71 +209,49 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
       <header className="border-b bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="text-2xl font-bold text-gray-900">
-            Madroño
-            <span className="ml-1 text-sm font-normal text-gray-600">
-              HOTEL
-            </span>
+            Madroño{' '}
+            <span className="text-sm font-normal text-gray-600">HOTEL</span>
           </div>
-          <nav className="hidden gap-6 md:flex">
-            <a href="/" className="text-sm text-gray-600 hover:text-gray-900">
-              Volver a búsqueda
-            </a>
-          </nav>
+          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
+            Volver a búsqueda
+          </Link>
         </div>
       </header>
 
-      {/* Search Summary */}
+      {/* Resumen de búsqueda */}
       {searchData.dateRange && (
         <div className="border-b bg-orange-50 py-4">
-          <div className="mx-auto max-w-7xl px-4">
-            <div className="flex flex-wrap items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-700">Fechas:</span>
-                <span className="text-gray-600">
-                  {format(searchData.dateRange.from, 'dd MMM', { locale: es })}{' '}
-                  -{' '}
-                  {format(searchData.dateRange.to, 'dd MMM yyyy', {
-                    locale: es
-                  })}
-                </span>
-                <Badge variant="secondary">{calculateNights()} noche(s)</Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-700">Huéspedes:</span>
-                <span className="text-gray-600">{searchData.guests}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-700">
-                  Habitaciones solicitadas:
-                </span>
-                <span className="text-gray-600">{searchData.roomCount}</span>
-              </div>
+          <div className="mx-auto max-w-7xl px-4 flex flex-wrap gap-4 text-sm items-center">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700">Fechas:</span>
+              <span className="text-gray-600">
+                {format(searchData.dateRange.from, 'dd MMM', { locale: es })} -{' '}
+                {format(searchData.dateRange.to, 'dd MMM yyyy', { locale: es })}
+              </span>
+              <Badge variant="secondary">{calculateNights()} noche(s)</Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700">Huéspedes:</span>
+              <span className="text-gray-600">{searchData.guests}</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-4 py-8">
+      {/* Grid Principal */}
+      <div className="mx-auto max-w-7xl px-4 py-8 pb-32">
         <div className="mb-8">
-          <h1 className="mb-2 text-balance text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900">
             Habitaciones Disponibles
           </h1>
-          <p className="text-pretty text-gray-600">
-            Selecciona hasta {searchData.roomCount} habitación(es) para tu
-            estadía en Hotel Madroño
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            Se encontraron {availableRooms.length} habitación(es) disponible(s)
-            según tu búsqueda
+          <p className="text-gray-600">
+            Selecciona hasta {searchData.roomCount} habitación(es).
           </p>
         </div>
 
-        {/* Room Grid */}
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {availableRooms.map((room) => {
             const isSelected = selectedRooms.includes(room.id);
-            const _isExpanded = expandedRoom === room.id;
             const isHighSeason = room.seasonName
               ?.toLowerCase()
               .includes('alta');
@@ -289,10 +259,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
             return (
               <Card
                 key={room.id}
-                className={`relative overflow-hidden transition-all duration-300 ${isSelected
-                    ? 'ring-2 ring-orange-600 shadow-lg'
-                    : 'hover:shadow-md'
-                  }`}
+                className={`relative overflow-hidden transition-all duration-300 ${isSelected ? 'ring-2 ring-orange-600 shadow-lg' : 'hover:shadow-md'}`}
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -300,83 +267,49 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
                     alt={room.name}
                     className="h-full w-full object-cover"
                   />
-                  {room.status && (
-                    <Badge className="absolute bg-green-600 left-4 top-4 ">
-                      Disponible
-                    </Badge>
-                  )}
-                  {room.seasonName && (
-                    <Badge className="absolute bg-orange-600 left-4 bottom-4 ">
-                      {room.seasonName}
-                    </Badge>
-                  )}
                   {isSelected && (
                     <div className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-white">
                       <Check className="h-5 w-5" />
                     </div>
                   )}
+                  {room.seasonName && (
+                    <Badge className="absolute bg-orange-600 left-4 bottom-4">
+                      {room.seasonName}
+                    </Badge>
+                  )}
                 </div>
 
                 <CardHeader>
                   <CardTitle className="text-xl">{room.name}</CardTitle>
-                  <CardDescription className="text-sm">
+                  <CardDescription className="line-clamp-2">
                     {room.description}
                   </CardDescription>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
-                    <span>Habitación #{room.numberBedroom}</span>
-                  </div>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <div className="flex gap-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      <span>Hasta {room.capacity} personas</span>
-                    </div>
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <Users className="h-4 w-4" />
+                    <span>Hasta {room.capacity} personas</span>
                   </div>
-
                   <div className="border-t pt-4">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-sm text-gray-600">
-                        {isHighSeason ? 'Temporada alta' : 'Temporada baja'}
-                      </span>
-                      <span
-                        className={`text-2xl font-bold ${isHighSeason ? 'text-orange-600' : 'text-gray-900'
-                          }`}
-                      >
-                        C$
+                      <span className="text-2xl font-bold text-gray-900">
+                        C${' '}
                         {isHighSeason
                           ? room.highSeasonPrice
                           : room.lowSeasonPrice}
                       </span>
                       <span className="text-sm text-gray-600">/noche</span>
                     </div>
-                    {!isHighSeason && (
-                      <div className="flex items-baseline gap-2 mt-1">
-                        <span className="text-xs text-gray-500">
-                          Temporada alta: C${room.highSeasonPrice}/noche
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </CardContent>
 
                 <CardFooter>
                   <Button
                     onClick={() => toggleRoomSelection(room.id)}
-                    className={`w-full ${isSelected
-                        ? 'bg-orange-600 hover:bg-orange-700'
-                        : 'bg-green-600 hover:bg-green-800'
-                      }`}
+                    className={`w-full ${isSelected ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700'}`}
                   >
-                    {isSelected ? (
-                      <>
-                        <Check className="mr-2 h-4 w-4" />
-                        Seleccionada
-                      </>
-                    ) : (
-                      'Seleccionar habitación'
-                    )}
+                    {isSelected ? 'Seleccionada' : 'Seleccionar habitación'}
                   </Button>
                 </CardFooter>
               </Card>
@@ -384,22 +317,24 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
           })}
         </div>
 
-        {/* Sticky Bottom Bar */}
+        {/* Barra Inferior Sticky */}
         {selectedRooms.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 border-t bg-white shadow-lg">
+          <div className="fixed bottom-0 left-0 right-0 border-t bg-white shadow-lg z-50">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
               <div>
                 <p className="text-sm text-gray-600">
-                  {selectedRooms.length} de {searchData.roomCount}{' '}
-                  habitación(es) seleccionada(s)
+                  {selectedRooms.length} de {searchData.roomCount} seleccionadas
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
                   Total: C${getTotalPrice().toLocaleString()}
                 </p>
               </div>
-              <Button onClick={handleReserve} size="lg" variant={'save'}>
-                Continuar con la reserva
-                <ArrowRight className="ml-2 h-5 w-5" />
+              <Button
+                onClick={handleReserve}
+                size="lg"
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                Continuar reserva <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </div>

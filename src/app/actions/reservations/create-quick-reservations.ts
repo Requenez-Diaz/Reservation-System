@@ -30,7 +30,6 @@ export async function createQuickReservation(data: QuickReservationData) {
       });
     }
 
-    // 2. Buscar la habitación para obtener el precio
     const bedroomIdNumber = Number.parseInt(data.bedroomId);
     const bedroom = await prisma.bedrooms.findUnique({
       where: { id: bedroomIdNumber }
@@ -40,12 +39,10 @@ export async function createQuickReservation(data: QuickReservationData) {
       throw new Error('Habitación no encontrada');
     }
 
-    // 3. Calcular precio (noches)
     const diffInTime = data.dateEnd.getTime() - data.dateStart.getTime();
     const nights = Math.max(1, Math.ceil(diffInTime / (1000 * 60 * 60 * 24)));
     const totalPrice = bedroom.lowSeasonPrice * nights;
 
-    // 4. Buscar o crear promoción por defecto
     let defaultPromotion = await prisma.promotions.findFirst({
       where: { codePromotions: 'NO_PROMOTION' }
     });
@@ -71,16 +68,14 @@ export async function createQuickReservation(data: QuickReservationData) {
       });
     }
 
-    // 5. Crear la reserva corregida según tu Schema
     const reservation = await prisma.reservation.create({
       data: {
-        // En tu modelo Reservation, el campo de relación se llama "User"
         User: {
           connect: { id: user.id }
         },
         status: 'PENDING',
         isRead: false,
-        // En tu modelo Bedrooms, la relación se llama "ReservationDetails"
+
         ReservationDetails: {
           create: {
             dateStart: data.dateStart,
@@ -88,7 +83,7 @@ export async function createQuickReservation(data: QuickReservationData) {
             price: totalPrice,
             guestQuantity: data.guests,
             status: 'PENDING',
-            // Usamos las relaciones definidas en el modelo ReservationDetails
+
             Bedrooms: {
               connect: { id: bedroomIdNumber }
             },
