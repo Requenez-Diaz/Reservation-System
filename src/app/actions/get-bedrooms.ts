@@ -10,8 +10,6 @@ export const getAllBedrooms = async () => {
         status: true
       },
       include: {
-        // Quitamos el filtro exacto de dateStart para que el
-        // calendario pueda mostrar disponibilidad real
         ReservationDetails: true,
         galleryImages: {
           select: {
@@ -21,11 +19,10 @@ export const getAllBedrooms = async () => {
           }
         },
         Seasons: true,
-        TypeBedrooms: true // Relación necesaria para el nombre del tipo
+        TypeBedrooms: true
       }
     });
 
-    console.log('Habitaciones obtenidas con éxito');
     return bedrooms;
   } catch (error) {
     console.error('Error al obtener las habitaciones:', error);

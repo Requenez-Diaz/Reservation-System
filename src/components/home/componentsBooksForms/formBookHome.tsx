@@ -1,16 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Users, Calendar, CheckCircle2, Bed } from 'lucide-react';
+import { Users, Calendar, Bed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 import {
   Popover,
   PopoverContent,
@@ -45,13 +38,7 @@ interface Bedroom {
   bookingsDetails?: Booking[];
 }
 
-const ROOM_STATUS = [
-  { value: 'all', label: 'Todas' },
-  { value: 'available', label: 'Disponible' }
-] as const;
-
 export function BedroomSearchForm() {
-  const [status, setStatus] = React.useState('all');
   const [guests, setGuests] = React.useState(1);
   const [roomCount, setRoomCount] = React.useState(1);
   const [guestDistribution, setGuestDistribution] = React.useState<number[]>([
@@ -62,9 +49,7 @@ export function BedroomSearchForm() {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [_showPromoModal, _setShowPromoModal] = React.useState(false);
-  const [_promoCode, _setPromoCode] = React.useState('');
-  const [_destination, _setDestination] = React.useState('hotel madroño');
+
   const { toast } = useToast();
   const router = useRouter();
 
@@ -87,41 +72,24 @@ export function BedroomSearchForm() {
         }
 
         if (savedGuests) {
-          const numGuests = Number.parseInt(savedGuests, 10);
-          if (!Number.isNaN(numGuests) && numGuests >= 1) {
-            setGuests(numGuests);
-          }
+          setGuests(Number.parseInt(savedGuests, 10) || 1);
         }
-
         if (savedRoomCount) {
-          const numRooms = Number.parseInt(savedRoomCount, 10);
-          if (!Number.isNaN(numRooms) && numRooms >= 1) {
-            setRoomCount(numRooms);
-          }
+          setRoomCount(Number.parseInt(savedRoomCount, 10) || 1);
         }
-
         if (savedDistribution) {
           setGuestDistribution(JSON.parse(savedDistribution));
         }
-      } catch (error) {
-        console.error('Error al cargar datos de localStorage:', error);
-      }
 
-      try {
         const response = await getAllBedrooms();
         setBedrooms(response as unknown as Bedroom[]);
       } catch (error) {
-        console.error('Error fetching bedrooms:', error);
-        toast({
-          title: 'Error',
-          description: 'No se pudieron cargar las habitaciones.',
-          variant: 'destructive'
-        });
+        console.error('Error al inicializar:', error);
       }
     };
 
     fetchBedroomsAndLoadState();
-  }, []);
+  }, [toast]);
 
   React.useEffect(() => {
     if (guestDistribution.length !== roomCount) {
@@ -132,7 +100,7 @@ export function BedroomSearchForm() {
         .map((val, idx) => (idx < remainder ? val + 1 : val));
       setGuestDistribution(newDistribution);
     }
-  }, [roomCount, guests]);
+  }, [roomCount, guests, guestDistribution.length]);
 
   React.useEffect(() => {
     if (dateRange?.from) {
@@ -182,17 +150,22 @@ export function BedroomSearchForm() {
     }
 
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 600));
 
-    const roomMatches: Bedroom[][] = guestDistribution.map((guestsNeeded) => {
-      return bedrooms.filter((bedroom) => {
-        const statusMatch =
-          status === 'all' ||
-          (status === 'available' && bedroom.status === true);
+    const usedRoomIds = new Set<string>();
+    const selectedRooms: Bedroom[] = [];
+
+    // --- LÓGICA DE BÚSQUEDA POR EFICIENCIA ---
+    for (const guestsNeeded of guestDistribution) {
+      const availableMatches = bedrooms.filter((bedroom) => {
+        if (usedRoomIds.has(bedroom.id)) {
+          return false;
+        }
+
+        const statusMatch = bedroom.status === true;
         const capacityMatch = bedroom.capacity >= guestsNeeded;
 
         let dateMatch = true;
-
         if (
           dateRange?.from &&
           bedroom.bookingsDetails &&
@@ -213,62 +186,44 @@ export function BedroomSearchForm() {
               (searchStart <= bookingStart && searchEnd >= bookingEnd)
             );
           });
-
           dateMatch = !hasConflict;
         }
 
         return statusMatch && capacityMatch && dateMatch;
       });
-    });
 
-    const selectedRooms: Bedroom[] = [];
-    const usedRoomIds = new Set<string>();
+      // ORDENAR: Primero las habitaciones que tengan la capacidad más cercana a la necesaria
+      availableMatches.sort((a, b) => a.capacity - b.capacity);
 
-    for (let i = 0; i < roomMatches.length; i++) {
-      const availableRooms = roomMatches[i].filter(
-        (room) => !usedRoomIds.has(room.id)
-      );
-      if (availableRooms.length > 0) {
-        const selectedRoom = availableRooms[0];
-        selectedRooms.push(selectedRoom);
-        usedRoomIds.add(selectedRoom.id);
+      if (availableMatches.length > 0) {
+        const bestFit = availableMatches[0];
+        selectedRooms.push(bestFit);
+        usedRoomIds.add(bestFit.id);
       }
     }
 
     setIsLoading(false);
 
-    if (selectedRooms.length === roomCount) {
+    if (selectedRooms.length > 0) {
       localStorage.setItem('filteredRooms', JSON.stringify(selectedRooms));
-      localStorage.setItem(
-        'guestDistribution',
-        JSON.stringify(guestDistribution)
-      );
 
-      toast({
-        title: 'Búsqueda completada',
-        description: `Se encontraron ${selectedRooms.length} habitación(es) que cumplen con la distribución solicitada.`
-      });
-
-      router.push('/rooms');
-    } else if (selectedRooms.length > 0) {
-      localStorage.setItem('filteredRooms', JSON.stringify(selectedRooms));
-      localStorage.setItem(
-        'guestDistribution',
-        JSON.stringify(guestDistribution.slice(0, selectedRooms.length))
-      );
-
-      toast({
-        description: `Solo se encontraron ${selectedRooms.length} habitación(es) disponible(s) de las ${roomCount} solicitadas.`,
-        title: 'Habitaciones limitadas',
-        variant: 'default'
-      });
-
+      if (selectedRooms.length < roomCount) {
+        toast({
+          title: 'Resultados parciales',
+          description: `Solo encontramos ${selectedRooms.length} de las ${roomCount} habitaciones solicitadas.`
+        });
+      } else {
+        toast({
+          title: '¡Éxito!',
+          description: 'Encontramos las habitaciones ideales para tu grupo.'
+        });
+      }
       router.push('/rooms');
     } else {
       toast({
-        title: 'Sin resultados',
+        title: 'Sin disponibilidad',
         description:
-          'No se encontraron habitaciones disponibles con los criterios seleccionados.',
+          'No hay habitaciones que coincidan con tu distribución en estas fechas.',
         variant: 'destructive'
       });
     }
@@ -279,44 +234,24 @@ export function BedroomSearchForm() {
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-20">
         <div className="rounded-lg bg-white p-6 shadow-2xl">
           <div className="grid gap-4 md:grid-cols-[2fr,1fr,auto,auto,1fr,auto] md:items-end">
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-700">Estado</Label>
-              <div className="relative group">
-                <CheckCircle2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary z-10 pointer-events-none" />
-                <Select onValueChange={setStatus} value={status}>
-                  <SelectTrigger className="pl-9 transition-all duration-200 focus:scale-[1.02] focus:shadow-md">
-                    <SelectValue placeholder="Estado de habitación" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ROOM_STATUS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
+            {/* Habitaciones */}
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Habitaciones</Label>
               <div className="flex items-center">
                 <Button
-                  className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="h-10 w-10"
                   onClick={() => setRoomCount((prev) => Math.max(1, prev - 1))}
                   size="icon"
                   variant="outline"
                 >
                   -
                 </Button>
-                <div className="flex items-center gap-2 px-4 transition-all duration-300">
-                  <Bed className="h-4 w-4 transition-transform duration-200" />
-                  <span className="font-medium tabular-nums transition-all duration-200">
-                    {roomCount}
-                  </span>
+                <div className="flex items-center gap-2 px-4">
+                  <Bed className="h-4 w-4" />
+                  <span className="font-medium tabular-nums">{roomCount}</span>
                 </div>
                 <Button
-                  className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="h-10 w-10"
                   onClick={() => setRoomCount((prev) => prev + 1)}
                   size="icon"
                   variant="outline"
@@ -326,25 +261,24 @@ export function BedroomSearchForm() {
               </div>
             </div>
 
+            {/* Huéspedes */}
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Huéspedes</Label>
               <div className="flex items-center">
                 <Button
-                  className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="h-10 w-10"
                   onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
                   size="icon"
                   variant="outline"
                 >
                   -
                 </Button>
-                <div className="flex items-center gap-2 px-4 transition-all duration-300">
-                  <Users className="h-4 w-4 transition-transform duration-200" />
-                  <span className="font-medium tabular-nums transition-all duration-200">
-                    {guests}
-                  </span>
+                <div className="flex items-center gap-2 px-4">
+                  <Users className="h-4 w-4" />
+                  <span className="font-medium tabular-nums">{guests}</span>
                 </div>
                 <Button
-                  className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="h-10 w-10"
                   onClick={() => setGuests((prev) => prev + 1)}
                   size="icon"
                   variant="outline"
@@ -364,12 +298,13 @@ export function BedroomSearchForm() {
               )}
             </div>
 
+            {/* Calendario */}
             <div className="space-y-2">
               <Label className="text-sm text-gray-700">Fechas</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    className="w-full pl-9 justify-start text-left font-normal transition-all duration-200 hover:scale-[1.02] hover:shadow-md relative bg-transparent"
+                    className="w-full pl-9 justify-start text-left font-normal relative bg-transparent"
                     variant="outline"
                   >
                     <Calendar className="absolute left-3 h-4 w-4 text-muted-foreground" />
@@ -389,10 +324,7 @@ export function BedroomSearchForm() {
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent
-                  align="start"
-                  className="w-auto p-0 animate-in fade-in slide-in-from-top-2 duration-200"
-                >
+                <PopoverContent align="start" className="w-auto p-0">
                   <CalendarComponent
                     initialFocus
                     locale={es}
@@ -406,24 +338,15 @@ export function BedroomSearchForm() {
               </Popover>
             </div>
 
-            <Button
-              onClick={handleSearch}
-              disabled={isLoading}
-              variant="save"
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Buscando...
-                </div>
-              ) : (
-                'Ver disponibilidad'
-              )}
+            {/* Botón Buscar */}
+            <Button onClick={handleSearch} disabled={isLoading} variant="save">
+              {isLoading ? 'Buscando...' : 'Ver disponibilidad'}
             </Button>
           </div>
         </div>
       </div>
 
+      {/* Dialogo de Distribución */}
       <Dialog
         open={showDistributionDialog}
         onOpenChange={setShowDistributionDialog}
@@ -432,7 +355,7 @@ export function BedroomSearchForm() {
           <DialogHeader>
             <DialogTitle>Distribuir Huéspedes</DialogTitle>
             <DialogDescription>
-              Especifica cuántos huéspedes quieres en cada habitación
+              Ajusta cuántas personas dormirán en cada habitación.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -464,9 +387,9 @@ export function BedroomSearchForm() {
               </div>
             ))}
             <div className="border-t pt-4 flex justify-between items-center">
-              <span className="text-sm font-medium">Total de huéspedes:</span>
+              <span className="text-sm font-medium">Total:</span>
               <span className="text-lg font-bold">
-                {getTotalFromDistribution()}
+                {getTotalFromDistribution()} huéspedes
               </span>
             </div>
           </div>
@@ -477,11 +400,8 @@ export function BedroomSearchForm() {
             >
               Cancelar
             </Button>
-            <Button
-              onClick={applyDistribution}
-              variant="save"
-            >
-              Aplicar distribución
+            <Button onClick={applyDistribution} variant="save">
+              Aplicar
             </Button>
           </DialogFooter>
         </DialogContent>
