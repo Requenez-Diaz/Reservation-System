@@ -2,24 +2,15 @@
 
 import * as React from 'react';
 import {
-  Wifi,
-  Coffee,
-  Tv,
-  Wind,
   MessageCircleMore,
   Users,
   CheckCircle2,
   XCircle,
-  ArrowRight
+  ArrowRight,
+  CalendarDays
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import { useToast } from '@/components/ui/use-toast';
@@ -28,13 +19,11 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { generateWhatsappUrl } from '@/components/bedrooms/messages/message-encode';
 
-// --- INTERFACES ---
 interface BedroomImage {
   id: string;
   image: string;
 }
 
-// Interfaz para tipar la respuesta cruda de la base de datos y evitar el uso de 'any'
 interface RawBedroom {
   id: string | number;
   description: string | null;
@@ -90,11 +79,28 @@ export default function HabitacionesPage() {
     null
   );
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   const { toast } = useToast();
   const { data: session } = useSession();
   const router = useRouter();
 
   const DEFAULT_IMAGE = '/luxury-hotel-room.png';
+
+  const getActivePrice = (bedroom: Bedroom) => {
+    if (!bedroom.Seasons) {
+      return bedroom.lowSeasonPrice;
+    }
+
+    const today = new Date();
+    const start = new Date(bedroom.Seasons.dateStart);
+    const end = new Date(bedroom.Seasons.dateEnd);
+
+    if (today >= start && today <= end) {
+      return bedroom.highSeasonPrice;
+    }
+
+    return bedroom.lowSeasonPrice;
+  };
 
   React.useEffect(() => {
     async function fetchBedrooms() {
@@ -133,18 +139,6 @@ export default function HabitacionesPage() {
     fetchBedrooms();
   }, []);
 
-  React.useEffect(() => {
-    if (session?.user) {
-      const pending = localStorage.getItem('pending_booking');
-      if (pending) {
-        const bedroom = JSON.parse(pending) as Bedroom;
-        setSelectedBedroom(bedroom);
-        setIsModalOpen(true);
-        localStorage.removeItem('pending_booking');
-      }
-    }
-  }, [session]);
-
   const handleReserveClick = (bedroom: Bedroom) => {
     if (!session?.user) {
       localStorage.setItem('pending_booking', JSON.stringify(bedroom));
@@ -161,11 +155,11 @@ export default function HabitacionesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-orange-600" />
-          <p className="text-slate-500 font-medium animate-pulse">
-            Preparando estancias...
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-100 border-t-orange-600" />
+          <p className="text-slate-400 font-medium italic">
+            Sincronizando disponibilidad...
           </p>
         </div>
       </div>
@@ -173,18 +167,23 @@ export default function HabitacionesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      <div className="bg-slate-900 text-white py-20 mb-12">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-          <Badge className="mb-4 bg-orange-600 border-none px-4 py-1 font-bold">
+    <div className="min-h-screen bg-slate-50/40 pb-20 font-sans">
+      {/* HEADER CLARO REDISEÑADO */}
+      <div className="relative bg-white border-b border-slate-200 py-20 mb-12 overflow-hidden">
+        <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 blur-3xl opacity-10">
+          <div className="aspect-square h-64 rounded-full bg-orange-600" />
+        </div>
+        <div className="mx-auto max-w-7xl px-4 relative text-center">
+          <Badge className="mb-4 bg-orange-100 text-orange-700 border-none px-4 py-1 font-bold">
             Reserva Tu Experiencia
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4">
-            Nuestras <span className="text-orange-500">Habitaciones</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">
+            Nuestras <span className="text-orange-600">Habitaciones</span>
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            Cada detalle ha sido diseñado para ofrecerte el máximo confort y
-            elegancia durante tu estadía.
+          <div className="h-1.5 w-24 bg-orange-500 rounded-full mx-auto mb-6" />
+          <p className="text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
+            Explora nuestra selección de habitaciones diseñadas para brindarte
+            el máximo confort y una experiencia inolvidable.
           </p>
         </div>
       </div>
@@ -192,6 +191,9 @@ export default function HabitacionesPage() {
       <div className="mx-auto max-w-7xl px-4">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {bedrooms.map((bedroom) => {
+            const currentPrice = getActivePrice(bedroom);
+            const isHighSeason =
+              bedroom.Seasons && currentPrice === bedroom.highSeasonPrice;
             const imageUrl =
               bedroom.BedroomImages?.[0]?.image ||
               bedroom.image ||
@@ -206,14 +208,14 @@ export default function HabitacionesPage() {
                   <img
                     src={imageUrl}
                     alt={bedroom.name}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <Badge className="bg-white/90 backdrop-blur-md text-slate-900 border-none font-bold shadow-sm">
+                    <Badge className="bg-white/95 backdrop-blur-sm text-slate-900 border-none font-bold shadow-sm">
                       Unidad #{bedroom.numberBedroom}
                     </Badge>
                     <Badge
-                      className={`${bedroom.status ? 'bg-emerald-500' : 'bg-red-500'} text-white border-none shadow-md`}
+                      className={`${bedroom.status ? 'bg-emerald-500' : 'bg-red-500'} text-white border-none shadow-sm`}
                     >
                       {bedroom.status ? (
                         <span className="flex items-center gap-1">
@@ -226,9 +228,18 @@ export default function HabitacionesPage() {
                       )}
                     </Badge>
                   </div>
+
+                  {isHighSeason && (
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-orange-600 text-white border-none flex items-center gap-1 shadow-lg animate-pulse">
+                        <CalendarDays className="h-3 w-3" /> Temporada Alta
+                      </Badge>
+                    </div>
+                  )}
+
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/90 to-transparent p-6">
                     <p className="text-white font-black text-3xl">
-                      C$ {bedroom.lowSeasonPrice.toLocaleString()}
+                      C$ {currentPrice.toLocaleString()}
                       <span className="text-sm font-normal text-slate-300">
                         {' '}
                         / noche
@@ -251,27 +262,10 @@ export default function HabitacionesPage() {
                   </p>
                 </CardHeader>
 
-                <CardContent className="flex-1">
-                  <div className="grid grid-cols-2 gap-y-3 pt-4 border-t border-slate-100">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-tighter">
-                      <Wifi className="h-4 w-4 text-orange-500" /> WiFi Gratis
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-tighter">
-                      <Wind className="h-4 w-4 text-orange-500" /> Aire Acond.
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-tighter">
-                      <Tv className="h-4 w-4 text-orange-500" /> Smart TV
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-tighter">
-                      <Coffee className="h-4 w-4 text-orange-500" /> Minibar
-                    </div>
-                  </div>
-                </CardContent>
-
                 <CardFooter className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-50">
                   <Button
                     onClick={() => handleReserveClick(bedroom)}
-                    className="w-full bg-slate-900 hover:bg-orange-600 text-white font-black transition-all duration-300"
+                    variant={'save'}
                   >
                     Reservar <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -280,14 +274,14 @@ export default function HabitacionesPage() {
                     href={generateWhatsappUrl(
                       bedroom.name,
                       bedroom.numberBedroom,
-                      bedroom.lowSeasonPrice
+                      currentPrice
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <Button
                       variant="outline"
-                      className="w-full border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-black"
+                      className="w-full border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-bold"
                     >
                       <MessageCircleMore className="mr-2 h-5 w-5" /> WhatsApp
                     </Button>
