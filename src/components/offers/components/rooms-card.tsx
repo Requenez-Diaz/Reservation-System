@@ -35,41 +35,36 @@ interface PromotionRoomCardProps {
 }
 
 export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
-  const bedroom = promotion.BedroomsPromotions[0]?.bedroom;
+  const bedroomData = promotion.BedroomsPromotions[0]?.bedroom;
 
-  // Si no hay habitación vinculada, no renderizamos para evitar errores
-  if (!bedroom) {
+  if (!bedroomData) {
     return null;
   }
 
   const isActive = new Date() <= new Date(promotion.dateEnd);
 
   return (
-    <Card className="group overflow-hidden border-none shadow-lg transition-all hover:shadow-2xl dark:bg-zinc-900">
-      {/* CONTENEDOR DE IMAGEN */}
-      <div className="relative h-52 w-full overflow-hidden">
+    <Card className="group overflow-hidden border-none shadow-lg transition-all hover:shadow-2xl bg-white">
+      <div className="relative h-56 w-full overflow-hidden">
         <Image
-          src={bedroom.image || '/placeholder-room.jpg'}
-          alt={`Habitación ${bedroom.number}`}
+          src={bedroomData.image || '/luxury-hotel-room.png'}
+          alt={`Habitación ${bedroomData.number}`}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        {/* Capa de degradado para legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/70 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-        {/* Badge de Descuento Flotante */}
-        <div className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full bg-red-600 px-3 py-1.5 text-white shadow-xl">
+        <div className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full bg-orange-600 px-3 py-1.5 text-white shadow-xl">
           <TicketPercent className="h-4 w-4" />
           <span className="text-sm font-black">
             {promotion.porcentageDescuent}% OFF
           </span>
         </div>
 
-        {/* Estado Activo/Inactivo */}
         <div className="absolute top-4 right-4">
           <Badge
             className={
-              isActive ? 'bg-green-500/90 backdrop-blur-md' : 'bg-zinc-500/90'
+              isActive ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'
             }
           >
             {isActive ? 'Oferta Activa' : 'Finalizada'}
@@ -79,46 +74,45 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
 
       <CardHeader className="pb-2 pt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-primary">
-            <BedDouble className="h-5 w-5" />
-            <CardTitle className="text-xl font-bold">
-              {bedroom.typeBedroom}
+          <div className="flex items-center gap-2">
+            <BedDouble className="h-5 w-5 text-orange-600" />
+            <CardTitle className="text-xl font-bold text-slate-800">
+              {bedroomData.typeBedroom}
             </CardTitle>
           </div>
-          <span className="text-sm font-bold text-muted-foreground">
-            #{bedroom.number}
-          </span>
+          <Badge variant="outline" className="text-slate-500 border-slate-200">
+            #{bedroomData.number}
+          </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Detalles de la Habitación */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-            <MapPin className="h-4 w-4 text-red-500" />
-            <span className="truncate">{bedroom.name}</span>
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <MapPin className="h-4 w-4 text-orange-500" />
+            <span className="truncate">{bedroomData.name}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-            <Calendar className="h-4 w-4 text-blue-500" />
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <Calendar className="h-4 w-4 text-slate-400" />
             <span>
               Vence: {new Date(promotion.dateEnd).toLocaleDateString('es-ES')}
             </span>
           </div>
         </div>
 
-        {/* Código de Promoción */}
-        <div className="rounded-lg bg-zinc-100 p-2 text-center dark:bg-zinc-800">
-          <p className="text-xs uppercase text-zinc-500">Código Promo</p>
-          <p className="font-mono font-bold tracking-widest text-primary">
+        <div className="rounded-lg bg-slate-50 border border-slate-100 p-2 text-center">
+          <p className="text-[10px] uppercase text-slate-400 font-bold">
+            Código de Descuento
+          </p>
+          <p className="font-mono font-black tracking-widest text-orange-600">
             {promotion.codePromotions}
           </p>
         </div>
 
-        {/* Botón de Acción */}
         <Link href={`/ofertas/${promotion.id}`} className="block">
-          <Button className="w-full bg-blue-600 font-bold transition-all hover:bg-blue-700 dark:bg-white blue:text-white dark:hover:bg-primary">
+          <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold transition-all">
             VER DISPONIBILIDAD
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
       </CardContent>

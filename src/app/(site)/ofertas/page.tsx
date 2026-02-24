@@ -9,12 +9,13 @@ interface PromotionFromDB {
   dateEnd: string;
   description?: string;
   BedroomsPromotions: Array<{
-    Bedrooms: {
+    bedroom: {
       id: number;
       description: string;
-      typeBedroom: string;
       numberBedroom: number;
       image: string;
+      TypeBedrooms?: { nameType: string } | null;
+      galleryImages?: Array<{ imageContent: string }> | null;
     };
   }>;
 }
@@ -22,7 +23,6 @@ interface PromotionFromDB {
 export default async function OffertsPage() {
   const result = await getPromotions();
 
-  // 1. Manejo de estados vacíos o errores
   if (!result.success || !result.data || result.data.length === 0) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -30,7 +30,7 @@ export default async function OffertsPage() {
           Ofertas por Habitación
         </h1>
         <p className="text-muted-foreground mt-4">
-          No hay promociones disponibles en este momento. Revisa más tarde.
+          No hay promociones disponibles.
         </p>
       </div>
     );
@@ -40,18 +40,15 @@ export default async function OffertsPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
-      {/* Encabezado de la página */}
-      <div className="flex flex-col border-b pb-6">
-        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+      <div className="flex flex-col border-b pb-6 text-center md:text-left">
+        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900">
           Ofertas Especiales
         </h1>
         <p className="text-lg text-muted-foreground mt-2">
-          Gestiona y visualiza los descuentos activos aplicados a habitaciones
-          específicas.
+          Descuentos activos en nuestras mejores unidades.
         </p>
       </div>
 
-      {/* Grid de Promociones */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {promotionsData.map((promotion) => (
           <PromotionRoomCard
@@ -59,16 +56,22 @@ export default async function OffertsPage() {
             promotion={{
               ...promotion,
               BedroomsPromotions: (promotion.BedroomsPromotions || []).map(
-                (bp) => ({
-                  bedroom: {
-                    id: bp.Bedrooms?.id,
-                    name: bp.Bedrooms?.description || 'Sin descripción',
-                    type: bp.Bedrooms?.typeBedroom || 'N/A',
-                    number: String(bp.Bedrooms?.numberBedroom || '0'),
-                    typeBedroom: bp.Bedrooms?.typeBedroom || 'N/A',
-                    image: bp.Bedrooms?.image || ''
-                  }
-                })
+                (bp) => {
+                  const b = bp.bedroom;
+                  const finalImage =
+                    b.galleryImages?.[0]?.imageContent || b.image || '';
+
+                  return {
+                    bedroom: {
+                      id: b.id,
+                      name: b.description || 'Sin descripción',
+                      type: b.TypeBedrooms?.nameType || 'Habitación',
+                      number: String(b.numberBedroom || '0'),
+                      typeBedroom: b.TypeBedrooms?.nameType || 'Estándar',
+                      image: finalImage
+                    }
+                  };
+                }
               )
             }}
           />

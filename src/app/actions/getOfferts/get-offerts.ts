@@ -6,10 +6,10 @@ export async function getPromotions() {
   try {
     const promotions = await prisma.promotions.findMany({
       include: {
-        Seasons: true,
+        seasons: true,
         BedroomsPromotions: {
           include: {
-            Bedrooms: true
+            bedroom: true
           }
         }
       },
@@ -37,10 +37,10 @@ export async function getPromotion(id: number) {
     const promotion = await prisma.promotions.findUnique({
       where: { id: Number(id) },
       include: {
-        Seasons: true,
+        seasons: true,
         BedroomsPromotions: {
           include: {
-            Bedrooms: true
+            bedroom: true
           }
         }
       }
