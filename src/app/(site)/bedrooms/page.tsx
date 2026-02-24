@@ -146,7 +146,7 @@ export default function HabitacionesPage() {
         title: 'Acceso restringido',
         description: 'Debes iniciar sesión para realizar una reserva.'
       });
-      router.push('/login');
+      router.push('/sign-in');
       return;
     }
     setSelectedBedroom(bedroom);
