@@ -18,12 +18,13 @@ import { BookingModal } from './booking-modal';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { generateWhatsappUrl } from '@/components/bedrooms/messages/message-encode';
+import { startOfDay } from 'date-fns'; // Importación necesaria para comparar fechas
 
+// ... (Interfaces se mantienen igual)
 interface BedroomImage {
   id: string;
   image: string;
 }
-
 interface RawBedroom {
   id: string | number;
   description: string | null;
@@ -47,7 +48,6 @@ interface RawBedroom {
     dateEnd: Date;
   } | null;
 }
-
 interface Bedroom {
   id: string;
   name: string;
@@ -59,10 +59,7 @@ interface Bedroom {
   highSeasonPrice: number;
   slug: string;
   BedroomImages?: BedroomImage[];
-  bookingsDetails?: Array<{
-    dateStart: string;
-    dateEnd?: string;
-  }>;
+  bookingsDetails?: Array<{ dateStart: string; dateEnd?: string }>;
   image?: string;
   Seasons?: {
     id: number;
@@ -87,18 +84,19 @@ export default function HabitacionesPage() {
   const DEFAULT_IMAGE = '/luxury-hotel-room.png';
 
   const getActivePrice = (bedroom: Bedroom) => {
-    if (!bedroom.Seasons) {
-      return bedroom.lowSeasonPrice;
+    const today = startOfDay(new Date());
+    const season = bedroom.Seasons;
+
+    if (season && season.dateStart && season.dateEnd) {
+      const start = startOfDay(new Date(season.dateStart));
+      const end = startOfDay(new Date(season.dateEnd));
+
+      if (today >= start && today <= end) {
+        return season.nameSeason.toLowerCase().includes('alta')
+          ? bedroom.highSeasonPrice
+          : bedroom.lowSeasonPrice;
+      }
     }
-
-    const today = new Date();
-    const start = new Date(bedroom.Seasons.dateStart);
-    const end = new Date(bedroom.Seasons.dateEnd);
-
-    if (today >= start && today <= end) {
-      return bedroom.highSeasonPrice;
-    }
-
     return bedroom.lowSeasonPrice;
   };
 
@@ -159,7 +157,7 @@ export default function HabitacionesPage() {
         <div className="flex flex-col items-center gap-4">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-100 border-t-orange-600" />
           <p className="text-slate-400 font-medium italic">
-            Sincronizando disponibilidad...
+            Cargando habitaciones...
           </p>
         </div>
       </div>
@@ -168,7 +166,7 @@ export default function HabitacionesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/40 pb-20 font-sans">
-      {/* HEADER CLARO REDISEÑADO */}
+      {/* HEADER */}
       <div className="relative bg-white border-b border-slate-200 py-20 mb-12 overflow-hidden">
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 blur-3xl opacity-10">
           <div className="aspect-square h-64 rounded-full bg-orange-600" />
@@ -183,7 +181,7 @@ export default function HabitacionesPage() {
           <div className="h-1.5 w-24 bg-orange-500 rounded-full mx-auto mb-6" />
           <p className="text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
             Explora nuestra selección de habitaciones diseñadas para brindarte
-            el máximo confort y una experiencia inolvidable.
+            el máximo confort.
           </p>
         </div>
       </div>
@@ -192,8 +190,15 @@ export default function HabitacionesPage() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {bedrooms.map((bedroom) => {
             const currentPrice = getActivePrice(bedroom);
-            const isHighSeason =
-              bedroom.Seasons && currentPrice === bedroom.highSeasonPrice;
+
+            // 🔥 LÓGICA DE BADGE CORREGIDA: Solo se activa si hoy está en rango alta
+            const today = startOfDay(new Date());
+            const isHighSeasonActive =
+              bedroom.Seasons &&
+              today >= startOfDay(new Date(bedroom.Seasons.dateStart)) &&
+              today <= startOfDay(new Date(bedroom.Seasons.dateEnd)) &&
+              bedroom.Seasons.nameSeason.toLowerCase().includes('alta');
+
             const imageUrl =
               bedroom.BedroomImages?.[0]?.image ||
               bedroom.image ||
@@ -229,7 +234,8 @@ export default function HabitacionesPage() {
                     </Badge>
                   </div>
 
-                  {isHighSeason && (
+                  {/* Mostramos el Badge solo si la temporada alta está vigente hoy */}
+                  {isHighSeasonActive && (
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-orange-600 text-white border-none flex items-center gap-1 shadow-lg animate-pulse">
                         <CalendarDays className="h-3 w-3" /> Temporada Alta

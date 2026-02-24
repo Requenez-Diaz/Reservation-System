@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { differenceInDays, startOfDay } from 'date-fns';
 
 export type QuickReservationData = {
   clientEmail: string;
@@ -32,27 +33,47 @@ export async function createQuickReservation(data: QuickReservationData) {
 
     const bedroomIdNumber = Number.parseInt(data.bedroomId);
     const bedroom = await prisma.bedrooms.findUnique({
-      where: { id: bedroomIdNumber }
+      where: { id: bedroomIdNumber },
+      include: { Seasons: true } // Incluimos la temporada para saber el precio real
     });
 
     if (!bedroom) {
       throw new Error('Habitación no encontrada');
     }
 
-    const diffInTime = data.dateEnd.getTime() - data.dateStart.getTime();
-    const nights = Math.max(1, Math.ceil(diffInTime / (1000 * 60 * 60 * 24)));
-    const totalPrice = bedroom.lowSeasonPrice * nights;
+    // --- CORRECCIÓN DE CÁLCULO DE NOCHES ---
+    // Normalizamos a inicio del día para evitar errores de horas/minutos
+    const start = startOfDay(new Date(data.dateStart));
+    const end = startOfDay(new Date(data.dateEnd));
 
+    // Usamos differenceInDays para obtener noches exactas (ej: entrada 10, salida 12 = 2 noches)
+    const nights = Math.max(1, differenceInDays(end, start));
+
+    // --- CORRECCIÓN DE PRECIO DINÁMICO ---
+    const now = new Date();
+    const season = bedroom.Seasons;
+
+    // Verificamos si estamos en la temporada asignada a la habitación
+    const isHighSeason =
+      season &&
+      now >= new Date(season.dateStart) &&
+      now <= new Date(season.dateEnd) &&
+      season.nameSeason.toLowerCase().includes('alta');
+
+    const pricePerNight = isHighSeason
+      ? bedroom.highSeasonPrice
+      : bedroom.lowSeasonPrice;
+    const totalPrice = pricePerNight * nights;
+
+    // --- MANEJO DE PROMOCIÓN ---
     let defaultPromotion = await prisma.promotions.findFirst({
       where: { codePromotions: 'NO_PROMOTION' }
     });
 
     if (!defaultPromotion) {
-      const season = await prisma.seasons.findFirst();
-      if (!season) {
-        throw new Error(
-          'No hay temporadas disponibles para asignar a la promoción'
-        );
+      const anySeason = await prisma.seasons.findFirst();
+      if (!anySeason) {
+        throw new Error('No hay temporadas disponibles');
       }
 
       defaultPromotion = await prisma.promotions.create({
@@ -63,33 +84,25 @@ export async function createQuickReservation(data: QuickReservationData) {
           dateEnd: new Date(2099, 11, 31),
           description: 'Sin promoción aplicada',
           updatedAt: new Date(),
-          seasonId: season.id
+          seasonId: anySeason.id
         }
       });
     }
 
     const reservation = await prisma.reservation.create({
       data: {
-        User: {
-          connect: { id: user.id }
-        },
+        User: { connect: { id: user.id } },
         status: 'PENDING',
         isRead: false,
-
         ReservationDetails: {
           create: {
-            dateStart: data.dateStart,
-            dateEnd: data.dateEnd,
+            dateStart: start,
+            dateEnd: end,
             price: totalPrice,
             guestQuantity: data.guests,
             status: 'PENDING',
-
-            Bedrooms: {
-              connect: { id: bedroomIdNumber }
-            },
-            Promotions: {
-              connect: { id: defaultPromotion.id }
-            }
+            Bedrooms: { connect: { id: bedroomIdNumber } },
+            Promotions: { connect: { id: defaultPromotion.id } }
           }
         }
       },
@@ -109,7 +122,7 @@ export async function createQuickReservation(data: QuickReservationData) {
     return {
       success: true,
       reservation,
-      message: 'Reserva creada exitosamente'
+      message: `Reserva creada por ${nights} noche(s). Total: $${totalPrice}`
     };
   } catch (error) {
     console.error('Error creating quick reservation:', error);
