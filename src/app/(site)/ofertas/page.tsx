@@ -26,7 +26,7 @@ export default async function OffertsPage() {
   if (!result.success || !result.data || result.data.length === 0) {
     return (
       <div className="container mx-auto py-20 text-center">
-        <h1 className="text-3xl font-bold text-zinc-800">
+        <h1 className="text-3xl font-bold text-zinc-800 dark:text-slate-100">
           Ofertas por Habitación
         </h1>
         <p className="text-muted-foreground mt-4">
@@ -40,8 +40,8 @@ export default async function OffertsPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
-      <div className="flex flex-col border-b pb-6 text-center md:text-left">
-        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900">
+      <div className="flex flex-col border-b dark:border-slate-800 pb-6 text-center md:text-left">
+        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-slate-100">
           Ofertas Especiales
         </h1>
         <p className="text-lg text-muted-foreground mt-2">

@@ -232,11 +232,11 @@ export function BedroomSearchForm() {
   return (
     <>
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-20">
-        <div className="rounded-lg bg-white p-6 shadow-2xl">
+        <div className="rounded-lg bg-white dark:bg-slate-900 dark:border dark:border-slate-700 p-6 shadow-2xl">
           <div className="grid gap-4 md:grid-cols-[2fr,1fr,auto,auto,1fr,auto] md:items-end">
             {/* Habitaciones */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-700">Habitaciones</Label>
+              <Label className="text-sm text-gray-700 dark:text-gray-300">Habitaciones</Label>
               <div className="flex items-center">
                 <Button
                   className="h-10 w-10"
@@ -263,7 +263,7 @@ export function BedroomSearchForm() {
 
             {/* Huéspedes */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-700">Huéspedes</Label>
+              <Label className="text-sm text-gray-700 dark:text-gray-300">Huéspedes</Label>
               <div className="flex items-center">
                 <Button
                   className="h-10 w-10"
@@ -300,7 +300,7 @@ export function BedroomSearchForm() {
 
             {/* Calendario */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-700">Fechas</Label>
+              <Label className="text-sm text-gray-700 dark:text-gray-300">Fechas</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button

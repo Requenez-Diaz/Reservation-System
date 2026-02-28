@@ -59,7 +59,7 @@ export default async function PromotionPage(props: PromotionPageProps) {
         <Link href="/ofertas">
           <Button
             variant="ghost"
-            className="hover:bg-zinc-100 transition-colors"
+            className="hover:bg-zinc-100 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver a ofertas
@@ -101,8 +101,8 @@ export default async function PromotionPage(props: PromotionPageProps) {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl shadow-xl text-zinc-900 min-w-[240px]">
-              <p className="text-sm font-bold text-zinc-500 line-through">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl text-zinc-900 dark:text-slate-100 min-w-[240px]">
+              <p className="text-sm font-bold text-zinc-500 dark:text-slate-400 line-through">
                 C${originalPrice.toLocaleString()}
               </p>
               <div className="flex items-center gap-2">
@@ -116,7 +116,7 @@ export default async function PromotionPage(props: PromotionPageProps) {
                   -{promotion.porcentageDescuent}%
                 </Badge>
               </div>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-xs text-zinc-400 dark:text-slate-500 mt-1">
                 Precio final por noche
               </p>
             </div>
@@ -126,38 +126,38 @@ export default async function PromotionPage(props: PromotionPageProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border-none bg-zinc-50 shadow-sm">
+          <Card className="border-none bg-zinc-50 dark:bg-slate-800/50 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Tag className="h-5 w-5 text-orange-500" />
-                Detalles de la Promoción
+                <span className="dark:text-slate-100">Detalles de la Promoción</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-lg shadow-sm text-orange-600">
+                  <div className="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm text-orange-600">
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>
                     <p className="text-[10px] text-muted-foreground uppercase font-black">
                       Periodo
                     </p>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium dark:text-slate-200">
                       {formatDate(promotion.dateStart)} -{' '}
                       {formatDate(promotion.dateEnd)}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-lg shadow-sm text-orange-600">
+                  <div className="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm text-orange-600">
                     <Clock className="h-5 w-5" />
                   </div>
                   <div>
                     <p className="text-[10px] text-muted-foreground uppercase font-black">
                       Temporada
                     </p>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium dark:text-slate-200">
                       {promotion.Seasons?.nameSeason || 'Regular'}
                     </p>
                   </div>
@@ -189,8 +189,8 @@ export default async function PromotionPage(props: PromotionPageProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="pt-4 border-t flex justify-between items-end">
-                <span className="font-bold text-slate-600">Total noche</span>
+              <div className="pt-4 border-t dark:border-slate-700 flex justify-between items-end">
+                <span className="font-bold text-slate-600 dark:text-slate-400">Total noche</span>
                 <span className="text-3xl font-black text-orange-600">
                   C${finalPrice.toLocaleString()}
                 </span>

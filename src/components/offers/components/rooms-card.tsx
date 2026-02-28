@@ -44,7 +44,7 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
   const isActive = new Date() <= new Date(promotion.dateEnd);
 
   return (
-    <Card className="group overflow-hidden border-none shadow-lg transition-all hover:shadow-2xl bg-white">
+    <Card className="group overflow-hidden border-none shadow-lg transition-all hover:shadow-2xl bg-white dark:bg-slate-800">
       <div className="relative h-56 w-full overflow-hidden">
         <Image
           src={bedroomData.image || '/luxury-hotel-room.png'}
@@ -76,11 +76,11 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BedDouble className="h-5 w-5 text-orange-600" />
-            <CardTitle className="text-xl font-bold text-slate-800">
+            <CardTitle className="text-xl font-bold text-slate-800 dark:text-slate-100">
               {bedroomData.typeBedroom}
             </CardTitle>
           </div>
-          <Badge variant="outline" className="text-slate-500 border-slate-200">
+          <Badge variant="outline" className="text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600">
             #{bedroomData.number}
           </Badge>
         </div>
@@ -88,11 +88,11 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
 
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-slate-600">
+          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
             <MapPin className="h-4 w-4 text-orange-500" />
             <span className="truncate">{bedroomData.name}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-600">
+          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
             <Calendar className="h-4 w-4 text-slate-400" />
             <span>
               Vence: {new Date(promotion.dateEnd).toLocaleDateString('es-ES')}
@@ -100,8 +100,8 @@ export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
           </div>
         </div>
 
-        <div className="rounded-lg bg-slate-50 border border-slate-100 p-2 text-center">
-          <p className="text-[10px] uppercase text-slate-400 font-bold">
+        <div className="rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 p-2 text-center">
+          <p className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">
             Código de Descuento
           </p>
           <p className="font-mono font-black tracking-widest text-orange-600">

@@ -25,7 +25,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white p-4">
+    <nav className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-700 p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="https://www.facebook.com/hotelito.madrono">
           <Image
@@ -44,7 +44,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
         </button>
 
         <div className="hidden md:flex items-center gap-x-7">
-          <ul className="flex gap-x-6 text-black">
+          <ul className="flex gap-x-6 text-black dark:text-gray-100">
             {navItems.map((navItem) => (
               <li key={navItem.path}>
                 <ActiveLink {...navItem} />
@@ -69,7 +69,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
 
       {isMenuOpen && (
         <div className="md:hidden mt-4">
-          <ul className="flex flex-col gap-y-4 text-black">
+          <ul className="flex flex-col gap-y-4 text-black dark:text-gray-100">
             {navItems.map((navItem) => (
               <li key={navItem.path}>
                 <ActiveLink {...navItem} />

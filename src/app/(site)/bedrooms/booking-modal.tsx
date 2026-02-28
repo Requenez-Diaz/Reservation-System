@@ -167,12 +167,12 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl max-h-[95vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 shadow-2xl max-h-[95vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2 shadow-md hover:bg-white transition-all"
+          className="absolute right-4 top-4 z-10 rounded-full bg-white/90 dark:bg-slate-800/90 p-2 shadow-md hover:bg-white dark:hover:bg-slate-700 transition-all"
         >
-          <X className="h-5 w-5 text-slate-900" />
+          <X className="h-5 w-5 text-slate-900 dark:text-slate-100" />
         </button>
 
         <div className="relative h-56">
@@ -199,16 +199,16 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
 
         <div className="p-8 space-y-8">
           {/* SECCIÓN PRECIO ACTUAL */}
-          <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 flex items-center justify-between">
+          <div className="bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">
+              <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-1">
                 Tarifa vigente hoy
               </p>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-black text-orange-600">
                   C${currentPrice.toLocaleString()}
                 </span>
-                <span className="text-xs text-slate-400 font-bold">
+                <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">
                   / noche
                 </span>
               </div>
@@ -226,41 +226,41 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-4">
-              <h3 className="font-bold text-slate-800 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
+              <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
                 <User className="h-4 w-4" /> Tus Datos
               </h3>
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500">
+                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
                     Nombre Completo
                   </Label>
                   <Input
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
-                    className="bg-slate-50/50"
+                    className="bg-slate-50/50 dark:bg-slate-800"
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500">
+                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
                     Correo Electrónico
                   </Label>
                   <Input
                     type="email"
                     value={clientEmail}
                     onChange={(e) => setClientEmail(e.target.value)}
-                    className="bg-slate-50/50"
+                    className="bg-slate-50/50 dark:bg-slate-800"
                   />
                 </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-bold text-slate-800 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
+              <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
                 <Calendar className="h-4 w-4" /> Estancia
               </h3>
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500">
+                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
                     Rango de Fechas
                   </Label>
                   <Popover>
@@ -289,13 +289,13 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
                   </Popover>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500">
+                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
                     Huéspedes
                   </Label>
-                  <div className="flex items-center border rounded-lg h-10 overflow-hidden">
+                  <div className="flex items-center border dark:border-slate-700 rounded-lg h-10 overflow-hidden">
                     <Button
                       variant="ghost"
-                      className="h-full rounded-none px-3 hover:bg-slate-100"
+                      className="h-full rounded-none px-3 hover:bg-slate-100 dark:hover:bg-slate-700"
                       onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
                     >
                       -
@@ -305,7 +305,7 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
                     </span>
                     <Button
                       variant="ghost"
-                      className="h-full rounded-none px-3 hover:bg-slate-100"
+                      className="h-full rounded-none px-3 hover:bg-slate-100 dark:hover:bg-slate-700"
                       onClick={() =>
                         setGuests((prev) =>
                           Math.min(bedroom.capacity, prev + 1)
@@ -322,20 +322,20 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
 
           {/* DESGLOSE FINAL */}
           {nightsCount > 0 && (
-            <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100 space-y-2">
+            <div className="bg-orange-50/50 dark:bg-orange-950/30 p-4 rounded-xl border border-orange-100 dark:border-orange-900/50 space-y-2">
               <div className="flex justify-between text-xs text-orange-700 font-bold uppercase">
                 <span>Resumen de cargos ({nightsCount} noches)</span>
               </div>
               <div className="flex justify-between items-end pt-2">
                 <div>
-                  <p className="text-2xl font-black text-slate-900">
+                  <p className="text-2xl font-black text-slate-900 dark:text-slate-100">
                     Total: C${totalAmount.toLocaleString()}
                   </p>
-                  <p className="text-[10px] text-slate-400 font-bold">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">
                     IMPUESTOS INCLUIDOS
                   </p>
                 </div>
-                <div className="flex items-center gap-1 text-orange-600 text-xs font-bold bg-white px-2 py-1 rounded-full shadow-sm">
+                <div className="flex items-center gap-1 text-orange-600 text-xs font-bold bg-white dark:bg-slate-800 px-2 py-1 rounded-full shadow-sm">
                   <CheckCircle2 className="h-3 w-3" /> Precio Garantizado
                 </div>
               </div>
@@ -346,7 +346,7 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
             <Button
               variant="ghost"
               onClick={onClose}
-              className="flex-1 font-bold text-slate-500 hover:text-slate-900"
+              className="flex-1 font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
               disabled={isLoading}
             >
               Cerrar

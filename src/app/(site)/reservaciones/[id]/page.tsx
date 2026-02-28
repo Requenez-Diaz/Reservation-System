@@ -109,7 +109,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
       1,
       Math.ceil(
         (new Date(dateEnd).getTime() - new Date(dateStart).getTime()) /
-          (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
       )
     );
   };
@@ -120,12 +120,12 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
-      <div className="bg-white border-b shadow-sm">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 pb-20">
+      <div className="bg-white dark:bg-slate-950 border-b dark:border-slate-800 shadow-sm">
         <div className="mx-auto max-w-5xl px-4 py-8">
           <Link
             href="/reservaciones"
-            className="inline-flex items-center text-sm text-slate-500 hover:text-orange-600 transition-colors mb-6 group"
+            className="inline-flex items-center text-sm text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-500 transition-colors mb-6 group"
           >
             <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             Volver a mis reservaciones
@@ -134,12 +134,12 @@ export default async function ReservationDetailPage({ params }: PageProps) {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
                   Reserva #{reservation.id}
                 </h1>
                 {getStatusBadge(reservation.status)}
               </div>
-              <p className="text-slate-500 flex items-center gap-2">
+              <p className="text-slate-500 dark:text-slate-400 flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 Registrada el{' '}
                 {format(new Date(reservation.createdAt), 'PPP', { locale: es })}
@@ -159,7 +159,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
 
       <div className="mx-auto max-w-5xl px-4 mt-8 grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-6">
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             <BedDouble className="h-5 w-5 text-orange-600" />
             Configuración de Habitaciones
           </h2>
@@ -172,7 +172,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             return (
               <Card
                 key={detail.id}
-                className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all"
+                className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all dark:bg-slate-800"
               >
                 <div className="flex flex-col sm:flex-row">
                   <div className="sm:w-56 h-48 sm:h-auto relative bg-slate-200">
@@ -193,15 +193,15 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                     <div className="flex flex-col h-full">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <Badge className="mb-2 bg-orange-100 text-orange-700 hover:bg-orange-100 border-none rounded-sm px-2 text-[10px] uppercase tracking-wider font-bold">
+                          <Badge className="mb-2 bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/60 border-none rounded-sm px-2 text-[10px] uppercase tracking-wider font-bold">
                             {bedroom.TypeBedrooms?.nameType || 'Habitación'}
                           </Badge>
-                          <CardTitle className="text-xl font-bold text-slate-900">
+                          <CardTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">
                             Unidad #{bedroom.numberBedroom}
                           </CardTitle>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-slate-900">
+                          <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
                             C${detail.price.toLocaleString()}
                           </p>
                           <p className="text-[10px] text-slate-400 font-bold uppercase">
@@ -210,8 +210,8 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                         </div>
                       </div>
 
-                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-4">
-                        <div className="flex gap-2 items-start text-slate-600">
+                      <div className="bg-slate-50 dark:bg-slate-700 p-3 rounded-lg border border-slate-100 dark:border-slate-600 mb-4">
+                        <div className="flex gap-2 items-start text-slate-600 dark:text-slate-300">
                           <Info className="h-4 w-4 mt-0.5 text-orange-500 shrink-0" />
                           <p className="text-sm leading-relaxed italic">
                             {bedroom.description ||
@@ -220,12 +220,12 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 py-3 border-t border-slate-100 mt-auto">
+                      <div className="grid grid-cols-2 gap-4 py-3 border-t border-slate-100 dark:border-slate-700 mt-auto">
                         <div className="flex flex-col">
                           <span className="text-[9px] uppercase font-bold text-slate-400 tracking-tighter">
                             Entrada
                           </span>
-                          <span className="text-sm font-semibold text-slate-700">
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                             {format(
                               new Date(detail.dateStart),
                               'dd MMM, yyyy',
@@ -237,7 +237,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                           <span className="text-[9px] uppercase font-bold text-slate-400 tracking-tighter">
                             Salida
                           </span>
-                          <span className="text-sm font-semibold text-slate-700">
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                             {format(new Date(detail.dateEnd), 'dd MMM, yyyy', {
                               locale: es
                             })}
@@ -276,7 +276,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm overflow-hidden">
+          <Card className="border-none shadow-sm overflow-hidden dark:bg-slate-800">
             <div className="h-2 bg-orange-500" />
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
@@ -285,10 +285,10 @@ export default async function ReservationDetailPage({ params }: PageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 La capacidad total de esta reserva está configurada para recibir
                 a un total de
-                <span className="font-bold text-slate-900">
+                <span className="font-bold text-slate-900 dark:text-slate-100">
                   {' '}
                   {reservation.ReservationDetails.reduce(
                     (acc: number, detail: ReservationDetail) =>
@@ -304,7 +304,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
 
           <Button
             variant="outline"
-            className="w-full border-dashed border-slate-300 text-slate-500"
+            className="w-full border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400"
             asChild
           >
             <Link href="mailto:alfredorequenez57libra@gmail.com">

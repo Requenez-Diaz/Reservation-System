@@ -143,8 +143,8 @@ export const ClientRoomsWithPromotions: React.FC<
         const bedroomDetails =
           applicablePromotions.length > 0
             ? applicablePromotions[0].BedroomsPromotions.find(
-                (bp) => bp.Bedrooms?.typeBedroom === room.type
-              )?.Bedrooms
+              (bp) => bp.Bedrooms?.typeBedroom === room.type
+            )?.Bedrooms
             : null;
 
         const originalPrice = bedroomDetails
@@ -153,7 +153,7 @@ export const ClientRoomsWithPromotions: React.FC<
 
         return (
           <div
-            className="overflow-hidden rounded-lg bg-white shadow-md"
+            className="overflow-hidden rounded-lg bg-white dark:bg-slate-800 shadow-md"
             key={index}
           >
             <img
@@ -164,7 +164,7 @@ export const ClientRoomsWithPromotions: React.FC<
 
             <div className="p-4">
               <h3 className="mb-2 text-xl font-semibold">{room.type}</h3>
-              <p className="mb-4 text-gray-600">
+              <p className="mb-4 text-gray-600 dark:text-slate-400">
                 {bedroomDetails?.description || room.description}
               </p>
 
@@ -189,7 +189,7 @@ export const ClientRoomsWithPromotions: React.FC<
 
                     return (
                       <div
-                        className="rounded-md bg-green-50 p-3"
+                        className="rounded-md bg-green-50 dark:bg-green-900/30 p-3"
                         key={promo.id}
                       >
                         <div className="flex items-center justify-between">
@@ -209,7 +209,7 @@ export const ClientRoomsWithPromotions: React.FC<
                           </span>
                         </div>
                         {promo.Seasons && (
-                          <div className="mt-2 text-xs text-gray-500">
+                          <div className="mt-2 text-xs text-gray-500 dark:text-slate-400">
                             Temporada: {promo.Seasons.nameSeason}
                           </div>
                         )}
@@ -220,7 +220,7 @@ export const ClientRoomsWithPromotions: React.FC<
               )}
 
               {applicablePromotions.length > 0 && (
-                <div className="mt-4 border-t pt-3">
+                <div className="mt-4 border-t dark:border-slate-600 pt-3">
                   <h4 className="mb-2 text-md font-semibold">Promociones:</h4>
                   <ul className="space-y-2">
                     {applicablePromotions.map((promotion) => {
@@ -231,26 +231,26 @@ export const ClientRoomsWithPromotions: React.FC<
 
                       return (
                         <li
-                          className="flex flex-col rounded bg-gray-50 p-2 text-sm"
+                          className="flex flex-col rounded bg-gray-50 dark:bg-slate-700 p-2 text-sm"
                           key={promotion.id}
                         >
                           <div className="flex items-center">
                             <span className="font-medium text-blue-600">
                               {promotion.codePromotions}
                             </span>
-                            <span className="ml-auto rounded bg-blue-100 px-2 py-0.5 text-blue-800 text-xs">
+                            <span className="ml-auto rounded bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-blue-800 dark:text-blue-300 text-xs">
                               {promotion.porcentageDescuent}% OFF
                             </span>
                           </div>
                           <p className="mt-1">{promotion.description}</p>
-                          <div className="mt-1 flex justify-between text-xs text-gray-500">
+                          <div className="mt-1 flex justify-between text-xs text-gray-500 dark:text-slate-400">
                             <span>
                               Desde: {formatDate(promotion.dateStart)}
                             </span>
                             <span>Hasta: {formatDate(promotion.dateEnd)}</span>
                           </div>
                           {bedroomPromotion?.Bedrooms?.capacity && (
-                            <div className="mt-1 rounded bg-blue-50 p-1 text-xs">
+                            <div className="mt-1 rounded bg-blue-50 dark:bg-blue-900/20 p-1 text-xs">
                               Capacidad: {bedroomPromotion.Bedrooms.capacity}{' '}
                               personas
                             </div>
@@ -263,16 +263,16 @@ export const ClientRoomsWithPromotions: React.FC<
               )}
 
               {bedroomDetails && (
-                <div className="mt-4 border-t border-gray-100 pt-2">
+                <div className="mt-4 border-t border-gray-100 dark:border-slate-700 pt-2">
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="flex items-center">
-                      <span className="text-gray-600">Capacidad:</span>
+                      <span className="text-gray-600 dark:text-slate-400">Capacidad:</span>
                       <span className="ml-1 font-medium">
                         {bedroomDetails.capacity} personas
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <span className="text-gray-600">Habitación:</span>
+                      <span className="text-gray-600 dark:text-slate-400">Habitación:</span>
                       <span className="ml-1 font-medium">
                         #{bedroomDetails.numberBedroom}
                       </span>
@@ -280,7 +280,7 @@ export const ClientRoomsWithPromotions: React.FC<
                     {bedroomDetails.amenities &&
                       bedroomDetails.amenities.length > 0 && (
                         <div className="col-span-2">
-                          <span className="text-gray-600">Amenidades:</span>
+                          <span className="text-gray-600 dark:text-slate-400">Amenidades:</span>
                           <span className="ml-1 font-medium">
                             {bedroomDetails.amenities.join(', ')}
                           </span>

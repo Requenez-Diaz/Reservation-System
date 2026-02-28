@@ -54,12 +54,12 @@ export function GeneralTab({
     'bg-red-500 hover:bg-red-600 text-white shadow-md shadow-red-500/50';
 
   return (
-    <Card className="bg-white shadow-md rounded-xl">
+    <Card className="bg-white dark:bg-slate-900 shadow-md rounded-xl">
       <CardHeader>
         <CardTitle className="text-2xl text-blue-700">
           Información de la Cuenta
         </CardTitle>
-        <CardDescription className="text-gray-600">
+        <CardDescription className="text-gray-600 dark:text-gray-400">
           Actualiza tu nombre, correo electrónico y teléfono.
         </CardDescription>
       </CardHeader>
@@ -99,7 +99,7 @@ export function GeneralTab({
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between pt-4 mt-4 border-t border-gray-200 gap-2">
+          <div className="flex flex-col sm:flex-row justify-between pt-4 mt-4 border-t border-gray-200 dark:border-slate-700 gap-2">
             <Button
               className={`${editCancelEditButtonClass} w-full sm:w-auto`}
               disabled={isSubmitting}

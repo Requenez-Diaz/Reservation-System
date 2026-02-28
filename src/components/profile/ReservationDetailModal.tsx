@@ -68,13 +68,13 @@ export default function ReservationDetailModal({
       onOpenChange={(open) => !open && setSelectedReservation(null)}
       open={selectedReservation?.id === reservation.id}
     >
-      <DialogContent className="w-full max-w-[95vw] sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 sm:p-8 shadow-2xl bg-white border border-gray-100">
+      <DialogContent className="w-full max-w-[95vw] sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 sm:p-8 shadow-2xl bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl font-bold text-gray-800">
-            <Bell className="h-6 w-6 text-blue-600" />
+          <DialogTitle className="flex items-center gap-2 text-2xl font-bold text-gray-800 dark:text-slate-100">
+            <Bell className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             Detalle de Reservación
           </DialogTitle>
-          <DialogDescription className="mt-1 text-gray-500 text-sm">
+          <DialogDescription className="mt-1 text-gray-500 dark:text-slate-400 text-sm">
             Información completa de la reservación seleccionada.
           </DialogDescription>
         </DialogHeader>
@@ -96,10 +96,10 @@ export default function ReservationDetailModal({
           )}
 
           <div className="flex flex-col">
-            <p className="font-semibold text-gray-800 text-lg leading-tight">
+            <p className="font-semibold text-gray-800 dark:text-slate-100 text-lg leading-tight">
               {reservation.User?.username ?? 'Usuario desconocido'}
             </p>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
               {reservation.User?.email ?? 'Sin correo'}
             </p>
           </div>
@@ -124,10 +124,10 @@ export default function ReservationDetailModal({
           ].map((item, i) => (
             <div
               key={i}
-              className="bg-gray-50 hover:bg-gray-100 p-4 rounded-xl shadow-inner transition-colors duration-150"
+              className="bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 p-4 rounded-xl shadow-inner transition-colors duration-150"
             >
-              <p className="text-gray-600 text-sm">{item.label}</p>
-              <p className="font-semibold text-gray-800">{item.value}</p>
+              <p className="text-gray-600 dark:text-slate-400 text-sm">{item.label}</p>
+              <p className="font-semibold text-gray-800 dark:text-slate-100">{item.value}</p>
             </div>
           ))}
         </div>
@@ -135,7 +135,7 @@ export default function ReservationDetailModal({
         <div className="mt-8 flex flex-col sm:flex-row justify-end gap-3">
           <DialogClose asChild>
             <Button
-              className="border-gray-300 text-gray-700 hover:bg-gray-100"
+              className="border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800"
               variant="outline"
             >
               Cerrar

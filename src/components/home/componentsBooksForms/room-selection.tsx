@@ -178,8 +178,8 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-teal-600 mx-auto mb-4" />
-          <p className="text-gray-600">Cargando habitaciones...</p>
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 dark:border-slate-700 border-t-teal-600 dark:border-t-teal-500 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-slate-400">Cargando habitaciones...</p>
         </div>
       </div>
     );
@@ -189,7 +189,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <p className="text-xl font-semibold text-gray-900 mb-2">
+          <p className="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-2">
             No hay habitaciones disponibles
           </p>
           <Button
@@ -204,15 +204,15 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
       {/* Header */}
-      <header className="border-b bg-white shadow-sm">
+      <header className="border-b dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-gray-900 dark:text-slate-100">
             Madroño{' '}
-            <span className="text-sm font-normal text-gray-600">HOTEL</span>
+            <span className="text-sm font-normal text-gray-600 dark:text-slate-400">HOTEL</span>
           </div>
-          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
+          <Link href="/" className="text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200">
             Volver a búsqueda
           </Link>
         </div>
@@ -220,19 +220,19 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
 
       {/* Resumen de búsqueda */}
       {searchData.dateRange && (
-        <div className="border-b bg-orange-50 py-4">
+        <div className="border-b dark:border-slate-800 bg-orange-50 dark:bg-slate-900/50 py-4">
           <div className="mx-auto max-w-7xl px-4 flex flex-wrap gap-4 text-sm items-center">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700">Fechas:</span>
-              <span className="text-gray-600">
+              <span className="font-semibold text-gray-700 dark:text-slate-300">Fechas:</span>
+              <span className="text-gray-600 dark:text-slate-400">
                 {format(searchData.dateRange.from, 'dd MMM', { locale: es })} -{' '}
                 {format(searchData.dateRange.to, 'dd MMM yyyy', { locale: es })}
               </span>
               <Badge variant="secondary">{calculateNights()} noche(s)</Badge>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700">Huéspedes:</span>
-              <span className="text-gray-600">{searchData.guests}</span>
+              <span className="font-semibold text-gray-700 dark:text-slate-300">Huéspedes:</span>
+              <span className="text-gray-600 dark:text-slate-400">{searchData.guests}</span>
             </div>
           </div>
         </div>
@@ -241,10 +241,10 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
       {/* Grid Principal */}
       <div className="mx-auto max-w-7xl px-4 py-8 pb-32">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">
             Habitaciones Disponibles
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-slate-400">
             Selecciona hasta {searchData.roomCount} habitación(es).
           </p>
         </div>
@@ -259,7 +259,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
             return (
               <Card
                 key={room.id}
-                className={`relative overflow-hidden transition-all duration-300 ${isSelected ? 'ring-2 ring-orange-600 shadow-lg' : 'hover:shadow-md'}`}
+                className={`relative overflow-hidden border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 transition-all duration-300 ${isSelected ? 'ring-2 ring-orange-600 shadow-lg' : 'hover:shadow-md'}`}
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -280,26 +280,26 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
                 </div>
 
                 <CardHeader>
-                  <CardTitle className="text-xl">{room.name}</CardTitle>
-                  <CardDescription className="line-clamp-2">
+                  <CardTitle className="text-xl dark:text-slate-100">{room.name}</CardTitle>
+                  <CardDescription className="line-clamp-2 dark:text-slate-400">
                     {room.description}
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-slate-400">
                     <Users className="h-4 w-4" />
                     <span>Hasta {room.capacity} personas</span>
                   </div>
-                  <div className="border-t pt-4">
+                  <div className="border-t dark:border-slate-700 pt-4">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">
+                      <span className="text-2xl font-bold text-gray-900 dark:text-slate-100">
                         C${' '}
                         {isHighSeason
                           ? room.highSeasonPrice
                           : room.lowSeasonPrice}
                       </span>
-                      <span className="text-sm text-gray-600">/noche</span>
+                      <span className="text-sm text-gray-600 dark:text-slate-400">/noche</span>
                     </div>
                   </div>
                 </CardContent>
@@ -319,13 +319,13 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
 
         {/* Barra Inferior Sticky */}
         {selectedRooms.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 border-t bg-white shadow-lg z-50">
+          <div className="fixed bottom-0 left-0 right-0 border-t dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg z-50">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-slate-400">
                   {selectedRooms.length} de {searchData.roomCount} seleccionadas
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">
                   Total: C${getTotalPrice().toLocaleString()}
                 </p>
               </div>

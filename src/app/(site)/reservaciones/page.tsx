@@ -80,8 +80,8 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all border-slate-200 bg-white">
-      <div className="relative h-48 w-full bg-slate-100">
+    <Card className="overflow-hidden hover:shadow-lg transition-all border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+      <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-900">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -116,35 +116,35 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
       </div>
 
       <CardHeader className="p-4 pb-2">
-        <h3 className="font-bold text-lg text-gray-900 line-clamp-1">
+        <h3 className="font-bold text-lg text-gray-900 dark:text-slate-100 line-clamp-1">
           {bedroom?.TypeBedrooms?.nameType || 'Habitación'} #
           {bedroom?.numberBedroom || 'N/A'}
         </h3>
-        <p className="text-xs text-gray-500 line-clamp-1 italic">
+        <p className="text-xs text-gray-500 dark:text-slate-400 line-clamp-1 italic">
           {bedroom?.description || 'Sin descripción disponible'}
         </p>
       </CardHeader>
 
       <CardContent className="p-4 pt-0 space-y-4">
         <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-1.5 text-slate-600">
+          <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
             <Calendar className="h-4 w-4 text-orange-600" />
             <span className="font-medium">
               {firstDetail?.dateStart
                 ? format(new Date(firstDetail.dateStart), 'dd MMM yyyy', {
-                    locale: es
-                  })
+                  locale: es
+                })
                 : '--'}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-600">
+          <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
             <Users className="h-4 w-4 text-orange-600" />
             <span className="font-medium">{totalGuests} pers. total</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-100 pt-3 mt-2">
-          <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">
+        <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3 mt-2">
+          <span className="text-xs text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider">
             Total Estancia:
           </span>
           <span className="text-xl font-black text-orange-600">
@@ -157,7 +157,7 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
         <Link href={`/reservaciones/${reservation.id}`} className="w-full">
           <Button
             variant="outline"
-            className="w-full gap-2 border-slate-200 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 transition-colors"
+            className="w-full gap-2 border-slate-200 dark:border-slate-700 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-400 hover:border-orange-200 dark:hover:border-slate-600 transition-colors"
           >
             <Info className="h-4 w-4" />
             Ver detalles completos
@@ -184,16 +184,16 @@ export default async function ReservationsPage() {
 
   if (!success || typedReservations.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center px-4 max-w-md">
-          <div className="bg-white p-10 rounded-3xl shadow-sm border border-slate-200">
+          <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
             <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
               <Calendar className="text-orange-600 h-8 w-8" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-2">
               No tienes reservas aún
             </h1>
-            <p className="text-gray-500 mb-8">
+            <p className="text-gray-500 dark:text-slate-400 mb-8">
               Parece que no has realizado ninguna reservación en Hotel Madroño.
             </p>
             <Link href="/">
@@ -208,14 +208,14 @@ export default async function ReservationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 pb-20">
       <div className="mx-auto max-w-7xl px-4 py-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
-            <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-3">
+            <h1 className="text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-3">
               Mis Reservaciones
             </h1>
-            <p className="text-lg text-slate-600">
+            <p className="text-lg text-slate-600 dark:text-slate-400">
               Gestiona tus estancias en{' '}
               <span className="font-bold text-orange-600 underline underline-offset-4 decoration-orange-200">
                 Hotel Madroño
@@ -226,7 +226,7 @@ export default async function ReservationsPage() {
           <Link href="/">
             <Button
               variant="ghost"
-              className="gap-2 text-slate-600 hover:text-orange-600 hover:bg-orange-50"
+              className="gap-2 text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-slate-800"
             >
               <ArrowLeft className="h-4 w-4" /> Volver al inicio
             </Button>

@@ -88,23 +88,23 @@ export default function BookingFormPage() {
   // ⏳ Loader
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-600">Verificando sesión...</p>
+      <div className="flex min-h-screen items-center justify-center dark:bg-slate-900">
+        <p className="text-gray-600 dark:text-slate-400">Verificando sesión...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <header className="border-b bg-white shadow-sm">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
+      <header className="border-b dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-gray-900 dark:text-slate-100">
             Hotel
-            <span className="ml-1 text-sm font-normal text-gray-600">
+            <span className="ml-1 text-sm font-normal text-gray-600 dark:text-slate-400">
               HOTEL Madroño
             </span>
           </div>
-          <Button variant="ghost" onClick={() => router.back()}>
+          <Button variant="ghost" onClick={() => router.back()} className="dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800">
             <ArrowLeft className="h-4 w-4" />
             Volver
           </Button>
@@ -113,16 +113,17 @@ export default function BookingFormPage() {
 
       <div className="mx-auto max-w-4xl px-4 py-8">
         <form onSubmit={handleSubmit}>
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardHeader>
-              <CardTitle>Información personal</CardTitle>
+              <CardTitle className="dark:text-slate-100">Información personal</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <Label>Nombre *</Label>
+                  <Label className="dark:text-slate-300">Nombre *</Label>
                   <Input
+                    className="dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500"
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
@@ -130,8 +131,9 @@ export default function BookingFormPage() {
                 </div>
 
                 <div>
-                  <Label>Apellido *</Label>
+                  <Label className="dark:text-slate-300">Apellido *</Label>
                   <Input
+                    className="dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
@@ -141,13 +143,15 @@ export default function BookingFormPage() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <Label>Email *</Label>
-                  <Input name="email" value={formData.email} disabled />
+                  <Label className="dark:text-slate-300">Email *</Label>
+                  <Input
+                    className="dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500" name="email" value={formData.email} disabled />
                 </div>
 
                 <div>
                   <Label>Teléfono *</Label>
                   <Input
+                    className="dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
