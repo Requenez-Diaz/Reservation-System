@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import UserAccountnav from '@/app/(site)/navbar/usersComponents/UserAccountnav';
 import { Session } from 'next-auth';
+import { ModeToggle } from '@/components/mode-toggle';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
@@ -29,8 +30,8 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
       <div className="container mx-auto flex justify-between items-center">
         <Link href="https://www.facebook.com/hotelito.madrono">
           <Image
-            alt="Hotel Madroño" // CORREGIDO (Línea 33)
-            height={55} // CORREGIDO (Línea 35)
+            alt="Hotel Madroño"
+            height={55}
             src="/hotel madroño.png"
             width={55}
           />
@@ -52,7 +53,8 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
             ))}
           </ul>
 
-          <div className="flex gap-x-6">
+          <div className="flex items-center gap-x-6">
+            <ModeToggle />
             {session ? (
               <UserAccountnav />
             ) : (
@@ -76,7 +78,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
               </li>
             ))}
           </ul>
-          <div className="mt-4">
+          <div className="mt-4 flex items-center justify-between">
             {session ? (
               <UserAccountnav />
             ) : (
@@ -87,6 +89,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
                 Iniciar sesión
               </Link>
             )}
+            <ModeToggle />
           </div>
         </div>
       )}
