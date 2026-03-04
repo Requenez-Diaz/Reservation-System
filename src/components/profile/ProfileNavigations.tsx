@@ -2,7 +2,6 @@
 
 import type React from 'react';
 import {
-  Bell,
   HelpCircle,
   ImageIcon,
   KeyRound,
@@ -18,7 +17,6 @@ export type SettingsTab =
   | 'general'
   | 'security'
   | 'avatar'
-  | 'notifications'
   | 'preferences'
   | 'support';
 
@@ -45,8 +43,8 @@ export function ProfileNavigation({
   }> = ({ tab, icon, label }) => (
     <button
       className={`flex items-center gap-3 rounded-lg px-4 py-2 text-base transition-all duration-200 ${hoverBg} ${activeTab === tab
-          ? `${activeBg} font-semibold ${textActive} shadow-sm`
-          : `${textMuted}`
+        ? `${activeBg} font-semibold ${textActive} shadow-sm`
+        : `${textMuted}`
         }`}
       onClick={() => onTabChange(tab)}
       type="button"
@@ -80,11 +78,6 @@ export function ProfileNavigation({
           icon={<KeyRound className="h-5 w-5" />}
           label="Seguridad"
           tab="security"
-        />
-        <NavLink
-          icon={<Bell className="h-5 w-5" />}
-          label="Notificaciones"
-          tab="notifications"
         />
         <NavLink
           icon={<Palette className="h-5 w-5" />}
