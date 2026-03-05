@@ -72,14 +72,14 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-100/50 blur-3xl" />
-        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 blur-3xl" />
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-100/50 dark:bg-orange-900/10 blur-3xl" />
+        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 dark:bg-blue-900/10 blur-3xl" />
       </div>
 
       <div className="z-10 w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="bg-slate-900 p-8 text-center text-white">
             <div className="inline-flex p-3 rounded-xl bg-orange-500 mb-4 shadow-lg shadow-orange-500/20">
               <LogIn className="h-6 w-6 text-white" />
@@ -104,14 +104,14 @@ const SignInForm = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold text-slate-700">
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300">
                         Correo Electrónico
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                           <Input
-                            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-all"
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
                             placeholder="nombre@ejemplo.com"
                             type="email"
                             {...field}
@@ -130,7 +130,7 @@ const SignInForm = () => {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center justify-between">
-                        <FormLabel className="font-bold text-slate-700">
+                        <FormLabel className="font-bold text-slate-700 dark:text-slate-300">
                           Contraseña
                         </FormLabel>
                         {/* OLVIDASTE TU CONTRASEÑA */}
@@ -145,7 +145,7 @@ const SignInForm = () => {
                         <div className="relative">
                           <KeyRound className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                           <Input
-                            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-all"
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
                             type="password"
                             placeholder="••••••••"
                             {...field}
@@ -171,17 +171,17 @@ const SignInForm = () => {
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-slate-200" />
+                    <span className="w-full border-t border-slate-200 dark:border-slate-800" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-slate-500 font-medium">
+                    <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 dark:text-slate-400 font-medium">
                       O continúa con
                     </span>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
                     ¿No tienes una cuenta aún?{' '}
                     <Link
                       className="text-blue-600 font-bold hover:text-blue-700 transition-colors inline-flex items-center gap-1"

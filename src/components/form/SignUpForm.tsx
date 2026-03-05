@@ -127,15 +127,15 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4 py-12">
       {/* Fondo con blur decorativo */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 blur-3xl" />
-        <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-100/50 blur-3xl" />
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 dark:bg-blue-900/10 blur-3xl" />
+        <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-100/50 dark:bg-orange-900/10 blur-3xl" />
       </div>
 
       <div className="z-10 w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
           {/* Header con Logo */}
           <div className="bg-slate-900 pt-8 pb-6 text-center text-white">
             <div className="flex justify-center mb-4">
@@ -169,14 +169,14 @@ const SignUpForm = () => {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold text-slate-700 text-xs uppercase tracking-wider">
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
                         Nombre de usuario
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <UserIcon className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                           <Input
-                            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-all"
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
                             placeholder="Tu apodo favorito"
                             {...field}
                           />
@@ -193,14 +193,14 @@ const SignUpForm = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold text-slate-700 text-xs uppercase tracking-wider">
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
                         Email
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                           <Input
-                            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-all"
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
                             placeholder="correo@ejemplo.com"
                             {...field}
                           />
@@ -217,14 +217,14 @@ const SignUpForm = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold text-slate-700 text-xs uppercase tracking-wider">
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
                         Contraseña
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <KeyRound className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                           <Input
-                            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-all"
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
                             placeholder="Mínimo 8 caracteres"
                             type={showPassword ? 'text' : 'password'}
                             {...field}
@@ -253,14 +253,14 @@ const SignUpForm = () => {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-bold text-slate-700 text-xs uppercase tracking-wider">
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
                         Confirmar Contraseña
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <KeyRound className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                           <Input
-                            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-all"
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
                             placeholder="Repite tu contraseña"
                             type={showPassword ? 'text' : 'password'}
                             {...field}
@@ -288,17 +288,17 @@ const SignUpForm = () => {
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-slate-200" />
+                    <span className="w-full border-t border-slate-200 dark:border-slate-800" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-slate-400 font-bold">
+                    <span className="bg-white dark:bg-slate-900 px-2 text-slate-400 dark:text-slate-500 font-bold">
                       o también
                     </span>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
                     ¿Ya tienes una cuenta?{' '}
                     <Link
                       className="text-blue-600 font-bold hover:text-blue-700 transition-colors inline-flex items-center gap-1"
