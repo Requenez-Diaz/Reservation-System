@@ -14,6 +14,7 @@ import { es } from 'date-fns/locale';
 import { Calendar, Users, Info, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { CancelButton } from './cancel-button';
 
 // --- INTERFACES DE TYPESCRIPT ---
 interface BedroomImage {
@@ -154,15 +155,21 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Link href={`/reservaciones/${reservation.id}`} className="w-full">
-          <Button
-            variant="outline"
-            className="w-full gap-2 border-slate-200 dark:border-slate-700 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-400 hover:border-orange-200 dark:hover:border-slate-600 transition-colors"
-          >
-            <Info className="h-4 w-4" />
-            Ver detalles completos
-          </Button>
-        </Link>
+        <div className="flex flex-col gap-2 w-full">
+          <Link href={`/reservaciones/${reservation.id}`} className="w-full">
+            <Button
+              variant="outline"
+              className="w-full gap-2 border-slate-200 dark:border-slate-700 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-400 hover:border-orange-200 dark:hover:border-slate-600 transition-colors"
+            >
+              <Info className="h-4 w-4" />
+              Ver detalles completos
+            </Button>
+          </Link>
+
+          {reservation.status === 'PENDING' && (
+            <CancelButton reservationId={reservation.id} />
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

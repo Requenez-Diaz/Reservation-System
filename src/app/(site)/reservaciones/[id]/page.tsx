@@ -18,6 +18,7 @@ import {
 
 import Link from 'next/link';
 import { getReservationById } from '@/app/actions/reservations/get-reservation';
+import { CancelButton } from '../cancel-button';
 
 interface Bedroom {
   numberBedroom: number | string;
@@ -301,6 +302,12 @@ export default async function ReservationDetailPage({ params }: PageProps) {
               </p>
             </CardContent>
           </Card>
+
+          {reservation.status === 'PENDING' && (
+            <div className="pt-2">
+              <CancelButton reservationId={reservation.id} />
+            </div>
+          )}
 
           <Button
             variant="outline"

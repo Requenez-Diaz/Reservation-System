@@ -92,3 +92,47 @@ export async function getOrCreateGuestUser(email: string, username: string) {
     };
   }
 }
+
+export async function cancelReservation(reservationId: number) {
+  try {
+    const reservation = await prisma.reservation.findUnique({
+      where: { id: reservationId },
+      include: { ReservationDetails: true }
+    });
+
+    if (!reservation) {
+      throw new Error('Reservación no encontrada');
+    }
+
+    if (reservation.status !== 'PENDING') {
+      throw new Error('Solo se pueden cancelar reservaciones pendientes');
+    }
+
+    // Actualizamos tanto la reservación como sus detalles a CANCELLED
+    await prisma.$transaction([
+      prisma.reservation.update({
+        where: { id: reservationId },
+        data: { status: 'CANCELLED' }
+      }),
+      prisma.reservationDetails.updateMany({
+        where: { reservation_id: reservationId },
+        data: { status: 'CANCELLED' }
+      })
+    ]);
+
+    revalidatePath('/reservaciones');
+    revalidatePath('/habitaciones');
+
+    return {
+      success: true,
+      message: 'Reservación cancelada exitosamente'
+    };
+  } catch (error) {
+    console.error('Error al cancelar reservación:', error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : 'Error al cancelar reservación'
+    };
+  }
+}
