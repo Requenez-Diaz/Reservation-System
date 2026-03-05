@@ -28,6 +28,7 @@ import {
 interface Booking {
   dateStart: string;
   dateEnd?: string;
+  status: string;
 }
 
 interface Bedroom {
@@ -35,7 +36,14 @@ interface Bedroom {
   name: string;
   capacity: number;
   status: boolean;
-  bookingsDetails?: Booking[];
+  lowSeasonPrice: number;
+  highSeasonPrice: number;
+  ReservationDetails?: Booking[];
+  Seasons?: {
+    dateStart: string;
+    dateEnd: string;
+    nameSeason: string;
+  } | null;
 }
 
 export function BedroomSearchForm() {
@@ -140,7 +148,21 @@ export function BedroomSearchForm() {
   };
 
   const handleSearch = async () => {
-    if (dateRange?.from && dateRange.from < new Date()) {
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    if (!dateRange?.from) {
+      setIsLoading(false);
+      toast({
+        description: 'Por favor selecciona un rango de fechas.',
+        title: 'Fechas faltantes',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (dateRange.from < new Date()) {
+      setIsLoading(false);
       toast({
         description: 'No puedes buscar habitaciones en fechas anteriores.',
         title: 'Fecha inválida',
@@ -149,81 +171,91 @@ export function BedroomSearchForm() {
       return;
     }
 
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    // --- LÓGICA DE BÚSQUEDA MEJORADA ---
+    const searchStart = dateRange.from;
+    const searchEnd = dateRange.to || dateRange.from;
 
+    // 1. Encontrar TODAS las habitaciones disponibles en el rango
+    const availableRoomsInRange = bedrooms.filter((bedroom) => {
+      // Un dormitorio está disponible si su status es true (no está en mantenimiento/fuera de servicio)
+      // Y no tiene reservas confirmadas o pendientes que se solapen con el rango buscado
+      const statusMatch = bedroom.status === true;
+
+      let dateMatch = true;
+      if (bedroom.ReservationDetails && bedroom.ReservationDetails.length > 0) {
+        const hasConflict = bedroom.ReservationDetails.some((booking) => {
+          const bookingStart = new Date(booking.dateStart);
+          const bookingEnd = booking.dateEnd
+            ? new Date(booking.dateEnd)
+            : bookingStart;
+
+          // Solapamiento total o parcial
+          const isOverlapping =
+            (searchStart >= bookingStart && searchStart <= bookingEnd) ||
+            (searchEnd >= bookingStart && searchEnd <= bookingEnd) ||
+            (searchStart <= bookingStart && searchEnd >= bookingEnd);
+
+          // Solo hay conflicto si se solapa Y la reserva no está CANCELADA
+          return isOverlapping && booking.status !== 'CANCELLED';
+        });
+        dateMatch = !hasConflict;
+      }
+      return statusMatch && dateMatch;
+    });
+
+    // 2. Intentar cumplir con la distribución solicitada priorizando las más baratas
     const usedRoomIds = new Set<string>();
     const selectedRooms: Bedroom[] = [];
 
-    // --- LÓGICA DE BÚSQUEDA POR EFICIENCIA ---
+    // Función para obtener el precio actual de una habitación
+    const getActivePrice = (bedroom: Bedroom) => {
+      const today = new Date();
+      if (bedroom.Seasons) {
+        const start = new Date(bedroom.Seasons.dateStart);
+        const end = new Date(bedroom.Seasons.dateEnd);
+        if (today >= start && today <= end) {
+          return bedroom.Seasons.nameSeason.toLowerCase().includes('alta')
+            ? bedroom.highSeasonPrice
+            : bedroom.lowSeasonPrice;
+        }
+      }
+      return bedroom.lowSeasonPrice;
+    };
+
     for (const guestsNeeded of guestDistribution) {
-      const availableMatches = bedrooms.filter((bedroom) => {
-        if (usedRoomIds.has(bedroom.id)) {
-          return false;
-        }
+      const candidates = availableRoomsInRange
+        .filter((r) => !usedRoomIds.has(r.id) && r.capacity >= guestsNeeded)
+        .sort((a, b) => getActivePrice(a) - getActivePrice(b));
 
-        const statusMatch = bedroom.status === true;
-        const capacityMatch = bedroom.capacity >= guestsNeeded;
-
-        let dateMatch = true;
-        if (
-          dateRange?.from &&
-          bedroom.bookingsDetails &&
-          bedroom.bookingsDetails.length > 0
-        ) {
-          const searchStart = dateRange.from;
-          const searchEnd = dateRange.to || dateRange.from;
-
-          const hasConflict = bedroom.bookingsDetails.some((booking) => {
-            const bookingStart = new Date(booking.dateStart);
-            const bookingEnd = booking.dateEnd
-              ? new Date(booking.dateEnd)
-              : bookingStart;
-
-            return (
-              (searchStart >= bookingStart && searchStart <= bookingEnd) ||
-              (searchEnd >= bookingStart && searchEnd <= bookingEnd) ||
-              (searchStart <= bookingStart && searchEnd >= bookingEnd)
-            );
-          });
-          dateMatch = !hasConflict;
-        }
-
-        return statusMatch && capacityMatch && dateMatch;
-      });
-
-      // ORDENAR: Primero las habitaciones que tengan la capacidad más cercana a la necesaria
-      availableMatches.sort((a, b) => a.capacity - b.capacity);
-
-      if (availableMatches.length > 0) {
-        const bestFit = availableMatches[0];
-        selectedRooms.push(bestFit);
-        usedRoomIds.add(bestFit.id);
+      if (candidates.length > 0) {
+        const bestCandidate = candidates[0];
+        selectedRooms.push(bestCandidate);
+        usedRoomIds.add(bestCandidate.id);
       }
     }
 
     setIsLoading(false);
 
-    if (selectedRooms.length > 0) {
-      localStorage.setItem('filteredRooms', JSON.stringify(selectedRooms));
+    // Guardamos TODAS las disponibles para que RoomSelection las muestre
+    // Pero mantenemos selectedRooms para saber cuáles sugirió el sistema inicialmente si quisiéramos
+    if (availableRoomsInRange.length > 0) {
+      localStorage.setItem(
+        'filteredRooms',
+        JSON.stringify(availableRoomsInRange)
+      );
+      localStorage.setItem('suggestedRooms', JSON.stringify(selectedRooms));
 
-      if (selectedRooms.length < roomCount) {
-        toast({
-          title: 'Resultados parciales',
-          description: `Solo encontramos ${selectedRooms.length} de las ${roomCount} habitaciones solicitadas.`
-        });
-      } else {
-        toast({
-          title: '¡Éxito!',
-          description: 'Encontramos las habitaciones ideales para tu grupo.'
-        });
-      }
+      toast({
+        title: 'Búsqueda completada',
+        description: `Encontramos ${availableRoomsInRange.length} habitaciones disponibles.`
+      });
+
       router.push('/rooms');
     } else {
       toast({
         title: 'Sin disponibilidad',
         description:
-          'No hay habitaciones que coincidan con tu distribución en estas fechas.',
+          'No hay habitaciones disponibles para los criterios seleccionados.',
         variant: 'destructive'
       });
     }

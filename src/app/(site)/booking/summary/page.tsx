@@ -190,20 +190,20 @@ export default function BookingSummaryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
       {/* HEADER ORIGINAL */}
-      <header className="border-b bg-white shadow-sm">
+      <header className="border-b bg-white dark:bg-slate-950 dark:border-slate-800 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-gray-900 dark:text-slate-100">
             Hotel{' '}
-            <span className="ml-1 text-sm font-normal text-gray-600">
+            <span className="ml-1 text-sm font-normal text-gray-600 dark:text-slate-400">
               MADROÑO
             </span>
           </div>
           <Button
             variant="ghost"
             onClick={() => router.back()}
-            className="gap-2"
+            className="gap-2 dark:text-slate-400 dark:hover:text-slate-200"
           >
             <ArrowLeft className="h-4 w-4" /> Volver
           </Button>
@@ -211,16 +211,16 @@ export default function BookingSummaryPage() {
       </header>
 
       {/* PROGRESS BAR */}
-      <div className="border-b bg-white">
+      <div className="border-b bg-white dark:bg-slate-900 dark:border-slate-800">
         <div className="mx-auto max-w-4xl px-4 py-6">
           <div className="flex items-center justify-center gap-4">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
                 ✓
               </div>
-              <span className="text-sm text-gray-600">Datos personales</span>
+              <span className="text-sm text-gray-600 dark:text-slate-400">Datos personales</span>
             </div>
-            <div className="h-px w-16 bg-gray-300" />
+            <div className="h-px w-16 bg-gray-300 dark:bg-slate-700" />
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
                 2
@@ -229,12 +229,12 @@ export default function BookingSummaryPage() {
                 Resumen
               </span>
             </div>
-            <div className="h-px w-16 bg-gray-300" />
+            <div className="h-px w-16 bg-gray-300 dark:bg-slate-700" />
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-sm font-semibold text-gray-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 dark:bg-slate-800 text-sm font-semibold text-gray-600 dark:text-slate-500">
                 3
               </div>
-              <span className="text-sm text-gray-600">Confirmación</span>
+              <span className="text-sm text-gray-600 dark:text-slate-500">Confirmación</span>
             </div>
           </div>
         </div>
@@ -242,45 +242,45 @@ export default function BookingSummaryPage() {
 
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100 mb-2">
             Resumen de tu reserva
           </h1>
-          <p className="text-gray-600 font-medium">
+          <p className="text-gray-600 dark:text-slate-400 font-medium">
             Huéspedes seleccionados: {searchData.guests}
           </p>
         </div>
 
         <div className="grid gap-6">
           {/* Info Estadía */}
-          <Card className="border-none shadow-sm ring-1 ring-slate-200">
+          <Card className="border-none shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 dark:bg-slate-900">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-800">
+              <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-100">
                 <Calendar className="h-5 w-5 text-orange-600" /> Información de
                 estadía
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">Check-in:</span>
-                <span className="font-bold text-slate-900">
+                <span className="text-gray-600 dark:text-slate-400">Check-in:</span>
+                <span className="font-bold text-slate-900 dark:text-slate-200">
                   {format(searchData.dateRange!.from, "dd 'de' MMMM yyyy", {
                     locale: es
                   })}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Check-out:</span>
-                <span className="font-bold text-slate-900">
+                <span className="text-gray-600 dark:text-slate-400">Check-out:</span>
+                <span className="font-bold text-slate-900 dark:text-slate-200">
                   {format(searchData.dateRange!.to!, "dd 'de' MMMM yyyy", {
                     locale: es
                   })}
                 </span>
               </div>
-              <div className="flex justify-between items-center border-t pt-3">
-                <span className="text-gray-600 font-medium">Estancia:</span>
+              <div className="flex justify-between items-center border-t dark:border-slate-800 pt-3">
+                <span className="text-gray-600 dark:text-slate-400 font-medium">Estancia:</span>
                 <Badge
                   variant="secondary"
-                  className="bg-orange-100 text-orange-700 font-bold border-none"
+                  className="bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 font-bold border-none"
                 >
                   {calculateNights()} noche(s)
                 </Badge>
@@ -289,9 +289,9 @@ export default function BookingSummaryPage() {
           </Card>
 
           {/* Habitaciones */}
-          <Card className="border-none shadow-sm ring-1 ring-slate-200">
+          <Card className="border-none shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 dark:bg-slate-900">
             <CardHeader>
-              <CardTitle className="text-lg font-bold text-slate-800">
+              <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100">
                 Habitaciones seleccionadas
               </CardTitle>
             </CardHeader>
@@ -302,7 +302,7 @@ export default function BookingSummaryPage() {
                 return (
                   <div
                     key={room.id}
-                    className="flex flex-col sm:flex-row gap-4 border-b border-slate-100 pb-4 last:border-0 last:pb-0"
+                    className="flex flex-col sm:flex-row gap-4 border-b border-slate-100 dark:border-slate-800 pb-4 last:border-0 last:pb-0"
                   >
                     <img
                       src={room.image || '/placeholder.svg'}
@@ -310,20 +310,20 @@ export default function BookingSummaryPage() {
                       className="h-24 w-24 rounded-lg object-cover"
                     />
                     <div className="flex-1">
-                      <h3 className="font-bold text-slate-900">{room.name}</h3>
-                      <p className="text-xs text-slate-400 font-bold mb-2 uppercase">
+                      <h3 className="font-bold text-slate-900 dark:text-slate-100">{room.name}</h3>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-bold mb-2 uppercase">
                         Unidad #{room.numberBedroom}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
                         <Users className="h-3.5 w-3.5 text-orange-600" />
                         <span>Capacidad: {room.capacity} pers.</span>
                       </div>
                     </div>
                     <div className="text-right flex flex-col justify-center">
-                      <p className="text-xs text-slate-400 font-medium">
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
                         C$ {price.toLocaleString()} × {nights} nts
                       </p>
-                      <p className="text-xl font-black text-slate-900">
+                      <p className="text-xl font-black text-slate-900 dark:text-slate-100">
                         C$ {(price * nights).toLocaleString()}
                       </p>
                     </div>
@@ -339,10 +339,10 @@ export default function BookingSummaryPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-400 font-black uppercase tracking-widest">
+                  <p className="text-xs text-white/70 font-black uppercase tracking-widest">
                     Total de la reserva
                   </p>
-                  <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-tighter">
+                  <p className="text-[10px] text-white/60 font-bold mt-1 uppercase tracking-tighter">
                     Impuestos y tasas incluidos
                   </p>
                 </div>
@@ -359,7 +359,7 @@ export default function BookingSummaryPage() {
               variant="outline"
               onClick={() => router.back()}
               disabled={isConfirming}
-              className="border-slate-200 text-slate-600 font-bold"
+              className="border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold dark:bg-transparent"
             >
               <ArrowLeft className="h-4 w-4 mr-2" /> Editar datos
             </Button>

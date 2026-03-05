@@ -19,10 +19,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 // --- INTERFACES ---
-interface SavedRoomData {
-  id: string | number;
-}
-
 interface BedroomFromDB {
   id: string;
   name: string;
@@ -37,6 +33,7 @@ interface BedroomFromDB {
   bookingsDetails?: Array<{
     dateStart: string;
     dateEnd?: string;
+    status: string;
   }>;
   seasonName?: string | null;
 }
@@ -92,17 +89,29 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
       }
 
       if (savedFilteredRooms) {
-        const filteredIds = JSON.parse(savedFilteredRooms).map(
-          (r: SavedRoomData) => String(r.id)
-        );
+        const filteredRooms = JSON.parse(savedFilteredRooms) as BedroomFromDB[];
+        const filteredIds = filteredRooms.map((r) => String(r.id));
 
         const matchedRooms = allBedrooms.filter((bedroom) =>
           filteredIds.includes(String(bedroom.id))
         );
 
+        // Ordenar por precio (considerando temporada)
+        matchedRooms.sort((a, b) => {
+          const isHighA = a.seasonName?.toLowerCase().includes('alta');
+          const isHighB = b.seasonName?.toLowerCase().includes('alta');
+          const priceA = isHighA ? a.highSeasonPrice : a.lowSeasonPrice;
+          const priceB = isHighB ? b.highSeasonPrice : b.lowSeasonPrice;
+          return priceA - priceB;
+        });
+
         setAvailableRooms(matchedRooms);
       } else {
-        setAvailableRooms(allBedrooms);
+        // Si no hay filtro, mostrar todas ordenadas por precio bajo
+        const sortedAll = [...allBedrooms].sort(
+          (a, b) => a.lowSeasonPrice - b.lowSeasonPrice
+        );
+        setAvailableRooms(sortedAll);
       }
 
       setIsLoading(false);
@@ -121,8 +130,8 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
 
       if (prev.length >= searchData.roomCount) {
         toast({
-          title: 'Límite alcanzado',
-          description: `Solo puedes seleccionar ${searchData.roomCount} habitación(es).`,
+          title: 'Límite de habitaciones alcanzado',
+          description: `Has buscado ${searchData.roomCount} habitación(es). Si necesitas más, por favor ajusta tu búsqueda en el inicio.`,
           variant: 'destructive'
         });
         return prev;
@@ -277,6 +286,12 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
                       {room.seasonName}
                     </Badge>
                   )}
+                  {availableRooms.length > 0 &&
+                    room.id === availableRooms[0].id && (
+                      <Badge className="absolute bg-emerald-500 text-white right-4 bottom-4 animate-pulse border-none shadow-lg">
+                        ¡Más económica!
+                      </Badge>
+                    )}
                 </div>
 
                 <CardHeader>
@@ -322,11 +337,11 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
           <div className="fixed bottom-0 left-0 right-0 border-t dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg z-50">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
               <div>
-                <p className="text-sm text-gray-600 dark:text-slate-400">
+                <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">
                   {selectedRooms.length} de {searchData.roomCount} seleccionadas
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">
-                  Total: C${getTotalPrice().toLocaleString()}
+                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100 tabular-nums">
+                  Total: C$ {getTotalPrice().toLocaleString()}
                 </p>
               </div>
               <Button
