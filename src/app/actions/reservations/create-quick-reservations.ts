@@ -41,10 +41,36 @@ export async function createQuickReservation(data: QuickReservationData) {
       throw new Error('Habitación no encontrada');
     }
 
-    // --- CORRECCIÓN DE CÁLCULO DE NOCHES ---
-    // Normalizamos a inicio del día para evitar errores de horas/minutos
+    // --- VERIFICACIÓN DE DISPONIBILIDAD ---
     const start = startOfDay(new Date(data.dateStart));
     const end = startOfDay(new Date(data.dateEnd));
+
+    const overlappingReservation = await prisma.reservationDetails.findFirst({
+      where: {
+        bedrooms_id: bedroomIdNumber,
+        status: { in: ['CONFIRMED', 'PENDING'] },
+        OR: [
+          {
+            dateStart: { lte: start },
+            dateEnd: { gte: start }
+          },
+          {
+            dateStart: { lte: end },
+            dateEnd: { gte: end }
+          },
+          {
+            dateStart: { gte: start },
+            dateEnd: { lte: end }
+          }
+        ]
+      }
+    });
+
+    if (overlappingReservation) {
+      throw new Error(
+        'La habitación ya está reservada para estas fechas. Por favor elige otras fechas.'
+      );
+    }
 
     // Usamos differenceInDays para obtener noches exactas (ej: entrada 10, salida 12 = 2 noches)
     const nights = Math.max(1, differenceInDays(end, start));

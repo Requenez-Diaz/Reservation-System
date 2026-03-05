@@ -113,6 +113,29 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
       return;
     }
 
+    // Verificar si el rango seleccionado incluye fechas ya reservadas
+    const isRangeReserved = bedroom.bookingsDetails?.some((booking) => {
+      const bStart = startOfDay(new Date(booking.dateStart));
+      const bEnd = startOfDay(new Date(booking.dateEnd || booking.dateStart));
+      const rStart = startOfDay(dateRange.from!);
+      const rEnd = startOfDay(dateRange.to!);
+
+      return (
+        (rStart <= bStart && rEnd >= bStart) ||
+        (rStart <= bEnd && rEnd >= bEnd) ||
+        (rStart >= bStart && rEnd <= bEnd)
+      );
+    });
+
+    if (isRangeReserved) {
+      toast({
+        title: 'Fechas no disponibles',
+        description: 'El rango seleccionado incluye fechas ya reservadas.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     if (!clientName || !clientEmail) {
       toast({
         title: 'Datos incompletos',
@@ -283,7 +306,21 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
                         onSelect={setDateRange}
                         numberOfMonths={2}
                         locale={es}
-                        disabled={(date) => date < startOfDay(new Date())}
+                        disabled={(date) => {
+                          const isPast = date < startOfDay(new Date());
+                          const isReserved = bedroom.bookingsDetails?.some(
+                            (booking) => {
+                              const bStart = startOfDay(
+                                new Date(booking.dateStart)
+                              );
+                              const bEnd = startOfDay(
+                                new Date(booking.dateEnd || booking.dateStart)
+                              );
+                              return date >= bStart && date <= bEnd;
+                            }
+                          );
+                          return isPast || !!isReserved;
+                        }}
                       />
                     </PopoverContent>
                   </Popover>

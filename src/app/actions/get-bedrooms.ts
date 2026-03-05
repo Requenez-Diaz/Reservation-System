@@ -8,7 +8,6 @@ export const getAllBedrooms = async () => {
   try {
     const bedrooms = await prisma.bedrooms.findMany({
       // ... resto de tu código igual
-      where: { status: true },
       include: {
         ReservationDetails: true,
         galleryImages: {

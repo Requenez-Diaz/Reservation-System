@@ -191,6 +191,17 @@ export default function HabitacionesPage() {
           {bedrooms.map((bedroom) => {
             const currentPrice = getActivePrice(bedroom);
 
+            // Determinar si hay una reserva activa en este momento
+            const hasActiveReservation = bedroom.bookingsDetails?.some(booking => {
+              const start = startOfDay(new Date(booking.dateStart));
+              const end = startOfDay(new Date(booking.dateEnd || booking.dateStart));
+              const today = startOfDay(new Date());
+              return today >= start && today <= end;
+            });
+
+            // Usamos el status de la BD como base, pero si hay una reserva activa, también está ocupada
+            const isOcupied = !bedroom.status || hasActiveReservation;
+
             // 🔥 LÓGICA DE BADGE CORREGIDA: Solo se activa si hoy está en rango alta
             const today = startOfDay(new Date());
             const isHighSeasonActive =
@@ -220,9 +231,9 @@ export default function HabitacionesPage() {
                       Unidad #{bedroom.numberBedroom}
                     </Badge>
                     <Badge
-                      className={`${bedroom.status ? 'bg-emerald-500' : 'bg-red-500'} text-white border-none shadow-sm`}
+                      className={`${!isOcupied ? 'bg-emerald-500' : 'bg-red-500'} text-white border-none shadow-sm`}
                     >
-                      {bedroom.status ? (
+                      {!isOcupied ? (
                         <span className="flex items-center gap-1">
                           <CheckCircle2 className="h-3 w-3" /> Disponible
                         </span>
