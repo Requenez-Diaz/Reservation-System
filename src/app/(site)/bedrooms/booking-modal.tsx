@@ -33,6 +33,10 @@ interface Bedroom {
   bookingsDetails?: Array<{
     dateStart: string;
     dateEnd?: string;
+    status: string;
+    Reservation?: {
+      status: string;
+    };
   }>;
   Seasons?: {
     id: number;
@@ -61,6 +65,13 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
   const [clientEmail, setClientEmail] = React.useState('');
   const [clientPhone, _setClientPhone] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+
+  // Helper para zona horaria (Evita que el 6 pase a 5 en navegadores locales)
+  const parseSafeDate = React.useCallback((d: string | Date) => {
+    const iso = typeof d === 'string' ? d : new Date(d).toISOString();
+    const [y, m, day] = iso.split('T')[0].split('-').map(Number);
+    return new Date(y, m - 1, day, 0, 0, 0, 0);
+  }, []);
 
   // 1. DETERMINAR PRECIO ACTUAL SEGÚN LA FECHA DE HOY
   const currentPrice = React.useMemo(() => {
@@ -115,16 +126,20 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
 
     // Verificar si el rango seleccionado incluye fechas ya reservadas
     const isRangeReserved = bedroom.bookingsDetails?.some((booking) => {
-      const bStart = startOfDay(new Date(booking.dateStart));
-      const bEnd = startOfDay(new Date(booking.dateEnd || booking.dateStart));
-      const rStart = startOfDay(dateRange.from!);
-      const rEnd = startOfDay(dateRange.to!);
+      if (booking.status === 'CANCELLED' || booking.Reservation?.status === 'CANCELLED') {
+        return false;
+      }
 
-      return (
-        (rStart <= bStart && rEnd >= bStart) ||
-        (rStart <= bEnd && rEnd >= bEnd) ||
-        (rStart >= bStart && rEnd <= bEnd)
-      );
+      const bStart = parseSafeDate(booking.dateStart);
+      const bEnd = booking.dateEnd ? parseSafeDate(booking.dateEnd) : parseSafeDate(booking.dateStart);
+
+      const rStart = new Date(dateRange.from!);
+      rStart.setHours(0, 0, 0, 0);
+      const rEnd = new Date(dateRange.to!);
+      rEnd.setHours(0, 0, 0, 0);
+
+      // Solapamiento total o parcial (lógica exclusiva [start, end)) -> choca si searchStart < bookingEnd AND searchEnd > bookingStart
+      return rStart < bEnd && rEnd > bStart;
     });
 
     if (isRangeReserved) {
@@ -307,16 +322,22 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
                         numberOfMonths={2}
                         locale={es}
                         disabled={(date) => {
-                          const isPast = date < startOfDay(new Date());
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const isPast = date < today;
+
                           const isReserved = bedroom.bookingsDetails?.some(
                             (booking) => {
-                              const bStart = startOfDay(
-                                new Date(booking.dateStart)
-                              );
-                              const bEnd = startOfDay(
-                                new Date(booking.dateEnd || booking.dateStart)
-                              );
-                              return date >= bStart && date <= bEnd;
+                              if (booking.status === 'CANCELLED' || booking.Reservation?.status === 'CANCELLED') {
+                                return false; // Ignorar canceladas
+                              }
+
+                              const bStart = parseSafeDate(booking.dateStart);
+                              const bEnd = booking.dateEnd ? parseSafeDate(booking.dateEnd) : parseSafeDate(booking.dateStart);
+
+                              // El calendario deshabilita los días que están puramente DENTRO [bStart, bEnd)
+                              // No deshabilita bEnd porque el bEnd es el día de check-out, por lo cual la tarde está libre
+                              return date >= bStart && date < bEnd;
                             }
                           );
                           return isPast || !!isReserved;

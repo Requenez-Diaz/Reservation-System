@@ -29,6 +29,9 @@ interface Booking {
   dateStart: string;
   dateEnd?: string;
   status: string;
+  Reservation?: {
+    status: string;
+  };
 }
 
 interface Bedroom {
@@ -171,9 +174,12 @@ export function BedroomSearchForm() {
       return;
     }
 
-    // --- LÓGICA DE BÚSQUEDA MEJORADA ---
-    const searchStart = dateRange.from;
-    const searchEnd = dateRange.to || dateRange.from;
+    // --- LÓGICA DE BÚSQUEDA MEJORADA (Normalización a Medianoche) ---
+    const searchStart = new Date(dateRange.from);
+    searchStart.setHours(0, 0, 0, 0);
+
+    const searchEnd = new Date(dateRange.to || dateRange.from);
+    searchEnd.setHours(0, 0, 0, 0);
 
     // 1. Encontrar TODAS las habitaciones disponibles en el rango
     const availableRoomsInRange = bedrooms.filter((bedroom) => {
@@ -184,19 +190,23 @@ export function BedroomSearchForm() {
       let dateMatch = true;
       if (bedroom.ReservationDetails && bedroom.ReservationDetails.length > 0) {
         const hasConflict = bedroom.ReservationDetails.some((booking) => {
-          const bookingStart = new Date(booking.dateStart);
-          const bookingEnd = booking.dateEnd
-            ? new Date(booking.dateEnd)
-            : bookingStart;
+          // Extraemos YYYY-MM-DD para evitar el desfase por zona horaria de UTC a Local
+          const parseSafeDate = (d: string | Date) => {
+            const iso = typeof d === 'string' ? d : new Date(d).toISOString();
+            const [y, m, day] = iso.split('T')[0].split('-').map(Number);
+            return new Date(y, m - 1, day, 0, 0, 0, 0);
+          };
 
-          // Solapamiento total o parcial
-          const isOverlapping =
-            (searchStart >= bookingStart && searchStart <= bookingEnd) ||
-            (searchEnd >= bookingStart && searchEnd <= bookingEnd) ||
-            (searchStart <= bookingStart && searchEnd >= bookingEnd);
+          const bookingStart = parseSafeDate(booking.dateStart);
+          const bookingEnd = booking.dateEnd ? parseSafeDate(booking.dateEnd) : parseSafeDate(booking.dateStart);
+
+          // Solapamiento total o parcial (lógica exclusiva [start, end))
+          const isOverlapping = searchStart < bookingEnd && searchEnd > bookingStart;
 
           // Solo hay conflicto si se solapa Y la reserva no está CANCELADA
-          return isOverlapping && booking.status !== 'CANCELLED';
+          // Verificamos tanto el detalle como la cabecera (Reservation) porque el admin puede cancelar la cabecera
+          const isNotCancelled = booking.status !== 'CANCELLED' && booking.Reservation?.status !== 'CANCELLED';
+          return isOverlapping && isNotCancelled;
         });
         dateMatch = !hasConflict;
       }

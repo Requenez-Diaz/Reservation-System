@@ -5,7 +5,6 @@ import {
   MessageCircleMore,
   Users,
   CheckCircle2,
-  XCircle,
   ArrowRight,
   CalendarDays
 } from 'lucide-react';
@@ -40,6 +39,10 @@ interface RawBedroom {
   ReservationDetails?: Array<{
     dateStart: Date | string;
     dateEnd: Date | string;
+    status: string;
+    Reservation?: {
+      status: string;
+    } | null;
   }> | null;
   Seasons?: {
     id: number;
@@ -59,7 +62,14 @@ interface Bedroom {
   highSeasonPrice: number;
   slug: string;
   BedroomImages?: BedroomImage[];
-  bookingsDetails?: Array<{ dateStart: string; dateEnd?: string }>;
+  bookingsDetails: Array<{
+    dateStart: string;
+    dateEnd: string;
+    status: string;
+    Reservation?: {
+      status: string;
+    };
+  }>;
   image?: string;
   Seasons?: {
     id: number;
@@ -123,7 +133,9 @@ export default function HabitacionesPage() {
           bookingsDetails:
             b.ReservationDetails?.map((r) => ({
               dateStart: new Date(r.dateStart).toISOString(),
-              dateEnd: new Date(r.dateEnd).toISOString()
+              dateEnd: new Date(r.dateEnd).toISOString(),
+              status: r.status,
+              Reservation: r.Reservation ? { status: r.Reservation.status } : undefined
             })) || [],
           Seasons: b.Seasons
         }));
@@ -230,19 +242,13 @@ export default function HabitacionesPage() {
                     <Badge className="bg-white/95 backdrop-blur-sm text-slate-900 border-none font-bold shadow-sm">
                       Unidad #{bedroom.numberBedroom}
                     </Badge>
-                    <Badge
-                      className={`${!isOcupied ? 'bg-emerald-500' : 'bg-red-500'} text-white border-none shadow-sm`}
-                    >
-                      {!isOcupied ? (
+                    {!isOcupied && (
+                      <Badge className="bg-emerald-500 text-white border-none shadow-sm">
                         <span className="flex items-center gap-1">
                           <CheckCircle2 className="h-3 w-3" /> Disponible
                         </span>
-                      ) : (
-                        <span className="flex items-center gap-1">
-                          <XCircle className="h-3 w-3" /> Ocupada
-                        </span>
-                      )}
-                    </Badge>
+                      </Badge>
+                    )}
                   </div>
 
                   {/* Mostramos el Badge solo si la temporada alta está vigente hoy */}

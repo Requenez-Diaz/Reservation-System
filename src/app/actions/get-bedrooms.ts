@@ -9,7 +9,15 @@ export const getAllBedrooms = async () => {
     const bedrooms = await prisma.bedrooms.findMany({
       // ... resto de tu código igual
       include: {
-        ReservationDetails: true,
+        ReservationDetails: {
+          include: {
+            Reservation: {
+              select: {
+                status: true
+              }
+            }
+          }
+        },
         galleryImages: {
           select: {
             fileName: true,

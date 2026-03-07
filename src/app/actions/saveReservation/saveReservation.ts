@@ -47,183 +47,133 @@ export const saveReservation = async (
   }
 
   const {
-    name,
-    lastName,
     bedroomsType,
     guests,
     rooms,
-    arrivalDate,
-    departureDate
+    arrivalDate: rawArrivalDate,
+    departureDate: rawDepartureDate
   } = data;
   const { email } = user;
 
+  // Helper local para extraer YYYY-MM-DD y asegurar la fecha correcta en zona local
+  const parseSafeDate = (d: string | Date) => {
+    const iso = typeof d === 'string' ? d : new Date(d).toISOString();
+    const [y, m, day] = iso.split('T')[0].split('-').map(Number);
+    return new Date(y, m - 1, day, 0, 0, 0, 0);
+  };
+
+  const arrivalDate = parseSafeDate(rawArrivalDate);
+  const departureDate = parseSafeDate(rawDepartureDate);
+
   try {
-    const getBedroomInfo = async (bedroomType: string) => {
-      const bedrooms = await prisma.bedrooms.findMany({
-        where: {
-          typeBedroom: bedroomType,
-          status: true
-        },
-        select: {
-          id: true,
-          typeBedroom: true,
-          capacity: true,
-          numberBedroom: true,
-          status: true
-        }
-      });
+    // 1. Obtener habitaciones físicas del tipo solicitado
+    const bedrooms = await prisma.bedrooms.findMany({
+      where: {
+        TypeBedrooms: { nameType: bedroomsType },
+        status: true
+      },
+      select: { id: true, capacity: true }
+    });
 
-      if (bedrooms.length === 0) {
-        return null;
-      }
-
-      const totalRooms = bedrooms.reduce(
-        (sum, bedroom) => sum + bedroom.capacity,
-        0
-      );
-
-      return {
-        bedrooms,
-        totalRooms
-      };
-    };
-
-    const bedroomInfo = await getBedroomInfo(bedroomsType);
-
-    if (!bedroomInfo) {
+    if (bedrooms.length === 0) {
       return {
         success: false,
-        message: `No se encontraron habitaciones del tipo "${bedroomsType}" o están inactivas.`
+        message: `No hay habitaciones activas del tipo "${bedroomsType}".`
       };
     }
 
-    const getAvailabilityInfo = async (startDate: Date, endDate: Date) => {
-      const conflictingReservations = await prisma.reservation.findMany({
-        where: {
-          bedroomsType: bedroomsType,
-          status: {
-            not: Status.CANCELLED
-          },
-          OR: [
-            {
-              arrivalDate: { lte: startDate },
-              departureDate: { gt: startDate }
-            },
-            {
-              arrivalDate: { gte: startDate, lt: endDate }
-            },
-            {
-              departureDate: { gt: startDate, lte: endDate }
-            },
-            {
-              arrivalDate: { lte: startDate },
-              departureDate: { gte: endDate }
-            }
-          ]
-        },
-        select: {
-          id: true,
-          rooms: true,
-          arrivalDate: true,
-          departureDate: true,
-          name: true,
-          email: true
-        },
-        orderBy: {
-          departureDate: 'asc'
-        }
-      });
+    // 2. Verificar disponibilidad real (excluyendo solapamientos)
+    const busyRooms = await prisma.reservationDetails.findMany({
+      where: {
+        status: { not: Status.CANCELLED },
+        Reservation: { status: { not: 'CANCELLED' } }, // El admin a veces solo cancela la cabecera
+        // Lógica de solapamiento estándar: (start1 < end2) AND (end1 > start2)
+        dateStart: { lt: departureDate },
+        dateEnd: { gt: arrivalDate },
+        Bedrooms: { TypeBedrooms: { nameType: bedroomsType } }
+      },
+      select: {
+        bedrooms_id: true,
+        dateEnd: true,
+        id: true,
+        dateStart: true
+      }
+    });
 
-      const totalOccupiedRooms = conflictingReservations.reduce(
-        (sum, reservation) => sum + reservation.rooms,
-        0
-      );
-      const availableRooms = bedroomInfo.totalRooms - totalOccupiedRooms;
+    const busyIds = new Set(busyRooms.map((r) => r.bedrooms_id));
+    const availablePhysicalRooms = bedrooms.filter(b => !busyIds.has(b.id));
 
+    if (availablePhysicalRooms.length < rooms) {
+      // Calcular la próxima fecha disponible basándose en cuándo se libera alguna habitación
       let nextAvailableDate: Date | null = null;
-
-      if (availableRooms < rooms && conflictingReservations.length > 0) {
-        const sortedByDeparture = conflictingReservations.sort(
-          (a, b) => a.departureDate.getTime() - b.departureDate.getTime()
-        );
-
-        let currentOccupied = totalOccupiedRooms;
-        for (const reservation of sortedByDeparture) {
-          currentOccupied -= reservation.rooms;
-          const potentialAvailable = bedroomInfo.totalRooms - currentOccupied;
-
-          if (potentialAvailable >= rooms) {
-            nextAvailableDate = reservation.departureDate;
-            break;
-          }
-        }
+      if (busyRooms.length > 0) {
+        const sortedDates = busyRooms
+          .map(r => new Date(r.dateEnd))
+          .sort((a, b) => a.getTime() - b.getTime());
+        nextAvailableDate = sortedDates[0];
       }
-      return {
-        availableRooms,
-        totalRooms: bedroomInfo.totalRooms,
-        nextAvailableDate,
-        conflictingReservations: conflictingReservations.map((res) => ({
-          id: res.id,
-          arrivalDate: res.arrivalDate,
-          departureDate: res.departureDate,
-          rooms: res.rooms
-        }))
-      };
-    };
 
-    const availabilityInfo = await getAvailabilityInfo(
-      arrivalDate,
-      departureDate
-    );
-
-    if (availabilityInfo.availableRooms < rooms) {
       return {
         success: false,
-        message: `No hay suficientes habitaciones disponibles del tipo "${bedroomsType}" para las fechas seleccionadas.`,
+        message: `Lo sentimos, solo quedan ${availablePhysicalRooms.length} habitaciones disponibles para esas fechas.`,
         showAvailabilityInfo: true,
-        availabilityInfo
+        availabilityInfo: {
+          availableRooms: availablePhysicalRooms.length,
+          totalRooms: bedrooms.length,
+          nextAvailableDate,
+          conflictingReservations: busyRooms.map(r => ({
+            id: r.id,
+            arrivalDate: r.dateStart,
+            departureDate: r.dateEnd,
+            rooms: 1 // Cada detalle es 1 habitación
+          }))
+        }
       };
     }
 
-    // 🔹 NUEVO: se obtiene el usuario autenticado desde la BD
+    // 3. Obtener usuario
     const userRecord = await prisma.user.findUnique({
       where: { email }
     });
 
     if (!userRecord) {
-      return {
-        success: false,
-        message: 'El usuario no existe en la base de datos.'
-      };
+      return { success: false, message: 'Usuario no encontrado en la base de datos.' };
     }
 
-    // 🔹 NUEVO: se crea la reserva y se asocia al usuario
+    // 4. Crear Reserva y sus Detalles
+    const selectedRooms = availablePhysicalRooms.slice(0, rooms);
+
     const newReservation = await prisma.reservation.create({
       data: {
-        name,
-        lastName,
-        email,
-        bedroomsType,
-        guests,
-        rooms,
-        arrivalDate,
-        departureDate,
-        status: Status.PENDING,
-        userId: userRecord.id //  relación directa
+        user_id: userRecord.id,
+        status: 'PENDING',
+        ReservationDetails: {
+          create: selectedRooms.map(room => ({
+            bedrooms_id: room.id,
+            dateStart: arrivalDate,
+            dateEnd: departureDate,
+            price: 0, // Se recomienda implementar lógica de precios aquí o pasarla desde el front
+            guestQuantity: Math.ceil(guests / rooms),
+            status: Status.PENDING
+          }))
+        }
       }
     });
 
     revalidatePath('/dashboard/bookings');
+    revalidatePath('/habitaciones');
+    revalidatePath('/rooms');
+    revalidatePath('/reservaciones');
 
     return {
       success: true,
-      message: `La reserva se registró correctamente. ID de reservación: ${newReservation.id}`
+      message: `La reserva se registró correctamente. ID: ${newReservation.id}`
     };
   } catch (error) {
     console.error('Error al guardar la reserva:', error);
     return {
       success: false,
-      message: 'Error al guardar la reserva.'
+      message: 'Error inesperado al registrar la reservación.'
     };
   }
 };

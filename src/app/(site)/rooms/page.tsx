@@ -11,6 +11,7 @@ interface GalleryImage {
 interface ReservationDetail {
   dateStart: Date | string;
   dateEnd: Date | string;
+  status: string;
 }
 
 interface RawBedroom {
@@ -70,7 +71,8 @@ export default async function RoomsPage() {
         dateEnd:
           d.dateEnd instanceof Date
             ? d.dateEnd.toISOString()
-            : String(d.dateEnd)
+            : String(d.dateEnd),
+        status: d.status
       })),
       seasonName: bedroom.Seasons?.nameSeason || 'Temporada Regular'
     };
