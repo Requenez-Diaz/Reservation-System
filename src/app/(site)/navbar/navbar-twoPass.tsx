@@ -13,7 +13,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
-  { path: '/ofertas', text: 'Ofertas' },
+  // { path: '/ofertas', text: 'Ofertas' },
   { path: '/bedrooms', text: 'Habitaciones' },
   { path: '/reservaciones', text: 'Reservaciones' }
 ];
