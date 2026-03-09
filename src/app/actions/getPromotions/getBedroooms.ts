@@ -4,7 +4,7 @@ import prisma from '@/lib/db';
 
 export async function getBedrooms() {
   try {
-    const bedrooms = await prisma.bedrooms.findMany();
+    const bedrooms = await prisma.bedroom.findMany();
 
     const formattedBedrooms = bedrooms.map((bedroom) => ({
       id: bedroom.id,

@@ -95,7 +95,7 @@ export async function createReservationForPromotion(
     const promotion = await prisma.promotions.findUnique({
       where: { id: promotionId },
       include: {
-        BedroomsPromotions: true
+        BedroomsPromotion: true
       }
     });
 
@@ -115,7 +115,7 @@ export async function createReservationForPromotion(
       };
     }
 
-    const isBedroomInPromotion = promotion.BedroomsPromotions.some(
+    const isBedroomInPromotion = promotion.BedroomsPromotion.some(
       (bp) => bp.bedroomId === bedroomId
     );
 
@@ -135,7 +135,7 @@ export async function createReservationForPromotion(
       };
     }
 
-    const bedroom = await prisma.bedrooms.findUnique({
+    const bedroom = await prisma.bedroom.findUnique({
       where: { id: bedroomId }
     });
 

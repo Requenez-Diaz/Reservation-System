@@ -6,7 +6,7 @@ import { unstable_noStore as noStore } from 'next/cache'; // Importar noStore
 export const getAllBedrooms = async () => {
   noStore(); // Esto deshabilita el caché para esta función específica
   try {
-    const bedrooms = await prisma.bedrooms.findMany({
+    const bedrooms = await prisma.bedroom.findMany({
       // ... resto de tu código igual
       include: {
         ReservationDetails: {
@@ -25,7 +25,7 @@ export const getAllBedrooms = async () => {
             imageContent: true
           }
         },
-        Seasons: true,
+        Season: true,
         TypeBedrooms: true
       }
     });

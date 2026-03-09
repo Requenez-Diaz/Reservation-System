@@ -32,9 +32,9 @@ export async function createQuickReservation(data: QuickReservationData) {
     }
 
     const bedroomIdNumber = Number.parseInt(data.bedroomId);
-    const bedroom = await prisma.bedrooms.findUnique({
+    const bedroom = await prisma.bedroom.findUnique({
       where: { id: bedroomIdNumber },
-      include: { Seasons: true } // Incluimos la temporada para saber el precio real
+      include: { Season: true } // Incluimos la temporada para saber el precio real
     });
 
     if (!bedroom) {
@@ -77,7 +77,7 @@ export async function createQuickReservation(data: QuickReservationData) {
 
     // --- CORRECCIÓN DE PRECIO DINÁMICO ---
     const now = new Date();
-    const season = bedroom.Seasons;
+    const season = bedroom.Season;
 
     // Verificamos si estamos en la temporada asignada a la habitación
     const isHighSeason =
@@ -97,7 +97,7 @@ export async function createQuickReservation(data: QuickReservationData) {
     });
 
     if (!defaultPromotion) {
-      const anySeason = await prisma.seasons.findFirst();
+      const anySeason = await prisma.season.findFirst();
       if (!anySeason) {
         throw new Error('No hay temporadas disponibles');
       }

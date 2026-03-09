@@ -14,10 +14,10 @@ export async function getPromotions() {
         }
       },
       include: {
-        Seasons: true,
-        BedroomsPromotions: {
+        seasons: true,
+        BedroomsPromotion: {
           include: {
-            Bedrooms: true
+            Bedroom: true
             // Quitamos "Promotions: true" aquí porque es redundante
             // y puede causar una carga circular innecesaria
           }

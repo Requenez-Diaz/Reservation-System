@@ -7,9 +7,9 @@ export async function getPromotions() {
     const promotions = await prisma.promotions.findMany({
       include: {
         seasons: true,
-        BedroomsPromotions: {
+        BedroomsPromotion: {
           include: {
-            bedroom: {
+            Bedroom: {
               include: {
                 galleryImages: true,
                 TypeBedrooms: true
