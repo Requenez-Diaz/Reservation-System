@@ -38,7 +38,7 @@ export const createTestimonial = async (formData: FormData) => {
       };
     }
 
-    const testimonial = await prisma.testimonials.create({
+    const testimonial = await prisma.testimonial.create({
       data: {
         name: name.trim(),
         rating: ratingNumber,
@@ -135,7 +135,7 @@ export const getCurrentUser = async () => {
  */
 export const getTestimonials = async (limit?: number) => {
   try {
-    const testimonials = await prisma.testimonials.findMany({
+    const testimonials = await prisma.testimonial.findMany({
       where: { isApproved: true },
       orderBy: { createdAt: 'desc' },
       ...(limit && { take: limit }),
@@ -171,7 +171,7 @@ export const getTestimonialsByUser = async (userId: string | number) => {
       throw new Error('El ID de usuario proporcionado no es un número válido');
     }
 
-    const testimonials = await prisma.testimonials.findMany({
+    const testimonials = await prisma.testimonial.findMany({
       where: {
         userId: parsedId
       },

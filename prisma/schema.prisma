@@ -20,9 +20,9 @@ model User {
   Comments           Comments[]
   PasswordResetToken PasswordResetToken?
   Reservation        Reservation[]
+  Testimonial        Testimonial[]
   role               Role                @relation(fields: [roleName], references: [roleName])
   UserImage          UserImage?
-  testimonials       testimonials[]
 }
 
 model Role {
@@ -40,22 +40,6 @@ model Reservation {
   status             BookingsStatus       @default(PENDING)
   User               User                 @relation(fields: [user_id], references: [id])
   ReservationDetails ReservationDetails[]
-}
-
-model testimonials {
-  id         Int       @id @default(autoincrement())
-  name       String
-  avatar     String
-  comment    String
-  location   String
-  rating     Int
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime
-  bedroomId  Int?
-  userId     Int?
-  isApproved Boolean   @default(false)
-  Bedrooms   Bedrooms? @relation(fields: [bedroomId], references: [id])
-  User       User?     @relation(fields: [userId], references: [id])
 }
 
 model Seasons {
@@ -104,7 +88,7 @@ model Bedrooms {
   BedroomsPromotions BedroomsPromotions[]
   Comments           Comments[]
   ReservationDetails ReservationDetails[]
-  testimonials       testimonials[]
+  Testimonial        Testimonial[]
 }
 
 model BedroomImages {
@@ -212,6 +196,22 @@ model ReservationDetails {
   Bedrooms       Bedrooms    @relation(fields: [bedrooms_id], references: [id])
   Promotions     Promotions? @relation(fields: [promotion_id], references: [id])
   Reservation    Reservation @relation(fields: [reservation_id], references: [id])
+}
+
+model Testimonial {
+  id         Int       @id @default(autoincrement())
+  name       String
+  avatar     String
+  comment    String
+  location   String
+  rating     Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+  bedroomId  Int?
+  userId     Int?
+  isApproved Boolean   @default(false)
+  Bedrooms   Bedrooms? @relation(fields: [bedroomId], references: [id])
+  User       User?     @relation(fields: [userId], references: [id])
 }
 
 enum BookingsStatus {
