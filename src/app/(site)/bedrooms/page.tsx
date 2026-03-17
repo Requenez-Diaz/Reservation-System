@@ -17,13 +17,20 @@ import { BookingModal } from './booking-modal';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { generateWhatsappUrl } from '@/components/bedrooms/messages/message-encode';
-import { startOfDay } from 'date-fns'; // Importación necesaria para comparar fechas
+import { startOfDay } from 'date-fns';
 
-// ... (Interfaces se mantienen igual)
-interface BedroomImage {
-  id: string;
-  image: string;
+// Definir interfaces para los datos crudos
+interface RawGalleryImage {
+  id?: string | number;
+  imageContent?: string | null;
 }
+
+interface RawReservationDetail {
+  dateStart: Date | string;
+  dateEnd: Date | string;
+  status: string;
+}
+
 interface RawBedroom {
   id: string | number;
   description: string | null;
@@ -34,23 +41,17 @@ interface RawBedroom {
   highSeasonPrice: number;
   slug: string | null;
   image?: string;
-  TypeBedrooms?: { nameType: string } | null;
-  galleryImages?: Array<{ fileName: string; imageContent: string }> | null;
-  ReservationDetails?: Array<{
+  TypeBedrooms?: { nameType?: string } | null;
+  Season?: {
+    id: number;
+    nameSeason: 'ALTA' | 'BAJA';
     dateStart: Date | string;
     dateEnd: Date | string;
-    status: string;
-    Reservation?: {
-      status: string;
-    } | null;
-  }> | null;
-  Seasons?: {
-    id: number;
-    nameSeason: string;
-    dateStart: Date;
-    dateEnd: Date;
   } | null;
+  galleryImages?: RawGalleryImage[];
+  ReservationDetails?: RawReservationDetail[];
 }
+
 interface Bedroom {
   id: string;
   name: string;
@@ -61,21 +62,18 @@ interface Bedroom {
   lowSeasonPrice: number;
   highSeasonPrice: number;
   slug: string;
-  BedroomImages?: BedroomImage[];
+  image?: string;
+  BedroomImages?: Array<{ id: string; image: string }>;
   bookingsDetails: Array<{
     dateStart: string;
     dateEnd: string;
     status: string;
-    Reservation?: {
-      status: string;
-    };
   }>;
-  image?: string;
-  Seasons?: {
+  Season?: {
     id: number;
-    nameSeason: string;
-    dateStart: Date;
-    dateEnd: Date;
+    nameSeason: 'ALTA' | 'BAJA';
+    dateStart: Date | string;
+    dateEnd: Date | string;
   } | null;
 }
 
@@ -95,14 +93,14 @@ export default function HabitacionesPage() {
 
   const getActivePrice = (bedroom: Bedroom) => {
     const today = startOfDay(new Date());
-    const season = bedroom.Seasons;
+    const season = bedroom.Season;
 
     if (season && season.dateStart && season.dateEnd) {
       const start = startOfDay(new Date(season.dateStart));
       const end = startOfDay(new Date(season.dateEnd));
 
       if (today >= start && today <= end) {
-        return season.nameSeason.toLowerCase().includes('alta')
+        return season.nameSeason === 'ALTA'
           ? bedroom.highSeasonPrice
           : bedroom.lowSeasonPrice;
       }
@@ -114,7 +112,7 @@ export default function HabitacionesPage() {
     async function fetchBedrooms() {
       try {
         const data = (await getAllBedrooms()) as RawBedroom[];
-        const mappedBedrooms: Bedroom[] = (data || []).map((b) => ({
+        const mappedBedrooms: Bedroom[] = (data || []).map((b: RawBedroom) => ({
           id: String(b.id),
           name: b.TypeBedrooms?.nameType || 'Habitación Confort',
           description: b.description || 'Sin descripción disponible',
@@ -126,18 +124,17 @@ export default function HabitacionesPage() {
           slug: b.slug || '',
           image: b.image,
           BedroomImages:
-            b.galleryImages?.map((img) => ({
-              id: String(img.fileName || Math.random()),
+            b.galleryImages?.map((img: RawGalleryImage) => ({
+              id: String(img.id || Math.random()),
               image: img.imageContent || ''
             })) || [],
           bookingsDetails:
-            b.ReservationDetails?.map((r) => ({
+            b.ReservationDetails?.map((r: RawReservationDetail) => ({
               dateStart: new Date(r.dateStart).toISOString(),
               dateEnd: new Date(r.dateEnd).toISOString(),
-              status: r.status,
-              Reservation: r.Reservation ? { status: r.Reservation.status } : undefined
+              status: r.status
             })) || [],
-          Seasons: b.Seasons
+          Season: b.Season
         }));
         setBedrooms(mappedBedrooms);
       } catch (error) {
@@ -191,10 +188,6 @@ export default function HabitacionesPage() {
             Nuestras <span className="text-orange-600">Habitaciones</span>
           </h1>
           <div className="h-1.5 w-24 bg-orange-500 rounded-full mx-auto mb-6" />
-          <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
-            Explora nuestra selección de habitaciones diseñadas para brindarte
-            el máximo confort.
-          </p>
         </div>
       </div>
 
@@ -203,25 +196,22 @@ export default function HabitacionesPage() {
           {bedrooms.map((bedroom) => {
             const currentPrice = getActivePrice(bedroom);
 
-            // Determinar si hay una reserva activa en este momento
-            const hasActiveReservation = bedroom.bookingsDetails?.some(booking => {
-              const start = startOfDay(new Date(booking.dateStart));
-              const end = startOfDay(new Date(booking.dateEnd || booking.dateStart));
-              const today = startOfDay(new Date());
-              return today >= start && today <= end;
-            });
-
-            // Usamos el status de la BD como base, pero si hay una reserva activa, también está ocupada
-            const isOcupied = !bedroom.status || hasActiveReservation;
-
-            // 🔥 LÓGICA DE BADGE CORREGIDA: Solo se activa si hoy está en rango alta
-            const today = startOfDay(new Date());
+            // Lógica para saber si mostrar el badge de Temporada Alta
             const isHighSeasonActive =
-              bedroom.Seasons &&
-              today >= startOfDay(new Date(bedroom.Seasons.dateStart)) &&
-              today <= startOfDay(new Date(bedroom.Seasons.dateEnd)) &&
-              bedroom.Seasons.nameSeason.toLowerCase().includes('alta');
+              bedroom.Season &&
+              currentPrice === bedroom.highSeasonPrice &&
+              bedroom.Season.nameSeason === 'ALTA';
 
+            const hasActiveReservation = bedroom.bookingsDetails?.some(
+              (booking) => {
+                const start = startOfDay(new Date(booking.dateStart));
+                const end = startOfDay(new Date(booking.dateEnd));
+                const today = startOfDay(new Date());
+                return today >= start && today <= end;
+              }
+            );
+
+            const isOccupied = !bedroom.status || hasActiveReservation;
             const imageUrl =
               bedroom.BedroomImages?.[0]?.image ||
               bedroom.image ||
@@ -238,11 +228,12 @@ export default function HabitacionesPage() {
                     alt={bedroom.name}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
+
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
                     <Badge className="bg-white/95 backdrop-blur-sm text-slate-900 border-none font-bold shadow-sm">
                       Unidad #{bedroom.numberBedroom}
                     </Badge>
-                    {!isOcupied && (
+                    {!isOccupied && (
                       <Badge className="bg-emerald-500 text-white border-none shadow-sm">
                         <span className="flex items-center gap-1">
                           <CheckCircle2 className="h-3 w-3" /> Disponible
@@ -251,7 +242,6 @@ export default function HabitacionesPage() {
                     )}
                   </div>
 
-                  {/* Mostramos el Badge solo si la temporada alta está vigente hoy */}
                   {isHighSeasonActive && (
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-orange-600 text-white border-none flex items-center gap-1 shadow-lg animate-pulse">
@@ -273,22 +263,22 @@ export default function HabitacionesPage() {
 
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-2xl font-bold text-slate-800 dark:text-slate-200 tracking-tight">
+                    <CardTitle className="text-2xl font-bold text-slate-800 dark:text-slate-200">
                       {bedroom.name}
                     </CardTitle>
-                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-sm">
+                    <div className="flex items-center gap-1.5 text-slate-500 bg-slate-100 px-2 py-1 rounded text-sm">
                       <Users className="h-4 w-4" /> {bedroom.capacity}
                     </div>
                   </div>
-                  <p className="text-slate-500 dark:text-slate-400 line-clamp-2 h-10 mt-1 italic text-sm">
+                  <p className="text-slate-500 line-clamp-2 h-10 mt-1 italic text-sm">
                     {bedroom.description}
                   </p>
                 </CardHeader>
 
-                <CardFooter className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-50 dark:border-slate-800">
+                <CardFooter className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-50">
                   <Button
                     onClick={() => handleReserveClick(bedroom)}
-                    variant={'save'}
+                    variant="save"
                   >
                     Reservar <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -304,7 +294,7 @@ export default function HabitacionesPage() {
                   >
                     <Button
                       variant="outline"
-                      className="w-full border-emerald-500 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 dark:bg-transparent font-bold"
+                      className="w-full border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-bold"
                     >
                       <MessageCircleMore className="mr-2 h-5 w-5" /> WhatsApp
                     </Button>

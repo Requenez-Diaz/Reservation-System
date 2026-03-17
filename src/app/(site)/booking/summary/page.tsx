@@ -1,3 +1,4 @@
+// @/app/(site)/booking/summary/page.tsx
 'use client';
 
 import * as React from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ArrowLeft, Calendar, Users, CheckCircle } from 'lucide-react';
 import {
@@ -25,7 +26,11 @@ interface BedroomFromDB {
   highSeasonPrice: number;
   image: string;
   slug: string;
-  seasonName?: string | null;
+  Season?: {
+    nameSeason: string;
+    dateStart: string;
+    dateEnd: string;
+  } | null;
 }
 
 interface CustomerData {
@@ -54,36 +59,59 @@ export default function BookingSummaryPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isConfirming, setIsConfirming] = React.useState(false);
 
+  const isHighSeasonActive = (room: BedroomFromDB) => {
+    if (!room.Season) {
+      return false;
+    }
+
+    const today = startOfDay(new Date());
+    const seasonStart = startOfDay(new Date(room.Season.dateStart));
+    const seasonEnd = startOfDay(new Date(room.Season.dateEnd));
+
+    const isTodayInSeason = today >= seasonStart && today <= seasonEnd;
+
+    if (isTodayInSeason && room.Season.nameSeason.toUpperCase() === 'ALTA') {
+      return true;
+    }
+
+    return false;
+  };
+
   React.useEffect(() => {
-    const savedRooms = localStorage.getItem('selectedRoomsForBooking');
-    const savedCustomer = localStorage.getItem('bookingCustomerData');
-    const savedDates = localStorage.getItem('selectedDates');
-    const savedGuests = localStorage.getItem('selectedGuests');
+    try {
+      const savedRooms = localStorage.getItem('selectedRoomsForBooking');
+      const savedCustomer = localStorage.getItem('bookingCustomerData');
+      const savedDates = localStorage.getItem('selectedDates');
+      const savedGuests = localStorage.getItem('selectedGuests');
 
-    if (!savedRooms || !savedCustomer) {
+      if (!savedRooms || !savedCustomer) {
+        router.push('/rooms');
+        return;
+      }
+
+      setSelectedRooms(JSON.parse(savedRooms));
+      setCustomerData(JSON.parse(savedCustomer));
+
+      if (savedDates) {
+        const { from, to } = JSON.parse(savedDates);
+        setSearchData((prev) => ({
+          ...prev,
+          dateRange: { from: new Date(from), to: new Date(to) }
+        }));
+      }
+
+      if (savedGuests) {
+        setSearchData((prev) => ({
+          ...prev,
+          guests: Number.parseInt(savedGuests, 10)
+        }));
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error cargando datos:', error);
       router.push('/rooms');
-      return;
     }
-
-    setSelectedRooms(JSON.parse(savedRooms));
-    setCustomerData(JSON.parse(savedCustomer));
-
-    if (savedDates) {
-      const { from, to } = JSON.parse(savedDates);
-      setSearchData((prev) => ({
-        ...prev,
-        dateRange: { from: new Date(from), to: new Date(to) }
-      }));
-    }
-
-    if (savedGuests) {
-      setSearchData((prev) => ({
-        ...prev,
-        guests: Number.parseInt(savedGuests, 10)
-      }));
-    }
-
-    setIsLoading(false);
   }, [router]);
 
   const calculateNights = () => {
@@ -97,7 +125,7 @@ export default function BookingSummaryPage() {
   };
 
   const getRoomPrice = (room: BedroomFromDB) => {
-    const isHigh = room.seasonName?.toLowerCase().includes('alta');
+    const isHigh = isHighSeasonActive(room);
     return isHigh ? room.highSeasonPrice : room.lowSeasonPrice;
   };
 
@@ -111,11 +139,12 @@ export default function BookingSummaryPage() {
 
   const handleConfirmBooking = async () => {
     if (!customerData || !searchData.dateRange) {
-      return toast({
+      toast({
         title: 'Datos incompletos',
         description: 'Por favor, completa toda la información requerida.',
         variant: 'destructive'
       });
+      return;
     }
     setIsConfirming(true);
 
@@ -128,8 +157,8 @@ export default function BookingSummaryPage() {
         throw new Error('Error al procesar el usuario');
       }
 
-      const totalGuestsToDistribute = searchData.guests; // 3
-      const numRooms = selectedRooms.length; // 2
+      const totalGuestsToDistribute = searchData.guests;
+      const numRooms = selectedRooms.length;
       const nights = calculateNights();
 
       const guestsPerRoomBase = Math.floor(totalGuestsToDistribute / numRooms);
@@ -218,7 +247,9 @@ export default function BookingSummaryPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
                 ✓
               </div>
-              <span className="text-sm text-gray-600 dark:text-slate-400">Datos personales</span>
+              <span className="text-sm text-gray-600 dark:text-slate-400">
+                Datos personales
+              </span>
             </div>
             <div className="h-px w-16 bg-gray-300 dark:bg-slate-700" />
             <div className="flex items-center gap-2">
@@ -234,7 +265,9 @@ export default function BookingSummaryPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 dark:bg-slate-800 text-sm font-semibold text-gray-600 dark:text-slate-500">
                 3
               </div>
-              <span className="text-sm text-gray-600 dark:text-slate-500">Confirmación</span>
+              <span className="text-sm text-gray-600 dark:text-slate-500">
+                Confirmación
+              </span>
             </div>
           </div>
         </div>
@@ -261,7 +294,9 @@ export default function BookingSummaryPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-slate-400">Check-in:</span>
+                <span className="text-gray-600 dark:text-slate-400">
+                  Check-in:
+                </span>
                 <span className="font-bold text-slate-900 dark:text-slate-200">
                   {format(searchData.dateRange!.from, "dd 'de' MMMM yyyy", {
                     locale: es
@@ -269,7 +304,9 @@ export default function BookingSummaryPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-slate-400">Check-out:</span>
+                <span className="text-gray-600 dark:text-slate-400">
+                  Check-out:
+                </span>
                 <span className="font-bold text-slate-900 dark:text-slate-200">
                   {format(searchData.dateRange!.to!, "dd 'de' MMMM yyyy", {
                     locale: es
@@ -277,7 +314,9 @@ export default function BookingSummaryPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center border-t dark:border-slate-800 pt-3">
-                <span className="text-gray-600 dark:text-slate-400 font-medium">Estancia:</span>
+                <span className="text-gray-600 dark:text-slate-400 font-medium">
+                  Estancia:
+                </span>
                 <Badge
                   variant="secondary"
                   className="bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 font-bold border-none"
@@ -299,6 +338,8 @@ export default function BookingSummaryPage() {
               {selectedRooms.map((room) => {
                 const nights = calculateNights();
                 const price = getRoomPrice(room);
+                const isHigh = isHighSeasonActive(room);
+
                 return (
                   <div
                     key={room.id}
@@ -310,7 +351,16 @@ export default function BookingSummaryPage() {
                       className="h-24 w-24 rounded-lg object-cover"
                     />
                     <div className="flex-1">
-                      <h3 className="font-bold text-slate-900 dark:text-slate-100">{room.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-slate-900 dark:text-slate-100">
+                          {room.name}
+                        </h3>
+                        {isHigh && (
+                          <Badge className="bg-orange-600 text-white border-none text-xs">
+                            Temporada Alta
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-xs text-slate-400 dark:text-slate-500 font-bold mb-2 uppercase">
                         Unidad #{room.numberBedroom}
                       </p>

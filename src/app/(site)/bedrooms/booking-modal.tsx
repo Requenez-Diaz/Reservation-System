@@ -38,11 +38,11 @@ interface Bedroom {
       status: string;
     };
   }>;
-  Seasons?: {
+  Season?: {
     id: number;
     nameSeason: string;
-    dateStart: Date;
-    dateEnd: Date;
+    dateStart: Date | string;
+    dateEnd: Date | string;
   } | null;
 }
 
@@ -63,37 +63,38 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
   const [guests, setGuests] = React.useState(1);
   const [clientName, setClientName] = React.useState('');
   const [clientEmail, setClientEmail] = React.useState('');
-  const [clientPhone, _setClientPhone] = React.useState('');
+  const [clientPhone] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  // Helper para zona horaria (Evita que el 6 pase a 5 en navegadores locales)
   const parseSafeDate = React.useCallback((d: string | Date) => {
     const iso = typeof d === 'string' ? d : new Date(d).toISOString();
     const [y, m, day] = iso.split('T')[0].split('-').map(Number);
     return new Date(y, m - 1, day, 0, 0, 0, 0);
   }, []);
 
-  // 1. DETERMINAR PRECIO ACTUAL SEGÚN LA FECHA DE HOY
-  const currentPrice = React.useMemo(() => {
-    const today = startOfDay(new Date());
-    const season = bedroom.Seasons;
+  const activePrice = React.useMemo(() => {
+    const season = bedroom.Season;
 
-    if (season && season.dateStart && season.dateEnd) {
-      const start = startOfDay(new Date(season.dateStart));
-      const end = startOfDay(new Date(season.dateEnd));
-
-      if (today >= start && today <= end) {
-        return season.nameSeason.toLowerCase().includes('alta')
-          ? bedroom.highSeasonPrice
-          : bedroom.lowSeasonPrice;
-      }
+    if (!season || !season.dateStart || !season.dateEnd) {
+      return bedroom.lowSeasonPrice;
     }
+
+    // Verificar si hoy está en temporada alta
+    const today = startOfDay(new Date());
+    const seasonStart = startOfDay(new Date(season.dateStart));
+    const seasonEnd = startOfDay(new Date(season.dateEnd));
+
+    const isTodayInSeason = today >= seasonStart && today <= seasonEnd;
+
+    if (isTodayInSeason && season.nameSeason.toUpperCase() === 'ALTA') {
+      return bedroom.highSeasonPrice;
+    }
+
     return bedroom.lowSeasonPrice;
   }, [bedroom]);
 
-  const isCurrentlyHighSeason = currentPrice === bedroom.highSeasonPrice;
+  const isHighSeasonActive = activePrice === bedroom.highSeasonPrice;
 
-  // 2. CÁLCULO DE NOCHES Y TOTAL
   const nightsCount = React.useMemo(() => {
     if (!dateRange?.from || !dateRange?.to) {
       return 0;
@@ -104,9 +105,8 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
     );
   }, [dateRange]);
 
-  const totalAmount = nightsCount * currentPrice;
+  const totalAmount = nightsCount * activePrice;
 
-  // Pre-carga de sesión
   React.useEffect(() => {
     if (isOpen && session?.user) {
       setClientName(session.user.username || '');
@@ -123,45 +123,7 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
       });
       return;
     }
-
-    // Verificar si el rango seleccionado incluye fechas ya reservadas
-    const isRangeReserved = bedroom.bookingsDetails?.some((booking) => {
-      if (booking.status === 'CANCELLED' || booking.Reservation?.status === 'CANCELLED') {
-        return false;
-      }
-
-      const bStart = parseSafeDate(booking.dateStart);
-      const bEnd = booking.dateEnd ? parseSafeDate(booking.dateEnd) : parseSafeDate(booking.dateStart);
-
-      const rStart = new Date(dateRange.from!);
-      rStart.setHours(0, 0, 0, 0);
-      const rEnd = new Date(dateRange.to!);
-      rEnd.setHours(0, 0, 0, 0);
-
-      // Solapamiento total o parcial (lógica exclusiva [start, end)) -> choca si searchStart < bookingEnd AND searchEnd > bookingStart
-      return rStart < bEnd && rEnd > bStart;
-    });
-
-    if (isRangeReserved) {
-      toast({
-        title: 'Fechas no disponibles',
-        description: 'El rango seleccionado incluye fechas ya reservadas.',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    if (!clientName || !clientEmail) {
-      toast({
-        title: 'Datos incompletos',
-        description: 'Completa tu nombre y email.',
-        variant: 'destructive'
-      });
-      return;
-    }
-
     setIsLoading(true);
-
     try {
       const result = await createQuickReservation({
         clientEmail,
@@ -172,19 +134,9 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
         dateEnd: dateRange.to,
         guests
       });
-
       if (result.success && result.reservation) {
-        toast({
-          title: '¡Reserva confirmada!',
-          description: 'Tu estancia ha sido programada.'
-        });
+        toast({ title: '¡Reserva confirmada!' });
         router.push(`/reservaciones/${result.reservation.id}`);
-      } else {
-        toast({
-          title: 'Error',
-          description: result.error || 'No se pudo crear.',
-          variant: 'destructive'
-        });
       }
     } catch (error) {
       toast({
@@ -200,12 +152,12 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
   if (!isOpen) {
     return null;
   }
-
   const imageUrl = bedroom.BedroomImages?.[0]?.image || DEFAULT_PLACEHOLDER;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 shadow-2xl max-h-[95vh] overflow-y-auto">
+        {/* BOTÓN CERRAR */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-10 rounded-full bg-white/90 dark:bg-slate-800/90 p-2 shadow-md hover:bg-white dark:hover:bg-slate-700 transition-all"
@@ -213,6 +165,7 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
           <X className="h-5 w-5 text-slate-900 dark:text-slate-100" />
         </button>
 
+        {/* HEADER IMAGEN */}
         <div className="relative h-56">
           <img
             src={imageUrl}
@@ -236,15 +189,15 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
         </div>
 
         <div className="p-8 space-y-8">
-          {/* SECCIÓN PRECIO ACTUAL */}
+          {/* SECCIÓN PRECIO ACTUAL - AHORA ES FIJO */}
           <div className="bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
             <div>
               <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-1">
-                Tarifa vigente hoy
+                Precio por noche (Temporada Actual)
               </p>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-black text-orange-600">
-                  C${currentPrice.toLocaleString()}
+                  C${activePrice.toLocaleString()}
                 </span>
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">
                   / noche
@@ -253,16 +206,17 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
             </div>
             <Badge
               className={
-                isCurrentlyHighSeason
+                isHighSeasonActive
                   ? 'bg-orange-600 animate-pulse'
                   : 'bg-emerald-600'
               }
             >
-              Temporada {isCurrentlyHighSeason ? 'Alta' : 'Baja'}
+              Temporada {isHighSeasonActive ? 'Alta' : 'Baja'}
             </Badge>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
+            {/* TUS DATOS */}
             <div className="space-y-4">
               <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
                 <User className="h-4 w-4" /> Tus Datos
@@ -292,6 +246,7 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
               </div>
             </div>
 
+            {/* ESTANCIA */}
             <div className="space-y-4">
               <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
                 <Calendar className="h-4 w-4" /> Estancia
@@ -322,21 +277,17 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
                         numberOfMonths={2}
                         locale={es}
                         disabled={(date) => {
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
+                          const today = startOfDay(new Date());
                           const isPast = date < today;
-
                           const isReserved = bedroom.bookingsDetails?.some(
                             (booking) => {
-                              if (booking.status === 'CANCELLED' || booking.Reservation?.status === 'CANCELLED') {
-                                return false; // Ignorar canceladas
+                              if (booking.status === 'CANCELLED') {
+                                return false;
                               }
-
                               const bStart = parseSafeDate(booking.dateStart);
-                              const bEnd = booking.dateEnd ? parseSafeDate(booking.dateEnd) : parseSafeDate(booking.dateStart);
-
-                              // El calendario deshabilita los días que están puramente DENTRO [bStart, bEnd)
-                              // No deshabilita bEnd porque el bEnd es el día de check-out, por lo cual la tarde está libre
+                              const bEnd = booking.dateEnd
+                                ? parseSafeDate(booking.dateEnd)
+                                : bStart;
                               return date >= bStart && date < bEnd;
                             }
                           );
@@ -353,8 +304,8 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
                   <div className="flex items-center border dark:border-slate-700 rounded-lg h-10 overflow-hidden">
                     <Button
                       variant="ghost"
-                      className="h-full rounded-none px-3 hover:bg-slate-100 dark:hover:bg-slate-700"
-                      onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
+                      className="h-full rounded-none px-3"
+                      onClick={() => setGuests((p) => Math.max(1, p - 1))}
                     >
                       -
                     </Button>
@@ -363,11 +314,9 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
                     </span>
                     <Button
                       variant="ghost"
-                      className="h-full rounded-none px-3 hover:bg-slate-100 dark:hover:bg-slate-700"
+                      className="h-full rounded-none px-3"
                       onClick={() =>
-                        setGuests((prev) =>
-                          Math.min(bedroom.capacity, prev + 1)
-                        )
+                        setGuests((p) => Math.min(bedroom.capacity, p + 1))
                       }
                     >
                       +
@@ -404,14 +353,14 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
             <Button
               variant="ghost"
               onClick={onClose}
-              className="flex-1 font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+              className="flex-1 font-bold text-slate-500"
               disabled={isLoading}
             >
               Cerrar
             </Button>
             <Button
               onClick={handleReserve}
-              className="flex-[2] bg-blue-600 hover:bg-blue-700 h-12 text-md font-black shadow-lg shadow-orange-600/20"
+              className="flex-[2] bg-blue-600 hover:bg-blue-700 h-12 text-md font-black shadow-lg"
               disabled={isLoading}
             >
               {isLoading ? 'Procesando...' : 'CONFIRMAR RESERVA'}

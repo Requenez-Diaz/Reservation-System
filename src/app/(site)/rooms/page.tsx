@@ -1,14 +1,14 @@
-// @/app/(site)/rooms/page.tsx
+// @/app/(site)/bedrooms/page.tsx
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import { RoomSelection } from '@/components/home/componentsBooksForms/room-selection';
 
-interface GalleryImage {
+export const dynamic = 'force-dynamic';
+
+interface RawGalleryImage {
   imageContent: string | null;
-  fileName?: string;
-  mimeType?: string;
 }
 
-interface ReservationDetail {
+interface RawReservationDetail {
   dateStart: Date | string;
   dateEnd: Date | string;
   status: string;
@@ -23,16 +23,15 @@ interface RawBedroom {
   lowSeasonPrice: number;
   highSeasonPrice: number;
   slug: string | null;
-  TypeBedrooms?: {
-    nameType?: string;
-    typeBedroom?: string;
-  } | null;
-  Seasons?: {
+  TypeBedrooms?: { nameType?: string } | null;
+  Season?: {
     id: number;
     nameSeason: string;
+    dateStart: Date;
+    dateEnd: Date;
   } | null;
-  galleryImages?: GalleryImage[];
-  ReservationDetails?: ReservationDetail[];
+  galleryImages?: RawGalleryImage[];
+  ReservationDetails?: RawReservationDetail[];
 }
 
 export default async function RoomsPage() {
@@ -41,11 +40,7 @@ export default async function RoomsPage() {
 
   const mappedRooms = rawBedrooms.map((bedroom) => {
     const firstImage = bedroom.galleryImages?.[0];
-
-    const typeName =
-      bedroom.TypeBedrooms?.nameType ||
-      bedroom.TypeBedrooms?.typeBedroom ||
-      'Habitación Estándar';
+    const typeName = bedroom.TypeBedrooms?.nameType || 'Habitación Estándar';
 
     return {
       id: String(bedroom.id),
@@ -57,24 +52,19 @@ export default async function RoomsPage() {
       lowSeasonPrice: bedroom.lowSeasonPrice,
       highSeasonPrice: bedroom.highSeasonPrice,
       image: firstImage?.imageContent || '/placeholder.svg',
-      slug:
-        bedroom.slug ||
-        typeName
-          .toLowerCase()
-          .replace(/\s+/g, '_')
-          .replace(/[^a-z0-9_]/g, ''),
+      slug: bedroom.slug || String(bedroom.id),
       bookingsDetails: (bedroom.ReservationDetails || []).map((d) => ({
-        dateStart:
-          d.dateStart instanceof Date
-            ? d.dateStart.toISOString()
-            : String(d.dateStart),
-        dateEnd:
-          d.dateEnd instanceof Date
-            ? d.dateEnd.toISOString()
-            : String(d.dateEnd),
+        dateStart: new Date(d.dateStart).toISOString(),
+        dateEnd: new Date(d.dateEnd).toISOString(),
         status: d.status
       })),
-      seasonName: bedroom.Seasons?.nameSeason || 'Temporada Regular'
+      Season: bedroom.Season
+        ? {
+            nameSeason: bedroom.Season.nameSeason,
+            dateStart: bedroom.Season.dateStart.toISOString(),
+            dateEnd: bedroom.Season.dateEnd.toISOString()
+          }
+        : null
     };
   });
 

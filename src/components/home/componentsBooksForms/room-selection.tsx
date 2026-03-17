@@ -1,3 +1,4 @@
+// @/components/home/componentsBooksForms/room-selection.tsx
 'use client';
 
 import * as React from 'react';
@@ -13,12 +14,11 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-// --- INTERFACES ---
 interface BedroomFromDB {
   id: string;
   name: string;
@@ -30,31 +30,57 @@ interface BedroomFromDB {
   highSeasonPrice: number;
   image: string;
   slug: string;
-  bookingsDetails?: Array<{
+  Season?: {
+    nameSeason: string;
     dateStart: string;
-    dateEnd?: string;
-    status: string;
-  }>;
-  seasonName?: string | null;
+    dateEnd: string;
+  } | null;
 }
 
 interface RoomSelectionProps {
   allBedrooms: BedroomFromDB[];
 }
 
+interface SearchData {
+  guests: number;
+  roomCount: number;
+  dateRange?: { from: Date; to: Date };
+}
+
+interface SavedRoom {
+  id: string;
+}
+
 export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
   const [selectedRooms, setSelectedRooms] = React.useState<string[]>([]);
-  const [searchData, setSearchData] = React.useState<{
-    dateRange?: { from: Date; to: Date };
-    guests: number;
-    roomCount: number;
-  }>({ guests: 2, roomCount: 1 });
+  const [searchData, setSearchData] = React.useState<SearchData>({
+    guests: 2,
+    roomCount: 1
+  });
   const [availableRooms, setAvailableRooms] = React.useState<BedroomFromDB[]>(
     []
   );
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isPageLoading, setIsPageLoading] = React.useState(true);
   const { toast } = useToast();
   const router = useRouter();
+
+  const isHighSeasonActive = (room: BedroomFromDB) => {
+    if (!room.Season) {
+      return false;
+    }
+
+    const today = startOfDay(new Date());
+    const seasonStart = startOfDay(new Date(room.Season.dateStart));
+    const seasonEnd = startOfDay(new Date(room.Season.dateEnd));
+
+    const isTodayInSeason = today >= seasonStart && today <= seasonEnd;
+
+    if (isTodayInSeason && room.Season.nameSeason.toUpperCase() === 'ALTA') {
+      return true;
+    }
+
+    return false;
+  };
 
   React.useEffect(() => {
     try {
@@ -65,60 +91,53 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
 
       if (savedDates) {
         const { from, to } = JSON.parse(savedDates);
-        setSearchData((prev) => ({
+        setSearchData((prev: SearchData) => ({
           ...prev,
-          dateRange: {
-            from: new Date(from),
-            to: new Date(to)
-          }
+          dateRange: { from: new Date(from), to: new Date(to) }
         }));
       }
 
       if (savedGuests) {
-        setSearchData((prev) => ({
-          ...prev,
-          guests: Number.parseInt(savedGuests, 10)
+        setSearchData((p: SearchData) => ({
+          ...p,
+          guests: Number(savedGuests)
         }));
       }
 
       if (savedRoomCount) {
-        setSearchData((prev) => ({
-          ...prev,
-          roomCount: Number.parseInt(savedRoomCount, 10)
+        setSearchData((p: SearchData) => ({
+          ...p,
+          roomCount: Number(savedRoomCount)
         }));
       }
 
+      let matchedRooms: BedroomFromDB[] = [];
       if (savedFilteredRooms) {
-        const filteredRooms = JSON.parse(savedFilteredRooms) as BedroomFromDB[];
-        const filteredIds = filteredRooms.map((r) => String(r.id));
-
-        const matchedRooms = allBedrooms.filter((bedroom) =>
+        const filteredIds = JSON.parse(savedFilteredRooms).map((r: SavedRoom) =>
+          String(r.id)
+        );
+        matchedRooms = allBedrooms.filter((bedroom) =>
           filteredIds.includes(String(bedroom.id))
         );
-
-        // Ordenar por precio (considerando temporada)
-        matchedRooms.sort((a, b) => {
-          const isHighA = a.seasonName?.toLowerCase().includes('alta');
-          const isHighB = b.seasonName?.toLowerCase().includes('alta');
-          const priceA = isHighA ? a.highSeasonPrice : a.lowSeasonPrice;
-          const priceB = isHighB ? b.highSeasonPrice : b.lowSeasonPrice;
-          return priceA - priceB;
-        });
-
-        setAvailableRooms(matchedRooms);
       } else {
-        // Si no hay filtro, mostrar todas ordenadas por precio bajo
-        const sortedAll = [...allBedrooms].sort(
-          (a, b) => a.lowSeasonPrice - b.lowSeasonPrice
-        );
-        setAvailableRooms(sortedAll);
+        matchedRooms = [...allBedrooms];
       }
 
-      setIsLoading(false);
+      matchedRooms.sort((a, b) => {
+        const priceA = isHighSeasonActive(a)
+          ? a.highSeasonPrice
+          : a.lowSeasonPrice;
+        const priceB = isHighSeasonActive(b)
+          ? b.highSeasonPrice
+          : b.lowSeasonPrice;
+        return priceA - priceB;
+      });
+
+      setAvailableRooms(matchedRooms);
+      setIsPageLoading(false);
     } catch (error) {
-      console.error('Error loading selection data:', error);
-      setAvailableRooms([]);
-      setIsLoading(false);
+      console.error('Error en RoomSelection:', error);
+      setIsPageLoading(false);
     }
   }, [allBedrooms]);
 
@@ -127,39 +146,12 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
       if (prev.includes(roomId)) {
         return prev.filter((id) => id !== roomId);
       }
-
       if (prev.length >= searchData.roomCount) {
-        toast({
-          title: 'Límite de habitaciones alcanzado',
-          description: `Has buscado ${searchData.roomCount} habitación(es). Si necesitas más, por favor ajusta tu búsqueda en el inicio.`,
-          variant: 'destructive'
-        });
+        toast({ title: 'Límite alcanzado', variant: 'destructive' });
         return prev;
       }
-
       return [...prev, roomId];
     });
-  };
-
-  const handleReserve = () => {
-    if (selectedRooms.length === 0) {
-      toast({
-        title: 'Selecciona una habitación',
-        description:
-          'Debes seleccionar al menos una habitación para continuar.',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    const selectedRoomDetails = availableRooms.filter((room) =>
-      selectedRooms.includes(room.id)
-    );
-    localStorage.setItem(
-      'selectedRoomsForBooking',
-      JSON.stringify(selectedRoomDetails)
-    );
-    router.push('/booking/form');
   };
 
   const calculateNights = () => {
@@ -172,98 +164,88 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
   };
 
   const getTotalPrice = () => {
-    const selectedRoomDetails = availableRooms.filter((room) =>
+    const selected = availableRooms.filter((room) =>
       selectedRooms.includes(room.id)
     );
-    const nightlyTotal = selectedRoomDetails.reduce((sum, room) => {
-      const isHigh = room.seasonName?.toLowerCase().includes('alta');
-      const price = isHigh ? room.highSeasonPrice : room.lowSeasonPrice;
+    const nightlyTotal = selected.reduce((sum, room) => {
+      const price = isHighSeasonActive(room)
+        ? room.highSeasonPrice
+        : room.lowSeasonPrice;
       return sum + price;
     }, 0);
     return nightlyTotal * calculateNights();
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 dark:border-slate-700 border-t-teal-600 dark:border-t-teal-500 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-slate-400">Cargando habitaciones...</p>
-        </div>
-      </div>
+  const handleReserve = () => {
+    const details = availableRooms.filter((room) =>
+      selectedRooms.includes(room.id)
     );
-  }
 
-  if (availableRooms.length === 0) {
+    // Incluir la información de temporada al guardar
+    const roomsWithSeason = details.map((room) => ({
+      ...room,
+      Season: room.Season
+    }));
+
+    localStorage.setItem(
+      'selectedRoomsForBooking',
+      JSON.stringify(roomsWithSeason)
+    );
+    router.push('/booking/form');
+  };
+
+  if (isPageLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-2">
-            No hay habitaciones disponibles
-          </p>
-          <Button
-            onClick={() => router.push('/')}
-            className="bg-orange-600 hover:bg-orange-700"
-          >
-            Volver a buscar
-          </Button>
-        </div>
+      <div className="flex min-h-screen items-center justify-center italic text-slate-400">
+        Cargando...
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
-      {/* Header */}
       <header className="border-b dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="text-2xl font-bold text-gray-900 dark:text-slate-100">
             Madroño{' '}
-            <span className="text-sm font-normal text-gray-600 dark:text-slate-400">HOTEL</span>
+            <span className="text-sm font-normal text-gray-600 dark:text-slate-400">
+              HOTEL
+            </span>
           </div>
-          <Link href="/" className="text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200">
+          <Link
+            href="/"
+            className="text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900"
+          >
             Volver a búsqueda
           </Link>
         </div>
       </header>
 
-      {/* Resumen de búsqueda */}
       {searchData.dateRange && (
         <div className="border-b dark:border-slate-800 bg-orange-50 dark:bg-slate-900/50 py-4">
           <div className="mx-auto max-w-7xl px-4 flex flex-wrap gap-4 text-sm items-center">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700 dark:text-slate-300">Fechas:</span>
-              <span className="text-gray-600 dark:text-slate-400">
-                {format(searchData.dateRange.from, 'dd MMM', { locale: es })} -{' '}
-                {format(searchData.dateRange.to, 'dd MMM yyyy', { locale: es })}
-              </span>
-              <Badge variant="secondary">{calculateNights()} noche(s)</Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-700 dark:text-slate-300">Huéspedes:</span>
-              <span className="text-gray-600 dark:text-slate-400">{searchData.guests}</span>
-            </div>
+            <span className="font-semibold">Fechas:</span>
+            <span className="text-gray-600">
+              {format(searchData.dateRange.from, 'dd MMM', { locale: es })} -{' '}
+              {format(searchData.dateRange.to, 'dd MMM yyyy', { locale: es })}
+            </span>
+            <Badge variant="secondary">{calculateNights()} noche(s)</Badge>
           </div>
         </div>
       )}
 
-      {/* Grid Principal */}
       <div className="mx-auto max-w-7xl px-4 py-8 pb-32">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">
-            Habitaciones Disponibles
-          </h1>
-          <p className="text-gray-600 dark:text-slate-400">
-            Selecciona hasta {searchData.roomCount} habitación(es).
-          </p>
-        </div>
+        <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-slate-100">
+          Habitaciones Disponibles
+        </h1>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {availableRooms.map((room) => {
             const isSelected = selectedRooms.includes(room.id);
-            const isHighSeason = room.seasonName
-              ?.toLowerCase()
-              .includes('alta');
+            const isHigh = isHighSeasonActive(room);
+            const currentPrice = isHigh
+              ? room.highSeasonPrice
+              : room.lowSeasonPrice;
 
             return (
               <Card
@@ -272,31 +254,25 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={room.image || '/placeholder.svg'}
+                    src={room.image}
                     alt={room.name}
                     className="h-full w-full object-cover"
                   />
                   {isSelected && (
-                    <div className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-white">
+                    <div className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-white shadow-md">
                       <Check className="h-5 w-5" />
                     </div>
                   )}
-                  {room.seasonName && (
-                    <Badge className="absolute bg-orange-600 left-4 bottom-4">
-                      {room.seasonName}
+                  {isHigh && (
+                    <Badge className="absolute bg-orange-600 left-4 bottom-4 border-none shadow-lg">
+                      Temporada Alta
                     </Badge>
                   )}
-                  {availableRooms.length > 0 &&
-                    room.id === availableRooms[0].id && (
-                      <Badge className="absolute bg-emerald-500 text-white right-4 bottom-4 animate-pulse border-none shadow-lg">
-                        ¡Más económica!
-                      </Badge>
-                    )}
                 </div>
 
                 <CardHeader>
-                  <CardTitle className="text-xl dark:text-slate-100">{room.name}</CardTitle>
-                  <CardDescription className="line-clamp-2 dark:text-slate-400">
+                  <CardTitle className="text-xl">{room.name}</CardTitle>
+                  <CardDescription className="line-clamp-2">
                     {room.description}
                   </CardDescription>
                 </CardHeader>
@@ -309,12 +285,9 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
                   <div className="border-t dark:border-slate-700 pt-4">
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold text-gray-900 dark:text-slate-100">
-                        C${' '}
-                        {isHighSeason
-                          ? room.highSeasonPrice
-                          : room.lowSeasonPrice}
+                        C$ {currentPrice.toLocaleString()}
                       </span>
-                      <span className="text-sm text-gray-600 dark:text-slate-400">/noche</span>
+                      <span className="text-sm text-gray-600">/noche</span>
                     </div>
                   </div>
                 </CardContent>
@@ -332,15 +305,11 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
           })}
         </div>
 
-        {/* Barra Inferior Sticky */}
         {selectedRooms.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 border-t dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg z-50">
+          <div className="fixed bottom-0 left-0 right-0 border-t bg-white dark:bg-slate-900 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-50">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
               <div>
-                <p className="text-sm text-gray-600 dark:text-slate-400 font-medium">
-                  {selectedRooms.length} de {searchData.roomCount} seleccionadas
-                </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100 tabular-nums">
+                <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">
                   Total: C$ {getTotalPrice().toLocaleString()}
                 </p>
               </div>
