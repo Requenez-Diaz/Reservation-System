@@ -19,7 +19,15 @@ import Image from 'next/image';
 import { useToast } from '../ui/use-toast';
 import { saveUsers } from '@/app/actions/users/saveUsers';
 import { signIn } from 'next-auth/react';
-import { Mail, UserIcon, Eye, EyeOff, KeyRound } from 'lucide-react'; // 'Lock' eliminado (Línea 22)
+import {
+  Mail,
+  UserIcon,
+  Eye,
+  EyeOff,
+  KeyRound,
+  UserPlus,
+  ArrowRight
+} from 'lucide-react';
 import { useState } from 'react';
 
 const FormSchema = z
@@ -68,30 +76,40 @@ const SignUpForm = () => {
       const user = await saveUsers(formDataObj);
 
       if (user) {
-        const signInResult = await signIn('credentials', {
-          email: formData.email,
-          password: formData.password,
-          redirect: false
-        });
+        const callbackUrl = localStorage.getItem('authCallbackUrl');
 
-        if (signInResult?.error) {
+        if (callbackUrl) {
           toast({
-            description:
-              'No se pudo iniciar sesión automáticamente. Por favor, inténtelo manualmente.',
-            title: 'Error de autenticación',
-            variant: 'destructive'
-          });
-        } else {
-          toast({
-            description: 'Será redirigido al panel de control.',
+            description: 'Por favor inicia sesión con tus nuevas credenciales.',
             title: 'Usuario registrado con éxito',
             variant: 'default'
           });
-          router.push('/');
+          router.push('/sign-in');
+        } else {
+          const signInResult = await signIn('credentials', {
+            email: formData.email,
+            password: formData.password,
+            redirect: false
+          });
+
+          if (signInResult?.error) {
+            toast({
+              description:
+                'No se pudo iniciar sesión automáticamente. Por favor, inténtelo manualmente.',
+              title: 'Error de autenticación',
+              variant: 'destructive'
+            });
+          } else {
+            toast({
+              description: 'Será redirigido al panel de control.',
+              title: 'Usuario registrado con éxito',
+              variant: 'default'
+            });
+            router.push('/');
+          }
         }
       }
     } catch (error: unknown) {
-      // CORREGIDO: Usar unknown en lugar de any
       if (error instanceof Error && error.message === 'Email already exists') {
         toast({
           description: 'Este correo electrónico ya está registrado.',
@@ -109,144 +127,196 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Form {...form}>
-        <form
-          className="max-w-md w-full p-4 border border-gray-300 rounded-md"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <div className="flex items-center justify-center content-center top-2">
-            <Image
-              alt="image" // CORREGIDO (Línea 115)
-              height={120}
-              src={'/hotel madroño.png'}
-              width={120}
-            />
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4 py-12">
+      {/* Fondo con blur decorativo */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 dark:bg-blue-900/10 blur-3xl" />
+        <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-100/50 dark:bg-orange-900/10 blur-3xl" />
+      </div>
 
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre de usuario</FormLabel>
-                <FormControl>
-                  <div className="relative flex items-center">
-                    <Input
-                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" // CORREGIDO (Línea 120)
-                      placeholder="Ingrese su nombre de usuario"
-                      {...field}
-                    />
-                    <UserIcon
-                      className="absolute right-4 text-gray-500"
-                      size={20} // CORREGIDO (Línea 122)
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <div className="relative flex items-center">
-                    <Input
-                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      placeholder="Ingrese su correo electrónico"
-                      {...field}
-                    />
-                    <Mail
-                      className="absolute right-4 text-gray-500"
-                      size={20}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contraseña</FormLabel>
-                <FormControl>
-                  <div className="relative flex items-center">
-                    <Input
-                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      placeholder="Ingrese su contraseña"
-                      type={showPassword ? 'text' : 'password'}
-                      {...field}
-                    />
-                    <button
-                      className="absolute right-4 text-gray-500"
-                      onClick={() => setShowPassword(!showPassword)}
-                      type="button"
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirmar Contraseña</FormLabel>
-                <FormControl>
-                  <div className="relative flex items-center">
-                    <Input
-                      className="w-full rounded-lg border border-stroke bg-gray-100 py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" // CORREGIDO (Línea 228)
-                      placeholder="Repite tu contraseña"
-                      type={showPassword ? 'text' : 'password'}
-                      {...field}
-                    />
-                    <KeyRound
-                      className="absolute right-4 text-gray-500"
-                      size={20}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="mb-5 mt-4">
-            <Button className="w-full" type="submit" variant="save">
-              Registrarse
-            </Button>
-          </div>
-
-          <div className="flex items-center mt-4">
-            <div className="flex-grow border-b border-gray-300"></div>
-            <div className="mx-4">o</div>
-            <div className="flex-grow border-b border-gray-300"></div>
-          </div>
-
-          <div className="mt-6 text-center">
-            <p>
-              ¿Ya tienes una cuenta?{' '}
-              <Link className="text-blue-400" href="/sign-in">
-                Inicia sesión
-              </Link>
+      <div className="z-10 w-full max-w-md">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          {/* Header con Logo */}
+          <div className="bg-slate-900 pt-8 pb-6 text-center text-white">
+            <div className="flex justify-center mb-4">
+              <div className="bg-white p-2 rounded-full shadow-lg">
+                <Image
+                  alt="Logo Hotel Madroño"
+                  height={80}
+                  src={'/hotel madroño.png'}
+                  width={80}
+                  className="object-contain"
+                />
+              </div>
+            </div>
+            <h1 className="text-2xl font-black tracking-tight">
+              Crea tu cuenta
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">
+              Únete a nuestra comunidad hoy
             </p>
           </div>
-        </form>
-      </Form>
+
+          <div className="p-8">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                {/* USERNAME */}
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
+                        Nombre de usuario
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <UserIcon className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
+                            placeholder="Tu apodo favorito"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs font-medium" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* EMAIL */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
+                        Email
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
+                            placeholder="correo@ejemplo.com"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs font-medium" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* PASSWORD */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
+                        Contraseña
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <KeyRound className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
+                            placeholder="Mínimo 8 caracteres"
+                            type={showPassword ? 'text' : 'password'}
+                            {...field}
+                          />
+                          <button
+                            className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 transition-colors"
+                            onClick={() => setShowPassword(!showPassword)}
+                            type="button"
+                          >
+                            {showPassword ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs font-medium" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* CONFIRM PASSWORD */}
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">
+                        Confirmar Contraseña
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <KeyRound className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
+                            placeholder="Repite tu contraseña"
+                            type={showPassword ? 'text' : 'password'}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs font-medium" />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 shadow-md shadow-blue-600/10 transition-all active:scale-[0.98] mt-4"
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <UserPlus className="h-4 w-4" /> Registrarse
+                    </span>
+                  )}
+                </Button>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white dark:bg-slate-900 px-2 text-slate-400 dark:text-slate-500 font-bold">
+                      o también
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    ¿Ya tienes una cuenta?{' '}
+                    <Link
+                      className="text-blue-600 font-bold hover:text-blue-700 transition-colors inline-flex items-center gap-1"
+                      href="/sign-in"
+                    >
+                      Inicia sesión aquí <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </p>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </div>
+
+        <p className="text-center text-slate-400 text-xs mt-8 font-medium uppercase tracking-widest">
+          Hotel Madroño — Nicaragua 2026
+        </p>
+      </div>
     </div>
   );
 };

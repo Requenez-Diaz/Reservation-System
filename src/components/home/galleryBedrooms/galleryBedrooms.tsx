@@ -26,14 +26,14 @@ const GalleryBedrooms = () => {
   ];
 
   return (
-    <section className="w-full bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 py-16 px-4 sm:px-6 lg:px-8">
+    <section className="w-full bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-amber-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-amber-900 dark:text-amber-400 mb-4">
             Explora tu futuro
           </h2>
-          <p className="text-lg text-amber-800/80 max-w-2xl mx-auto">
+          <p className="text-lg text-amber-800/80 dark:text-amber-300/80 max-w-2xl mx-auto">
             Creamos un mundo donde puedes reservar a un solo click
           </p>
         </div>

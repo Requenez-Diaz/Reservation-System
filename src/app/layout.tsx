@@ -24,7 +24,7 @@ export default async function RootLayout({
   await getServerSession(authOptions);
 
   return (
-    <html>
+    <html lang="es" suppressHydrationWarning>
       <body>
         <Provider>
           <main>{children}</main>

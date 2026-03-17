@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import {
   Card,
   CardContent,
@@ -14,9 +15,7 @@ import { getPromotion } from '@/app/actions/getOfferts/get-offerts';
 import { ReserveRoomDialog } from '@/components/offers/components/reserv-form-dialog';
 
 interface PromotionPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
 export default async function PromotionPage(props: PromotionPageProps) {
@@ -29,14 +28,17 @@ export default async function PromotionPage(props: PromotionPageProps) {
   }
 
   const promotion = result.data;
-  const bedroom = promotion.BedroomsPromotions[0]?.Bedrooms;
+
+  const bedroom = promotion.BedroomsPromotions[0]?.bedroom;
+
   if (!bedroom) {
     notFound();
   }
 
+  // Cálculos de precio
   const originalPrice = bedroom.highSeasonPrice || 0;
-  const discount = (originalPrice * promotion.porcentageDescuent) / 100;
-  const finalPrice = originalPrice - discount;
+  const discountAmount = (originalPrice * promotion.porcentageDescuent) / 100;
+  const finalPrice = originalPrice - discountAmount;
 
   const now = new Date();
   const startDate = new Date(promotion.dateStart);
@@ -45,184 +47,172 @@ export default async function PromotionPage(props: PromotionPageProps) {
 
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString('es-ES', {
-      year: 'numeric',
+      day: 'numeric',
       month: 'long',
-      day: 'numeric'
+      year: 'numeric'
     });
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="container mx-auto py-8 space-y-8 max-w-6xl">
+      <div className="flex items-center justify-between">
         <Link href="/ofertas">
-          <Button size="sm" variant="outline">
+          <Button
+            variant="ghost"
+            className="hover:bg-zinc-100 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition-colors"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver a ofertas
           </Button>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold">Detalle de Oferta</h1>
-          <p className="text-muted-foreground">
-            Habitación específica con promoción aplicada
-          </p>
+        <Badge
+          className={
+            isActive ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+          }
+        >
+          {isActive ? 'Oferta Disponible' : 'No Disponible'}
+        </Badge>
+      </div>
+
+      {/* Hero Section */}
+      <div className="relative h-[400px] w-full overflow-hidden rounded-3xl shadow-2xl">
+        <Image
+          src={bedroom.image || '/luxury-hotel-room.png'}
+          alt={bedroom.typeBedroom || 'Habitación'}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+        <div className="absolute bottom-8 left-8 right-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-2">
+              <Badge className="bg-orange-600 text-white border-none">
+                {bedroom.typeBedroom || 'Habitación'}
+              </Badge>
+              <h1 className="text-4xl md:text-5xl font-black text-white">
+                Unidad #{bedroom.numberBedroom}
+              </h1>
+              <div className="flex items-center gap-2 text-zinc-300">
+                <MapPin className="h-4 w-4" />
+                <p className="text-lg italic">
+                  {bedroom.description || 'Sin descripción'}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl text-zinc-900 dark:text-slate-100 min-w-[240px]">
+              <p className="text-sm font-bold text-zinc-500 dark:text-slate-400 line-through">
+                C${originalPrice.toLocaleString()}
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-4xl font-black text-orange-600">
+                  C${finalPrice.toLocaleString()}
+                </span>
+                <Badge
+                  variant="outline"
+                  className="text-red-600 border-red-200 bg-red-50"
+                >
+                  -{promotion.porcentageDescuent}%
+                </Badge>
+              </div>
+              <p className="text-xs text-zinc-400 dark:text-slate-500 mt-1">
+                Precio final por noche
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="border-none bg-zinc-50 dark:bg-slate-800/50 shadow-sm">
+            <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Tag className="h-5 w-5" />
-                {promotion.codePromotions}
+                <Tag className="h-5 w-5 text-orange-500" />
+                <span className="dark:text-slate-100">Detalles de la Promoción</span>
               </CardTitle>
-              <Badge variant={isActive ? 'success' : 'inactive'}>
-                {isActive ? 'Activa' : 'Inactiva'}
-              </Badge>
-            </div>
-            <CardDescription>Información de la promoción</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-green-600">
-                {promotion.porcentageDescuent} % de descuento
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span>
-                Del {formatDate(promotion.dateStart)} al{' '}
-                {formatDate(promotion.dateEnd)}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>
-                Temporada: {promotion.Seasons?.nameSeason || 'No especificada'}
-              </span>
-            </div>
-
-            {promotion.description && (
-              <div className="p-3 bg-muted rounded-lg">
-                <p className="text-sm">{promotion.description}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Habitación Específica
-            </CardTitle>
-            <CardDescription>
-              Detalles de la habitación con promoción
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-semibold text-blue-800">
-                  {bedroom.typeBedroom} - {bedroom.description}, Habitación #
-                  {bedroom.numberBedroom}
-                </h3>
-                <Badge className="text-xs" variant="success">
-                  ID: {bedroom.id}
-                </Badge>
-              </div>
-              <p className="text-sm text-blue-600">{bedroom.typeBedroom}</p>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="font-medium">Precios con promoción:</h4>
-              <div className="grid grid-cols-1 gap-2">
-                <div className="flex justify-between items-center p-2 bg-muted rounded">
-                  <span className="text-sm">Precio original:</span>
-                  <span className="font-medium">${originalPrice}</span>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm text-orange-600">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-black">
+                      Periodo
+                    </p>
+                    <p className="text-sm font-medium dark:text-slate-200">
+                      {formatDate(promotion.dateStart)} -{' '}
+                      {formatDate(promotion.dateEnd)}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center p-2 bg-red-50 rounded">
-                  <span className="text-sm text-red-600">Descuento:</span>
-                  <span className="font-medium text-red-600">
-                    -${discount.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center p-2 bg-green-50 rounded border border-green-200">
-                  <span className="text-sm font-medium text-green-700">
-                    Precio final:
-                  </span>
-                  <span className="text-xl font-bold text-green-700">
-                    ${finalPrice.toFixed(2)}
-                  </span>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm text-orange-600">
+                    <Clock className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-black">
+                      Temporada
+                    </p>
+                    <p className="text-sm font-medium dark:text-slate-200">
+                      {promotion.Seasons?.nameSeason || 'Regular'}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+              <div className="bg-orange-500 p-4 rounded-xl text-center">
+                <p className="text-[10px] text-white uppercase font-bold mb-2">
+                  Código de Canje
+                </p>
+                <span className="text-2xl font-mono font-bold tracking-widest text-white">
+                  {promotion.codePromotions}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            <ReserveRoomDialog
-              bedroom={{
-                id: bedroom.id,
-                name: bedroom.typeBedroom,
-                type: bedroom.typeBedroom || '',
-                number: bedroom.numberBedroom?.toString() || '',
-                typeBedroom: bedroom.typeBedroom
-              }}
-              pricePerNight={finalPrice}
-              promotionDateEnd={promotion.dateEnd}
-              promotionDateStart={promotion.dateStart}
-              promotionId={promotion.id}
-            />
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <Card className="border-none shadow-2xl overflow-hidden">
+            <div className="bg-orange-600 p-4 text-white text-center">
+              <p className="text-sm font-bold">
+                ¡Ahorras C${(originalPrice - finalPrice).toLocaleString()}!
+              </p>
+            </div>
+            <CardHeader>
+              <CardTitle>Reserva ahora</CardTitle>
+              <CardDescription>
+                Asegura tu estancia con este precio especial.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="pt-4 border-t dark:border-slate-700 flex justify-between items-end">
+                <span className="font-bold text-slate-600 dark:text-slate-400">Total noche</span>
+                <span className="text-3xl font-black text-orange-600">
+                  C${finalPrice.toLocaleString()}
+                </span>
+              </div>
+
+              <ReserveRoomDialog
+                bedroom={{
+                  id: bedroom.id,
+                  name: bedroom.typeBedroom || 'Habitación',
+                  type: bedroom.typeBedroom || '',
+                  number: bedroom.numberBedroom?.toString() || '',
+                  typeBedroom: bedroom.typeBedroom || ''
+                }}
+                pricePerNight={finalPrice}
+                promotionDateEnd={promotion.dateEnd}
+                promotionDateStart={promotion.dateStart}
+                promotionId={promotion.id}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Información Adicional</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4   bg-orange-500/10 rounded-lg">
-              <div className="text-2xl font-bold text-primary">
-                {promotion.porcentageDescuent}%
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Descuento aplicado
-              </div>
-            </div>
-            <div className="text-center p-4  bg-orange-500/10 rounded-lg">
-              <div className="text-2xl font-bold text-primary">
-                ${discount.toFixed(2)}
-              </div>
-              <div className="text-sm text-muted-foreground">Ahorro total</div>
-            </div>
-            <div className="text-center p-4  bg-orange-500/10 rounded-lg">
-              <div className="text-2xl font-bold text-primary">1</div>
-              <div className="text-sm text-muted-foreground">
-                Habitación específica
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {!isActive && (
-        <Card className="border-orange-200 bg-orange-50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-orange-800">
-              <Clock className="h-4 w-4" />
-              <span className="font-medium">
-                Esta promoción no está actualmente activa.
-                {now < startDate &&
-                  ` Comenzará el ${formatDate(promotion.dateStart)}.`}
-                {now > endDate &&
-                  ` Finalizó el ${formatDate(promotion.dateEnd)}.`}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

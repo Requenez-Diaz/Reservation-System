@@ -4,7 +4,7 @@ import React from 'react';
 const Footer = () => {
   const email = 'alfredorequenez57libra@gmail.com';
   return (
-    <footer className="bg-faf1ed text-black">
+    <footer className="bg-faf1ed dark:bg-slate-900 dark:border-t dark:border-slate-700 text-black dark:text-gray-200">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-4">
@@ -21,7 +21,7 @@ const Footer = () => {
             <p>Dirección: Nueva Guinea, Zona # 8</p>
             <p>Teléfono: +505 8646 9676</p>
             <Link
-              className="text-black hover:text-blue-400 transition duration-300"
+              className="text-black dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-400 transition duration-300"
               href={`mailto:${email}`}
             >
               <p>Email: {email}</p>
@@ -29,19 +29,19 @@ const Footer = () => {
           </div>
           <div className="space-y-4">
             <Link
-              className="block text-black hover:text-blue-400 transition duration-300"
+              className="block text-black dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-400 transition duration-300"
               href="/aboutUs"
             >
               <p>Acerca de nosotros</p>
             </Link>
             <Link
-              className="block text-black hover:text-blue-400 transition duration-300"
+              className="block text-black dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-400 transition duration-300"
               href="/contact"
             >
               <p>Contacto</p>
             </Link>
             <Link
-              className="block text-black hover:text-blue-400 transition duration-300"
+              className="block text-black dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-400 transition duration-300"
               href="/terms"
             >
               <p>Términos y condiciones</p>
@@ -49,7 +49,7 @@ const Footer = () => {
           </div>
           <div className="space-y-4">
             <Link
-              className="flex items-center text-black hover:text-blue-400 transition duration-300"
+              className="flex items-center text-black dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-400 transition duration-300"
               href={'https://www.facebook.com/avimilex.diaz'}
             >
               <span className="mr-2">
@@ -71,7 +71,7 @@ const Footer = () => {
               <p>Facebook</p>
             </Link>
             <Link
-              className="flex items-center text-black hover:text-blue-400 transition duration-300"
+              className="flex items-center text-black dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-400 transition duration-300"
               href={'https://www.instagram.com/avimilex.diaz'}
             >
               <span className="mr-2">
@@ -112,7 +112,7 @@ const Footer = () => {
               <p>Instagram</p>
             </Link>
             <Link
-              className="flex items-center text-black hover:text-blue-400 transition duration-300"
+              className="flex items-center text-black dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-400 transition duration-300"
               href={'https://www.twitter.com/avimilex.diaz'}
             >
               <span className="mr-2">

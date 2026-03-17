@@ -8,148 +8,81 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id                 Int                 @id @default(autoincrement())
+  email              String              @unique
+  username           String              @unique
+  lastName           String?
+  numberPhone        Int?
+  password           String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  roleName           String
+  image              String?
+  PasswordResetToken PasswordResetToken?
+  Reservation        Reservation[]
+  Testimonial        Testimonial[]
+  role               Role                @relation(fields: [roleName], references: [roleName])
+  UserImage          UserImage?
+}
+
 model Role {
   id       Int    @id @default(autoincrement())
   descript String
   roleName String @unique
-  User     User[]
-}
-
-model UsersRole {
-  Id_user Int @unique
-  Id_role Int
+  users    User[]
 }
 
 model Reservation {
-  id            Int            @id @default(autoincrement())
-  name          String
-  lastName      String
-  email         String
-  bedroomsType  String
-  guests        Int
-  rooms         Int
-  arrivalDate   DateTime
-  departureDate DateTime
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  status        Status
-  userId        Int
-  promotionId   Int?
-  isRead        Boolean        @default(false)
-  Promotions    Promotions?    @relation(fields: [promotionId], references: [id])
-  User          User           @relation(fields: [userId], references: [id])
-  notifications Notification[]
+  id                 Int                  @id @default(autoincrement())
+  createdAt          DateTime             @default(now())
+  isRead             Boolean              @default(false)
+  user_id            Int
+  status             BookingsStatus       @default(PENDING)
+  User               User                 @relation(fields: [user_id], references: [id])
+  ReservationDetails ReservationDetails[]
 }
 
-model Notification {
-  id            Int              @id @default(autoincrement())
-  title         String
-  message       String
-  isRead        Boolean          @default(false)
-  createdAt     DateTime         @default(now())
-  email         String
-  userImage     String?
-  userId        Int
-  user          User             @relation(fields: [userId], references: [id])
-  reservationId Int?
-  reservation   Reservation?     @relation(fields: [reservationId], references: [id])
-  type          NotificationType
-}
-
-enum NotificationType {
-  CREATED
-  CONFIRMED
-  CANCELLED
-}
-
-model Comments {
-  id         Int       @id @default(autoincrement())
-  comments   String
-  bedroomsId Int?
-  content    String
-  createdAt  DateTime  @default(now())
-  rating     Int       @default(0)
-  updatedAt  DateTime  @updatedAt
-  userId     Int
-  Bedrooms   Bedrooms? @relation(fields: [bedroomsId], references: [id])
-  User       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Events {
-  id         Int      @id @default(autoincrement())
-  nameEvents String
-  date       DateTime
-  hours      DateTime
-  location   String
-}
-
-model testimonials {
-  id         Int       @id @default(autoincrement())
-  name       String
-  avatar     String
-  comment    String
-  location   String
-  rating     Int
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  bedroomId  Int?
-  userId     Int?
-  isApproved Boolean   @default(false)
-  Bedrooms   Bedrooms? @relation(fields: [bedroomId], references: [id])
-  User       User?     @relation(fields: [userId], references: [id])
-
-  @@map("testimonials")
-}
-
-model historicReservations {
-  id          Int         @id @default(autoincrement())
-  bookingId   Int
-  events      EventStatus
-  description String
-  date        DateTime
-}
-
-model Services {
-  id          String             @id @default(uuid())
-  nameService String
-  description String
-  price       Int
-  bookings    bookingsServices[]
-}
-
-model Seasons {
-  id         Int          @id @default(autoincrement())
-  nameSeason String
-  dateStart  DateTime
-  dateEnd    DateTime
-  Bedrooms   Bedrooms[]
-  Promotions Promotions[]
-}
-
-model bookingsServices {
-  id         String    @id @default(uuid())
-  bookingId  Int
-  serviceId  Int
-  price      Int
-  servicesId String?
-  services   Services? @relation(fields: [servicesId], references: [id])
-}
-
-model BookingsDetails {
-  id           Int        @id @default(autoincrement())
-  bookingId    Int
+model BedroomImages {
+  id           Int      @id @default(autoincrement())
   bedroomId    Int
-  price        Int
-  dateStart    DateTime
-  dateEnd      DateTime
-  promotionId  Int
-  status       Status
-  created_at   DateTime   @default(now())
-  bookingsId   Int
-  bedroomsId   Int
-  promotionsId Int
-  bedrooms     Bedrooms   @relation(fields: [bedroomsId], references: [id])
-  promotions   Promotions @relation(fields: [promotionsId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  fileName     String
+  mimeType     String
+  imageContent String?
+  bedroom      Bedroom  @relation(fields: [bedroomId], references: [id])
+}
+
+model TypeBedrooms {
+  id          Int       @id @default(autoincrement())
+  nameType    String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Bedroom     Bedroom[]
+}
+
+model UserImage {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  image  String
+  User   User   @relation(fields: [userId], references: [id])
+}
+
+model Promotions {
+  id                 Int                  @id @default(autoincrement())
+  codePromotions     String
+  porcentageDescuent Int
+  dateStart          DateTime
+  dateEnd            DateTime
+  description        String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  seasonId           Int
+  BedroomsPromotion  BedroomsPromotion[]
+  seasons            Season               @relation(fields: [seasonId], references: [id])
+  ReservationDetails ReservationDetails[]
 }
 
 model PasswordResetToken {
@@ -165,114 +98,97 @@ model PasswordResetToken {
   @@index([userId])
 }
 
-model Invoce {
-  id            Int             @id @default(autoincrement())
-  clientId      Int
-  date          DateTime
-  invoceDetails invoceDetails[]
+model ReservationDetails {
+  id             Int         @id @default(autoincrement())
+  reservation_id Int
+  price          Int
+  dateStart      DateTime
+  dateEnd        DateTime
+  promotion_id   Int?
+  status         Status
+  created_at     DateTime    @default(now())
+  bedrooms_id    Int
+  guestQuantity  Int
+  Bedrooms       Bedroom     @relation(fields: [bedrooms_id], references: [id])
+  Promotions     Promotions? @relation(fields: [promotion_id], references: [id])
+  Reservation    Reservation @relation(fields: [reservation_id], references: [id])
 }
 
-model invoceDetails {
-  id       Int    @id @default(autoincrement())
-  invoceId Int
-  item     String
-  price    Int
-  amount   Int
-  invoce   Invoce @relation(fields: [invoceId], references: [id])
+model Testimonial {
+  id         Int      @id @default(autoincrement())
+  name       String
+  avatar     String
+  comment    String
+  location   String
+  rating     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  bedroomId  Int?
+  userId     Int?
+  isApproved Boolean  @default(false)
+  Bedrooms   Bedroom? @relation(fields: [bedroomId], references: [id])
+  User       User?    @relation(fields: [userId], references: [id])
 }
 
-model UserImage {
-  id     Int    @id @default(autoincrement())
-  userId Int    @unique
-  image  String
-  User   User   @relation(fields: [userId], references: [id])
-}
-
-model BedroomsPromotions {
-  id          Int        @id @default(autoincrement())
-  bedroomId   Int
-  promotionId Int
-  Bedrooms    Bedrooms   @relation(fields: [bedroomId], references: [id])
-  Promotions  Promotions @relation(fields: [promotionId], references: [id])
-
-  @@unique([bedroomId, promotionId])
-}
-
-model Promotions {
+model Bedroom {
   id                 Int                  @id @default(autoincrement())
-  codePromotions     String
-  porcentageDescuent Int
-  dateStart          DateTime
-  dateEnd            DateTime
-  description        String
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime
-  seasonId           Int
-  BedroomsPromotions BedroomsPromotions[]
-  bookingsDetails    BookingsDetails[]
-  Seasons            Seasons              @relation(fields: [seasonId], references: [id])
-  Reservation        Reservation[]
-}
-
-model Bedrooms {
-  id                 Int                  @id @default(autoincrement())
-  typeBedroom        String
   description        String
   lowSeasonPrice     Int
   highSeasonPrice    Int
   status             Boolean
   numberBedroom      Int
-  seasonsId          Int
+  seasonsId          Int?
   amenities          String[]
   capacity           Int
   createdAt          DateTime             @default(now())
   image              String
   updatedAt          DateTime
   slug               String               @unique
-  BedroomImages      BedroomImages[]
-  Seasons            Seasons              @relation(fields: [seasonsId], references: [id], onDelete: Cascade)
-  BedroomsPromotions BedroomsPromotions[]
-  bookingsDetails    BookingsDetails[]
-  comments           Comments[]
-  testimonials       testimonials[]
+  typeBedroomId      Int?
+  Season             Season?              @relation(fields: [seasonsId], references: [id])
+  TypeBedrooms       TypeBedrooms?        @relation(fields: [typeBedroomId], references: [id])
+  galleryImages      BedroomImages[]
+  BedroomsPromotion  BedroomsPromotion[]
+  ReservationDetails ReservationDetails[]
+  Testimonial        Testimonial[]
 }
 
-model User {
-  id                 Int                 @id @default(autoincrement())
-  email              String              @unique
-  username           String              @unique
-  password           String
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime
-  roleName           String
-  image              String?
-  comments           Comments[]
-  PasswordResetToken PasswordResetToken?
-  Reservation        Reservation[]
-  Role               Role                @relation(fields: [roleName], references: [roleName])
-  UserImage          UserImage?
-  testimonials       testimonials[]
-  notifications      Notification[]
+model BedroomsPromotion {
+  id          Int        @id @default(autoincrement())
+  bedroomId   Int
+  promotionId Int
+  Bedroom     Bedroom    @relation(fields: [bedroomId], references: [id])
+  Promotions  Promotions @relation(fields: [promotionId], references: [id])
+
+  @@unique([bedroomId, promotionId])
 }
 
-model BedroomImages {
-  id           Int      @id @default(autoincrement())
-  bedroomId    Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime
-  fileName     String
-  mimeType     String
-  imageContent String?
-  Bedrooms     Bedrooms @relation(fields: [bedroomId], references: [id])
+model InvoceDetail {
+  id       Int     @id @default(autoincrement())
+  invoceId Int
+  item     String
+  price    Int
+  amount   Int
+  Invoice  Invoice @relation(fields: [invoceId], references: [id])
+}
+
+model Invoice {
+  id           Int            @id @default(autoincrement())
+  clientId     Int
+  date         DateTime
+  InvoceDetail InvoceDetail[]
+}
+
+model Season {
+  id         Int          @id @default(autoincrement())
+  dateStart  DateTime
+  dateEnd    DateTime
+  nameSeason SeasonType   @default(BAJA)
+  Bedroom    Bedroom[]
+  Promotions Promotions[]
 }
 
 enum BookingsStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
-
-enum EventStatus {
   PENDING
   CONFIRMED
   CANCELLED
@@ -282,4 +198,9 @@ enum Status {
   PENDING
   CONFIRMED
   CANCELLED
+}
+
+enum SeasonType {
+  ALTA
+  BAJA
 }

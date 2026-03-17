@@ -1,15 +1,16 @@
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Eye, MapPin } from 'lucide-react'; // Eliminamos Percent
+import {
+  Calendar,
+  MapPin,
+  TicketPercent,
+  ArrowRight,
+  BedDouble
+} from 'lucide-react';
 import Link from 'next/link';
 
 interface PromotionRoomCardProps {
@@ -27,83 +28,91 @@ interface PromotionRoomCardProps {
         type: string;
         number: string;
         typeBedroom: string;
+        image: string;
       };
     }>;
   };
 }
 
 export function PromotionRoomCard({ promotion }: PromotionRoomCardProps) {
-  const bedroom = promotion.BedroomsPromotions[0]?.bedroom;
+  const bedroomData = promotion.BedroomsPromotions[0]?.bedroom;
 
-  if (!bedroom) {
+  if (!bedroomData) {
     return null;
   }
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
-
-  const now = new Date();
-  const isActive =
-    now >= new Date(promotion.dateStart) && now <= new Date(promotion.dateEnd);
+  const isActive = new Date() <= new Date(promotion.dateEnd);
 
   return (
-    <Card className="transition-shadow hover:shadow-md">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">{promotion.codePromotions}</CardTitle>
-          <Badge variant={isActive ? 'success' : 'inactive'}>
-            {isActive ? 'Activa' : 'Inactiva'}
+    <Card className="group overflow-hidden border-none shadow-lg transition-all hover:shadow-2xl bg-white dark:bg-slate-800">
+      <div className="relative h-56 w-full overflow-hidden">
+        <Image
+          src={bedroomData.image || '/luxury-hotel-room.png'}
+          alt={`Habitación ${bedroomData.number}`}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+
+        <div className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full bg-orange-600 px-3 py-1.5 text-white shadow-xl">
+          <TicketPercent className="h-4 w-4" />
+          <span className="text-sm font-black">
+            {promotion.porcentageDescuent}% OFF
+          </span>
+        </div>
+
+        <div className="absolute top-4 right-4">
+          <Badge
+            className={
+              isActive ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white'
+            }
+          >
+            {isActive ? 'Oferta Activa' : 'Finalizada'}
           </Badge>
         </div>
-        <CardDescription>Promoción para habitación específica</CardDescription>
+      </div>
+
+      <CardHeader className="pb-2 pt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <BedDouble className="h-5 w-5 text-orange-600" />
+            <CardTitle className="text-xl font-bold text-slate-800 dark:text-slate-100">
+              {bedroomData.typeBedroom}
+            </CardTitle>
+          </div>
+          <Badge variant="outline" className="text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600">
+            #{bedroomData.number}
+          </Badge>
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Información de la habitación */}
-        <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-blue-600" />
-          <div className="flex items-center gap-2">
-            <span className="font-medium">
-              {bedroom.name} - {bedroom.type} #{bedroom.number}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <MapPin className="h-4 w-4 text-orange-500" />
+            <span className="truncate">{bedroomData.name}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <Calendar className="h-4 w-4 text-slate-400" />
+            <span>
+              Vence: {new Date(promotion.dateEnd).toLocaleDateString('es-ES')}
             </span>
-            <Badge className="text-xs" variant="info">
-              ID: {bedroom.id}
-            </Badge>
           </div>
         </div>
 
-        {/* Descuento */}
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-green-600">
-            {promotion.porcentageDescuent}% de descuento
-          </span>
-        </div>
-
-        {/* Fechas */}
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Calendar className="h-4 w-4" />
-          <span className="text-sm">
-            {formatDate(promotion.dateStart)} - {formatDate(promotion.dateEnd)}
-          </span>
-        </div>
-
-        {/* Descripción */}
-        {promotion.description && (
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            {promotion.description}
+        <div className="rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 p-2 text-center">
+          <p className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">
+            Código de Descuento
           </p>
-        )}
+          <p className="font-mono font-black tracking-widest text-orange-600">
+            {promotion.codePromotions}
+          </p>
+        </div>
 
-        {/* Botón para ver detalles */}
-        <Link href={`/ofertas/${promotion.id}`}>
-          <Button className="w-full" variant="save">
-            <Eye className="mr-2 h-4 w-4" />
-            Ver habitación específica
+        <Link href={`/ofertas/${promotion.id}`} className="block">
+          <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold transition-all">
+            VER DISPONIBILIDAD
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
       </CardContent>

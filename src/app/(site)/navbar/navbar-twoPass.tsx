@@ -9,11 +9,12 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import UserAccountnav from '@/app/(site)/navbar/usersComponents/UserAccountnav';
 import { Session } from 'next-auth';
+import { ModeToggle } from '@/components/mode-toggle';
 
 const navItems = [
   { path: '/', text: 'Inicio' },
-  { path: '/ofertas', text: 'Ofertas' },
-  { path: '/habitaciones', text: 'Habitaciones' },
+  // { path: '/ofertas', text: 'Ofertas' },
+  { path: '/bedrooms', text: 'Habitaciones' },
   { path: '/reservaciones', text: 'Reservaciones' }
 ];
 
@@ -25,12 +26,12 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white p-4">
+    <nav className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-700 p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="https://www.facebook.com/hotelito.madrono">
           <Image
-            alt="Hotel Madroño" // CORREGIDO (Línea 33)
-            height={55} // CORREGIDO (Línea 35)
+            alt="Hotel Madroño"
+            height={55}
             src="/hotel madroño.png"
             width={55}
           />
@@ -44,7 +45,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
         </button>
 
         <div className="hidden md:flex items-center gap-x-7">
-          <ul className="flex gap-x-6 text-black">
+          <ul className="flex gap-x-6 text-black dark:text-gray-100">
             {navItems.map((navItem) => (
               <li key={navItem.path}>
                 <ActiveLink {...navItem} />
@@ -52,7 +53,8 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
             ))}
           </ul>
 
-          <div className="flex gap-x-6">
+          <div className="flex items-center gap-x-6">
+            <ModeToggle />
             {session ? (
               <UserAccountnav />
             ) : (
@@ -69,14 +71,14 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
 
       {isMenuOpen && (
         <div className="md:hidden mt-4">
-          <ul className="flex flex-col gap-y-4 text-black">
+          <ul className="flex flex-col gap-y-4 text-black dark:text-gray-100">
             {navItems.map((navItem) => (
               <li key={navItem.path}>
                 <ActiveLink {...navItem} />
               </li>
             ))}
           </ul>
-          <div className="mt-4">
+          <div className="mt-4 flex items-center justify-between">
             {session ? (
               <UserAccountnav />
             ) : (
@@ -87,6 +89,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
                 Iniciar sesión
               </Link>
             )}
+            <ModeToggle />
           </div>
         </div>
       )}

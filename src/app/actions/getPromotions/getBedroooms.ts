@@ -4,12 +4,11 @@ import prisma from '@/lib/db';
 
 export async function getBedrooms() {
   try {
-    const bedrooms = await prisma.bedrooms.findMany();
+    const bedrooms = await prisma.bedroom.findMany();
 
-    // Mapear los datos de la base de datos al formato que espera el componente
     const formattedBedrooms = bedrooms.map((bedroom) => ({
       id: bedroom.id,
-      type: bedroom.typeBedroom,
+      type: bedroom.typeBedroomId,
       description: bedroom.description || ''
     }));
 

@@ -10,7 +10,7 @@ export default async function TestimonialsSection() {
   const testimonials: Testimonial[] = source.map((testimonial) => ({
     id: testimonial.id,
     name: testimonial.name,
-    avatar: testimonial.avatar,
+    avatar: testimonial.User?.image || testimonial.avatar,
     rating: testimonial.rating,
     comment: testimonial.comment,
     location: testimonial.location,

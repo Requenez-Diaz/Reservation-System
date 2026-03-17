@@ -5,24 +5,26 @@ import prisma from '@/lib/db';
 export async function getPromotions() {
   try {
     const promotions = await prisma.promotions.findMany({
-      where: {
-        dateEnd: { gte: new Date() }
-      },
       include: {
-        Seasons: true,
-
-        BedroomsPromotions: {
+        seasons: true,
+        BedroomsPromotion: {
           include: {
-            Bedrooms: true,
-            Promotions: true
+            Bedroom: {
+              include: {
+                galleryImages: true,
+                TypeBedrooms: true
+              }
+            }
           }
         }
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     });
-    console.log('Promotions:', promotions);
-    return { success: true, data: promotions };
+
+    const safeData = JSON.parse(JSON.stringify(promotions));
+    return { success: true, data: safeData };
   } catch (error) {
-    throw new Error('Error fetching promotions');
-    return [];
+    console.error('Error al obtener promociones:', error);
+    return { success: false, data: [] };
   }
 }

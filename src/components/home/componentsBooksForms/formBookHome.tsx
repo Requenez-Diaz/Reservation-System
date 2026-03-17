@@ -1,69 +1,76 @@
 'use client';
 
 import * as React from 'react';
-import { Users, Calendar, CheckCircle2 } from 'lucide-react';
+import { Users, Calendar, Bed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Label } from '@/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-// Suponiendo que esta es tu acción de servidor
-import { getAllBedrooms } from '@/app/actions/get-bedrooms';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import type { Bedroom } from '../roomsType';
 import { useToast } from '@/components/ui/use-toast';
 import type { DateRange } from 'react-day-picker';
+import { useRouter } from 'next/navigation';
+import { getAllBedrooms } from '@/app/actions/get-bedrooms';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 
-interface BedroomSearchFormProps {
-  onSearch: (_results: Bedroom[]) => void;
-  setIsLoading: (_isLoading: boolean) => void;
-  isLoading: boolean;
+interface Booking {
+  dateStart: string;
+  dateEnd?: string;
+  status: string;
+  Reservation?: {
+    status: string;
+  };
 }
 
-const ROOM_STATUS = [
-  { value: 'all', label: 'Todas' },
-  { value: 'available', label: 'Disponible' }
-] as const;
+interface Bedroom {
+  id: string;
+  name: string;
+  capacity: number;
+  status: boolean;
+  lowSeasonPrice: number;
+  highSeasonPrice: number;
+  ReservationDetails?: Booking[];
+  Seasons?: {
+    dateStart: string;
+    dateEnd: string;
+    nameSeason: string;
+  } | null;
+}
 
-export default function BedroomSearchForm({
-  onSearch,
-  setIsLoading,
-  isLoading // El linter lo detecta como no usado, aunque se usa en el return
-}: BedroomSearchFormProps) {
-  // CORREGIDO: Renombrar para evitar el error no-unused-vars (Línea 35 y 36)
-  const _onSearch = onSearch;
-  const _isLoading = isLoading;
-
-  const [status, setStatus] = React.useState('all');
+export function BedroomSearchForm() {
   const [guests, setGuests] = React.useState(1);
+  const [roomCount, setRoomCount] = React.useState(1);
+  const [guestDistribution, setGuestDistribution] = React.useState<number[]>([
+    1
+  ]);
+  const [showDistributionDialog, setShowDistributionDialog] =
+    React.useState(false);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  // EFECTO 1: Carga inicial de habitaciones Y precarga de datos de localStorage
+  const { toast } = useToast();
+  const router = useRouter();
+
   React.useEffect(() => {
     const fetchBedroomsAndLoadState = async () => {
-      // Cargar el estado guardado (Fechas y Huéspedes)
       try {
         const savedDates = localStorage.getItem('selectedDates');
         const savedGuests = localStorage.getItem('selectedGuests');
+        const savedRoomCount = localStorage.getItem('selectedRoomCount');
+        const savedDistribution = localStorage.getItem('guestDistribution');
 
         if (savedDates) {
           const { from, to } = JSON.parse(savedDates);
@@ -76,31 +83,36 @@ export default function BedroomSearchForm({
         }
 
         if (savedGuests) {
-          const numGuests = Number.parseInt(savedGuests, 10);
-          if (!Number.isNaN(numGuests) && numGuests >= 1) {
-            setGuests(numGuests);
-          }
+          setGuests(Number.parseInt(savedGuests, 10) || 1);
         }
-      } catch (error) {
-        console.error('Error al cargar datos de localStorage:', error);
-      }
+        if (savedRoomCount) {
+          setRoomCount(Number.parseInt(savedRoomCount, 10) || 1);
+        }
+        if (savedDistribution) {
+          setGuestDistribution(JSON.parse(savedDistribution));
+        }
 
-      // Cargar las habitaciones
-      try {
         const response = await getAllBedrooms();
-        if (!Array.isArray(response) || response.length === 0) {
-          console.error('API response is not an array or is empty');
-          return;
-        }
-        setBedrooms(response as Bedroom[]);
+        setBedrooms(response as unknown as Bedroom[]);
       } catch (error) {
-        console.error('Error fetching bedrooms:', error);
+        console.error('Error al inicializar:', error);
       }
     };
-    fetchBedroomsAndLoadState();
-  }, []);
 
-  // EFECTO 2: Guarda Fechas y Huéspedes en localStorage cada vez que cambian
+    fetchBedroomsAndLoadState();
+  }, [toast]);
+
+  React.useEffect(() => {
+    if (guestDistribution.length !== roomCount) {
+      const avgGuests = Math.floor(guests / roomCount);
+      const remainder = guests % roomCount;
+      const newDistribution = Array(roomCount)
+        .fill(avgGuests)
+        .map((val, idx) => (idx < remainder ? val + 1 : val));
+      setGuestDistribution(newDistribution);
+    }
+  }, [roomCount, guests, guestDistribution.length]);
+
   React.useEffect(() => {
     if (dateRange?.from) {
       const dateData = {
@@ -109,170 +121,333 @@ export default function BedroomSearchForm({
       };
       localStorage.setItem('selectedDates', JSON.stringify(dateData));
       localStorage.setItem('selectedGuests', guests.toString());
-      localStorage.setItem('fromSearch', 'true'); // Flag para el flujo
+      localStorage.setItem('selectedRoomCount', roomCount.toString());
+      localStorage.setItem(
+        'guestDistribution',
+        JSON.stringify(guestDistribution)
+      );
+      localStorage.setItem('fromSearch', 'true');
     }
-  }, [dateRange, guests]);
+  }, [dateRange, guests, roomCount, guestDistribution]);
+
+  const updateGuestDistribution = (roomIndex: number, count: number) => {
+    const newDistribution = [...guestDistribution];
+    newDistribution[roomIndex] = Math.max(1, count);
+    setGuestDistribution(newDistribution);
+  };
+
+  const getTotalFromDistribution = () => {
+    return guestDistribution.reduce((sum, count) => sum + count, 0);
+  };
+
+  const applyDistribution = () => {
+    const total = getTotalFromDistribution();
+    setGuests(total);
+    setShowDistributionDialog(false);
+    toast({
+      title: 'Distribución aplicada',
+      description: `Se distribuyeron ${total} huésped(es) en ${roomCount} habitación(es).`
+    });
+  };
 
   const handleSearch = async () => {
-    // ... (Lógica de validación y filtrado omitida por ser la misma)
-    if (dateRange?.from && dateRange.from < new Date()) {
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    if (!dateRange?.from) {
+      setIsLoading(false);
+      toast({
+        description: 'Por favor selecciona un rango de fechas.',
+        title: 'Fechas faltantes',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (dateRange.from < new Date()) {
+      setIsLoading(false);
       toast({
         description: 'No puedes buscar habitaciones en fechas anteriores.',
         title: 'Fecha inválida',
         variant: 'destructive'
       });
-      return _onSearch([]);
+      return;
     }
 
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // --- LÓGICA DE BÚSQUEDA MEJORADA (Normalización a Medianoche) ---
+    const searchStart = new Date(dateRange.from);
+    searchStart.setHours(0, 0, 0, 0);
 
-    // Lógica de filtrado de habitaciones...
-    const results = bedrooms.filter((bedroom) => {
-      const statusMatch =
-        status === 'all' || (status === 'available' && bedroom.status === true);
-      const capacityMatch = bedroom.capacity >= guests;
+    const searchEnd = new Date(dateRange.to || dateRange.from);
+    searchEnd.setHours(0, 0, 0, 0);
+
+    // 1. Encontrar TODAS las habitaciones disponibles en el rango
+    const availableRoomsInRange = bedrooms.filter((bedroom) => {
+      // Un dormitorio está disponible si su status es true (no está en mantenimiento/fuera de servicio)
+      // Y no tiene reservas confirmadas o pendientes que se solapen con el rango buscado
+      const statusMatch = bedroom.status === true;
+
       let dateMatch = true;
-      // Lógica de conflicto de fechas...
-      if (
-        dateRange?.from &&
-        bedroom.bookingsDetails &&
-        bedroom.bookingsDetails.length > 0
-      ) {
-        const searchStart = dateRange.from;
-        const searchEnd = dateRange.to || dateRange.from;
-        const hasConflict = bedroom.bookingsDetails.some((booking) => {
-          const bookingStart = new Date(booking.dateStart);
-          const bookingEnd = booking.dateEnd
-            ? new Date(booking.dateEnd)
-            : bookingStart;
-          return (
-            (searchStart >= bookingStart && searchStart <= bookingEnd) ||
-            (searchEnd >= bookingStart && searchEnd <= bookingEnd) ||
-            (searchStart <= bookingStart && searchEnd >= bookingEnd)
-          );
+      if (bedroom.ReservationDetails && bedroom.ReservationDetails.length > 0) {
+        const hasConflict = bedroom.ReservationDetails.some((booking) => {
+          // Extraemos YYYY-MM-DD para evitar el desfase por zona horaria de UTC a Local
+          const parseSafeDate = (d: string | Date) => {
+            const iso = typeof d === 'string' ? d : new Date(d).toISOString();
+            const [y, m, day] = iso.split('T')[0].split('-').map(Number);
+            return new Date(y, m - 1, day, 0, 0, 0, 0);
+          };
+
+          const bookingStart = parseSafeDate(booking.dateStart);
+          const bookingEnd = booking.dateEnd ? parseSafeDate(booking.dateEnd) : parseSafeDate(booking.dateStart);
+
+          // Solapamiento total o parcial (lógica exclusiva [start, end))
+          const isOverlapping = searchStart < bookingEnd && searchEnd > bookingStart;
+
+          // Solo hay conflicto si se solapa Y la reserva no está CANCELADA
+          // Verificamos tanto el detalle como la cabecera (Reservation) porque el admin puede cancelar la cabecera
+          const isNotCancelled = booking.status !== 'CANCELLED' && booking.Reservation?.status !== 'CANCELLED';
+          return isOverlapping && isNotCancelled;
         });
         dateMatch = !hasConflict;
       }
-      return statusMatch && capacityMatch && dateMatch;
+      return statusMatch && dateMatch;
     });
 
-    _onSearch(results);
+    // 2. Intentar cumplir con la distribución solicitada priorizando las más baratas
+    const usedRoomIds = new Set<string>();
+    const selectedRooms: Bedroom[] = [];
+
+    // Función para obtener el precio actual de una habitación
+    const getActivePrice = (bedroom: Bedroom) => {
+      const today = new Date();
+      if (bedroom.Seasons) {
+        const start = new Date(bedroom.Seasons.dateStart);
+        const end = new Date(bedroom.Seasons.dateEnd);
+        if (today >= start && today <= end) {
+          return bedroom.Seasons.nameSeason.toLowerCase().includes('alta')
+            ? bedroom.highSeasonPrice
+            : bedroom.lowSeasonPrice;
+        }
+      }
+      return bedroom.lowSeasonPrice;
+    };
+
+    for (const guestsNeeded of guestDistribution) {
+      const candidates = availableRoomsInRange
+        .filter((r) => !usedRoomIds.has(r.id) && r.capacity >= guestsNeeded)
+        .sort((a, b) => getActivePrice(a) - getActivePrice(b));
+
+      if (candidates.length > 0) {
+        const bestCandidate = candidates[0];
+        selectedRooms.push(bestCandidate);
+        usedRoomIds.add(bestCandidate.id);
+      }
+    }
+
     setIsLoading(false);
+
+    // Guardamos TODAS las disponibles para que RoomSelection las muestre
+    // Pero mantenemos selectedRooms para saber cuáles sugirió el sistema inicialmente si quisiéramos
+    if (availableRoomsInRange.length > 0) {
+      localStorage.setItem(
+        'filteredRooms',
+        JSON.stringify(availableRoomsInRange)
+      );
+      localStorage.setItem('suggestedRooms', JSON.stringify(selectedRooms));
+
+      toast({
+        title: 'Búsqueda completada',
+        description: `Encontramos ${availableRoomsInRange.length} habitaciones disponibles.`
+      });
+
+      router.push('/rooms');
+    } else {
+      toast({
+        title: 'Sin disponibilidad',
+        description:
+          'No hay habitaciones disponibles para los criterios seleccionados.',
+        variant: 'destructive'
+      });
+    }
   };
 
   return (
-    <Card className="mx-auto max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <CardHeader className="text-center">
-        <CardTitle className="text-4xl font-bold tracking-tight">
-          ¿Qué quieres buscar?
-        </CardTitle>
-        <CardDescription className="text-lg">
-          Descubre el mejor lugar para ti!!
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-[1fr,auto,1fr,auto] md:items-center">
-          {/* ... Select de Estado (sin cambios) ... */}
-          <div className="relative group">
-            <CheckCircle2
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary z-10 pointer-events-none" // CORREGIDO (Línea 175)
-            />
-            <Select onValueChange={setStatus} value={status}>
-              <SelectTrigger className="pl-9 transition-all duration-200 focus:scale-[1.02] focus:shadow-md">
-                <SelectValue placeholder="Estado de habitación" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROOM_STATUS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+    <>
+      <div className="relative z-10 mx-auto max-w-6xl px-4 pt-20">
+        <div className="rounded-lg bg-white dark:bg-slate-900 dark:border dark:border-slate-700 p-6 shadow-2xl">
+          <div className="grid gap-4 md:grid-cols-[2fr,1fr,auto,auto,1fr,auto] md:items-end">
+            {/* Habitaciones */}
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700 dark:text-gray-300">Habitaciones</Label>
+              <div className="flex items-center">
+                <Button
+                  className="h-10 w-10"
+                  onClick={() => setRoomCount((prev) => Math.max(1, prev - 1))}
+                  size="icon"
+                  variant="outline"
+                >
+                  -
+                </Button>
+                <div className="flex items-center gap-2 px-4">
+                  <Bed className="h-4 w-4" />
+                  <span className="font-medium tabular-nums">{roomCount}</span>
+                </div>
+                <Button
+                  className="h-10 w-10"
+                  onClick={() => setRoomCount((prev) => prev + 1)}
+                  size="icon"
+                  variant="outline"
+                >
+                  +
+                </Button>
+              </div>
+            </div>
 
-          {/* Guests selector (sin cambios) */}
-          <div className="flex items-center">
-            <Button
-              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent" // CORREGIDO (Línea 193)
-              onClick={() => setGuests((prev) => Math.max(1, prev - 1))} // CORREGIDO (Línea 194)
-              size="icon" // CORREGIDO (Línea 195)
-              variant="outline"
-            >
-              -
+            {/* Huéspedes */}
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700 dark:text-gray-300">Huéspedes</Label>
+              <div className="flex items-center">
+                <Button
+                  className="h-10 w-10"
+                  onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
+                  size="icon"
+                  variant="outline"
+                >
+                  -
+                </Button>
+                <div className="flex items-center gap-2 px-4">
+                  <Users className="h-4 w-4" />
+                  <span className="font-medium tabular-nums">{guests}</span>
+                </div>
+                <Button
+                  className="h-10 w-10"
+                  onClick={() => setGuests((prev) => prev + 1)}
+                  size="icon"
+                  variant="outline"
+                >
+                  +
+                </Button>
+              </div>
+              {roomCount > 1 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-2 text-xs bg-transparent"
+                  onClick={() => setShowDistributionDialog(true)}
+                >
+                  Distribuir huéspedes
+                </Button>
+              )}
+            </div>
+
+            {/* Calendario */}
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700 dark:text-gray-300">Fechas</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    className="w-full pl-9 justify-start text-left font-normal relative bg-transparent"
+                    variant="outline"
+                  >
+                    <Calendar className="absolute left-3 h-4 w-4 text-muted-foreground" />
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, 'dd/MM/yy', { locale: es })} -{' '}
+                          {format(dateRange.to, 'dd/MM/yy', { locale: es })}
+                        </>
+                      ) : (
+                        format(dateRange.from, 'dd/MM/yyyy', { locale: es })
+                      )
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Selecciona fechas
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-auto p-0">
+                  <CalendarComponent
+                    initialFocus
+                    locale={es}
+                    mode="range"
+                    numberOfMonths={2}
+                    onSelect={setDateRange}
+                    selected={dateRange}
+                    disabled={(date) => date < new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Botón Buscar */}
+            <Button onClick={handleSearch} disabled={isLoading} variant="save">
+              {isLoading ? 'Buscando...' : 'Ver disponibilidad'}
             </Button>
-            <div className="flex items-center gap-2 px-4 transition-all duration-300">
-              <Users className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-              <span className="font-medium tabular-nums transition-all duration-200">
-                {guests}
+          </div>
+        </div>
+      </div>
+
+      {/* Dialogo de Distribución */}
+      <Dialog
+        open={showDistributionDialog}
+        onOpenChange={setShowDistributionDialog}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Distribuir Huéspedes</DialogTitle>
+            <DialogDescription>
+              Ajusta cuántas personas dormirán en cada habitación.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {guestDistribution.map((count, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <Label className="w-32 text-sm">Habitación {index + 1}</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="h-8 w-8 bg-transparent"
+                    onClick={() => updateGuestDistribution(index, count - 1)}
+                  >
+                    -
+                  </Button>
+                  <div className="flex items-center gap-2 w-16 justify-center">
+                    <Users className="h-4 w-4 text-gray-500" />
+                    <span className="font-medium">{count}</span>
+                  </div>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="h-8 w-8 bg-transparent"
+                    onClick={() => updateGuestDistribution(index, count + 1)}
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <div className="border-t pt-4 flex justify-between items-center">
+              <span className="text-sm font-medium">Total:</span>
+              <span className="text-lg font-bold">
+                {getTotalFromDistribution()} huéspedes
               </span>
             </div>
-            <Button
-              className="h-10 w-10 transition-all duration-200 hover:scale-110 active:scale-95 bg-transparent" // CORREGIDO (Línea 207)
-              onClick={() => setGuests((prev) => prev + 1)} // CORREGIDO (Línea 208)
-              size="icon" // CORREGIDO (Línea 209)
-              variant="outline"
-            >
-              +
-            </Button>
           </div>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                className="pl-9 justify-start text-left font-normal transition-all duration-200 hover:scale-[1.02] hover:shadow-md relative bg-transparent" // CORREGIDO (Línea 219)
-                variant="outline"
-              >
-                <Calendar className="absolute left-3 h-4 w-4 text-muted-foreground" />
-                {dateRange?.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, 'dd/MM/yyyy', { locale: es })} -{' '}
-                      {format(dateRange.to, 'dd/MM/yyyy', { locale: es })}
-                    </>
-                  ) : (
-                    format(dateRange.from, 'dd/MM/yyyy', { locale: es })
-                  )
-                ) : (
-                  <span className="text-muted-foreground">
-                    Selecciona rango de fechas
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              align="start" // CORREGIDO (Línea 240)
-              className="w-auto p-0 animate-in fade-in slide-in-from-top-2 duration-200"
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDistributionDialog(false)}
             >
-              <CalendarComponent
-                initialFocus // CORREGIDO (Línea 245)
-                locale={es} // CORREGIDO (Línea 246)
-                mode="range" // CORREGIDO (Línea 247)
-                numberOfMonths={2} // CORREGIDO (Línea 248)
-                onSelect={setDateRange}
-                selected={dateRange}
-              />
-            </PopoverContent>
-          </Popover>
-
-          <Button
-            className="relative overflow-hidden transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100" // CORREGIDO (Línea 256)
-            disabled={isLoading} // CORREGIDO (Línea 257)
-            onClick={handleSearch}
-            variant="save"
-          >
-            {isLoading ? (
-              <div className="flex items-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Buscando...
-              </div>
-            ) : (
-              'Buscar'
-            )}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+              Cancelar
+            </Button>
+            <Button onClick={applyDistribution} variant="save">
+              Aplicar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

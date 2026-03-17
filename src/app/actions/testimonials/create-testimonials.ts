@@ -5,12 +5,18 @@ import { revalidatePath } from 'next/cache';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
 
+/**
+ * CREAR TESTIMONIAL
+ */
 export const createTestimonial = async (formData: FormData) => {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user || !session.user.id) {
-      throw new Error('Usuario no autenticado');
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'Debes iniciar sesión para publicar un testimonio'
+      };
     }
 
     const userId = session.user.id;
@@ -20,41 +26,30 @@ export const createTestimonial = async (formData: FormData) => {
     const comment = formData.get('comment') as string;
     const location = formData.get('location') as string;
 
-    const missingFields: string[] = [];
-    if (!name) {
-      missingFields.push('name');
-    }
-    if (!rating) {
-      missingFields.push('rating');
-    }
-    if (!comment) {
-      missingFields.push('comment');
-    }
-    if (!location) {
-      missingFields.push('location');
+    if (!name || !rating || !comment || !location) {
+      return { success: false, error: 'Todos los campos son obligatorios' };
     }
 
-    if (missingFields.length > 0) {
-      throw new Error(
-        `Campos requeridos faltantes: ${missingFields.join(', ')}`
-      );
-    }
-
-    const ratingNumber = Number.parseInt(rating);
+    const ratingNumber = Number.parseInt(rating, 10);
     if (isNaN(ratingNumber) || ratingNumber < 1 || ratingNumber > 5) {
-      throw new Error('La calificación debe ser un número entre 1 y 5');
+      return {
+        success: false,
+        error: 'La calificación debe ser un número entre 1 y 5'
+      };
     }
 
-    const testimonial = await prisma.testimonials.create({
+    const testimonial = await prisma.testimonial.create({
       data: {
         name: name.trim(),
         rating: ratingNumber,
         comment: comment.trim(),
         location: location.trim(),
-        avatar: '/placeholder.svg?height=40&width=40',
+        avatar: session.user.image || '/placeholder.svg?height=40&width=40',
         isApproved: false,
+        updatedAt: new Date(),
         User: {
-          connect: { id: Number.parseInt(userId) }
+          // Convertimos a Number explícitamente para evitar el error de tipado
+          connect: { id: Number(userId) }
         }
       },
       include: {
@@ -73,23 +68,30 @@ export const createTestimonial = async (formData: FormData) => {
     return {
       success: true,
       testimonial,
-      message: 'Testimonial creado exitosamente'
+      message: 'Testimonio enviado exitosamente. Pendiente de aprobación.'
     };
   } catch (error) {
     console.error('Error creating testimonial:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Error desconocido'
+      error: error instanceof Error ? error.message : 'Error inesperado'
     };
   }
 };
 
-// Función para obtener habitaciones
+/**
+ * OBTENER HABITACIONES
+ */
 export const getBedrooms = async () => {
   try {
-    const bedrooms = await prisma.bedrooms.findMany({
-      select: { id: true, typeBedroom: true, description: true },
-      orderBy: { typeBedroom: 'asc' }
+    const bedrooms = await prisma.bedroom.findMany({
+      select: {
+        id: true,
+        TypeBedrooms: true,
+        description: true,
+        numberBedroom: true
+      },
+      orderBy: { numberBedroom: 'asc' }
     });
 
     return { success: true, bedrooms };
@@ -99,18 +101,22 @@ export const getBedrooms = async () => {
   }
 };
 
-// Función para obtener el usuario actual
+/**
+ * OBTENER USUARIO ACTUAL
+ */
 export const getCurrentUser = async () => {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user || !session.user.id) {
+    if (!session?.user?.id) {
       return { success: false, error: 'Usuario no autenticado' };
     }
 
+    const userId = session.user.id;
+
     const user = await prisma.user.findUnique({
-      where: { id: Number.parseInt(session.user.id) },
-      select: { id: true, username: true, email: true }
+      where: { id: Number(userId) },
+      select: { id: true, username: true, email: true, image: true }
     });
 
     if (!user) {
@@ -124,14 +130,25 @@ export const getCurrentUser = async () => {
   }
 };
 
-// Obtener testimoniales
+/**
+ * OBTENER TESTIMONIALES APROBADOS
+ */
 export const getTestimonials = async (limit?: number) => {
   try {
-    const testimonials = await prisma.testimonials.findMany({
+    const testimonials = await prisma.testimonial.findMany({
       where: { isApproved: true },
       orderBy: { createdAt: 'desc' },
       ...(limit && { take: limit }),
-      include: { User: { select: { id: true, username: true, email: true } } }
+      include: {
+        User: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            image: true
+          }
+        }
+      }
     });
 
     return { success: true, testimonials };
@@ -141,13 +158,27 @@ export const getTestimonials = async (limit?: number) => {
   }
 };
 
-// Obtener testimoniales de un usuario específico
-export const getTestimonialsByUser = async (userId: number) => {
+/**
+ * OBTENER TESTIMONIALES DE UN USUARIO (CORREGIDO SIN ANY)
+ */
+export const getTestimonialsByUser = async (userId: string | number) => {
   try {
-    const testimonials = await prisma.testimonials.findMany({
-      where: { userId, isApproved: true },
+    // Definimos el ID de forma segura para TypeScript
+    const parsedId =
+      typeof userId === 'string' ? Number.parseInt(userId, 10) : userId;
+
+    if (isNaN(parsedId)) {
+      throw new Error('El ID de usuario proporcionado no es un número válido');
+    }
+
+    const testimonials = await prisma.testimonial.findMany({
+      where: {
+        userId: parsedId
+      },
       orderBy: { createdAt: 'desc' },
-      include: { User: { select: { id: true, username: true, email: true } } }
+      include: {
+        User: { select: { id: true, username: true, email: true, image: true } }
+      }
     });
 
     return { success: true, testimonials };

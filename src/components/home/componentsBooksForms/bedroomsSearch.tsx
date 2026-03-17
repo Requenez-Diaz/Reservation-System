@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 import { Bedroom } from '../roomsType';
-import BedroomSearchForm from './formBookHome';
 import SearchResults from './searchResults';
 import LoadingOverlay from './loadingOverlay';
+import { BedroomSearchForm } from './formBookHome';
 
 export default function BedroomSearch() {
   const [searchResults, setSearchResults] = React.useState<Bedroom[]>([]);

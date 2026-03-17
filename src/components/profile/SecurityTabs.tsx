@@ -55,17 +55,17 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
   };
 
   return (
-    <Card className="bg-white shadow-md rounded-xl">
+    <Card className="bg-white dark:bg-slate-900 shadow-md rounded-xl">
       <CardHeader>
         <CardTitle className={`text-2xl ${accentText}`}>
           Seguridad de la Cuenta
         </CardTitle>
-        <CardDescription className="text-gray-600">
+        <CardDescription className="text-gray-600 dark:text-gray-400">
           Configura tu contraseña y autenticación de dos factores.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className={`p-4 rounded-xl bg-gray-50`}>
+        <div className={`p-4 rounded-xl bg-gray-50 dark:bg-slate-800`}>
           <div className="flex justify-between items-center mb-4">
             <div>
               <p
@@ -169,7 +169,7 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
           )}
         </div>
 
-        <div className="flex justify-between items-center p-4 rounded-xl bg-gray-50">
+        <div className="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-slate-800">
           <div>
             <p className={`font-medium ${accentText}`}>
               Autenticación de Dos Factores (2FA)

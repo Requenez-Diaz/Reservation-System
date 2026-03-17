@@ -79,7 +79,11 @@ export default function AboutUs() {
 
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { name: 'Avimilex Requenez', role: 'Desarrollador' },
+              {
+                name: 'Avimilex Requenez Diaz',
+                role: 'Desarrollador',
+                image: '/AVIMILEX.jpeg'
+              },
               { name: 'Elliam Sanchez', role: 'Desarrollador' },
               { name: 'Sophie Chen', role: 'CTO' }
             ].map((member, idx) => (
@@ -89,7 +93,7 @@ export default function AboutUs() {
                     alt={`${member.name} - ${member.role}`}
                     className="object-cover"
                     height={160}
-                    src="https://josecamachofotografia.com/wp-content/uploads/2023/08/fotografo-hoteles-piscina-vista-frontal.jpg"
+                    src={member.image || '/placeholder-user.png'}
                     width={160}
                   />
                 </div>

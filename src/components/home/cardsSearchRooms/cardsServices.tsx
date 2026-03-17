@@ -48,16 +48,16 @@ const CardService = () => {
       {cardData.map((card, index) => (
         <Card
           key={index}
-          className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 hover:border-amber-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border-amber-200 dark:border-slate-600 hover:border-amber-300 dark:hover:border-gray-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
         >
           <CardHeader className="flex flex-col items-center text-center space-y-4 p-6">
             <div className="p-4 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
               {card.icon}
             </div>
-            <CardTitle className="text-xl font-bold text-amber-900">
+            <CardTitle className="text-xl font-bold text-amber-900 dark:text-amber-300">
               {card.title}
             </CardTitle>
-            <CardDescription className="text-amber-700 leading-relaxed">
+            <CardDescription className="text-amber-700 dark:text-amber-400 leading-relaxed">
               {card.description}
             </CardDescription>
           </CardHeader>

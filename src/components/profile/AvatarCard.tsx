@@ -35,9 +35,8 @@ export function AvatarCard({
 
   return (
     <Card
-      className={`bg-white transition-all duration-300 rounded-xl ${
-        isEditing ? 'shadow-lg shadow-blue-200' : 'shadow-md'
-      }`}
+      className={`bg-white dark:bg-slate-900 transition-all duration-300 rounded-xl ${isEditing ? 'shadow-lg shadow-blue-200 dark:shadow-blue-900' : 'shadow-md'
+        }`}
     >
       <CardHeader>
         <CardTitle
@@ -46,7 +45,7 @@ export function AvatarCard({
           <ImageIcon className={accentText + ' h-5 w-5'} />
           Foto de Perfil
         </CardTitle>
-        <CardDescription className="text-gray-600">
+        <CardDescription className="text-gray-600 dark:text-gray-400">
           Tu avatar ayuda a identificar tu cuenta en toda la aplicación.
         </CardDescription>
       </CardHeader>
@@ -54,11 +53,10 @@ export function AvatarCard({
       <CardContent className="flex flex-col items-center gap-6 py-6">
         <div className="relative group">
           <Avatar
-            className={`w-36 h-36 relative transition-all duration-300 ${
-              isEditing
+            className={`w-36 h-36 relative transition-all duration-300 ${isEditing
                 ? 'cursor-pointer ring-4 ring-blue-300 ring-offset-4 ring-offset-white hover:ring-blue-400 hover:scale-105'
                 : 'ring-2 ring-gray-200'
-            }`}
+              }`}
             onClick={onAvatarClick}
           >
             {avatarSrc ? (

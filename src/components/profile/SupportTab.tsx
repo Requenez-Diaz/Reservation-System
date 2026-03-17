@@ -7,14 +7,14 @@ import Link from 'next/link';
 
 export function SupportTab() {
     return (
-        <Card className="shadow-md border-blue-100">
+        <Card className="shadow-md border-blue-100 dark:border-slate-700 dark:bg-slate-900">
             <CardHeader>
                 <CardTitle className="text-blue-700 text-xl font-semibold">
                     Soporte y Ayuda
                 </CardTitle>
             </CardHeader>
 
-            <CardContent className="space-y-5 text-gray-700">
+            <CardContent className="space-y-5 text-gray-700 dark:text-gray-300">
                 <p>
                     ¿Tienes algún problema o duda? Nuestro equipo está disponible para ayudarte.
                 </p>
@@ -33,7 +33,7 @@ export function SupportTab() {
                     </Button>
                 </div>
 
-                <p className="text-sm text-gray-500 mt-3">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                     También puedes visitar nuestra sección de preguntas frecuentes o contactarnos directamente.
                 </p>
             </CardContent>

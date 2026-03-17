@@ -1,13 +1,12 @@
 import React from 'react';
 
 import { getAllBedrooms } from '@/app/actions/get-bedrooms';
-import OrdersRooms from '../bedrooms/ordersRooms';
 import ParentCards from '../bedrooms/parentCards';
 
 export default async function RoomInfoHome() {
   const bedroomsData = await getAllBedrooms();
   const mappedItems = bedroomsData.map((bedroom) => ({
-    typeBedroom: bedroom.typeBedroom,
+    typeBedroom: bedroom.TypeBedrooms?.nameType || '',
     description: bedroom.description,
     lowSeasonPrice: bedroom.lowSeasonPrice,
     status: bedroom.status,
@@ -17,7 +16,6 @@ export default async function RoomInfoHome() {
 
   return (
     <div>
-      <OrdersRooms />
       <ParentCards items={mappedItems} />
     </div>
   );

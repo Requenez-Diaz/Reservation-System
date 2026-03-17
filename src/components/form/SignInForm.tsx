@@ -14,21 +14,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
+import { KeyRound, Mail, LogIn, UserPlus } from 'lucide-react';
 
 const FormSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email'),
+  email: z.string().min(1, 'El correo es obligatorio').email('Correo inválido'),
   password: z
     .string()
-    .min(1, 'Password is required')
-    .min(8, 'Password must have than 8 characters')
+    .min(1, 'La contraseña es obligatoria')
+    .min(8, 'Debe tener al menos 8 caracteres')
 });
 
 const SignInForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+
   const form = useForm<z.infer<typeof FormSchema>>({
     defaultValues: {
       email: '',
@@ -46,140 +50,156 @@ const SignInForm = () => {
 
     if (signInData?.error) {
       toast({
-        description: 'Oops! Something went wrong. Please try again later.',
-        title: 'Error',
+        title: 'Error de acceso',
+        description:
+          'Credenciales incorrectas. Verifica tu correo y contraseña.',
         variant: 'destructive'
       });
-    } else {
-      router.refresh();
-      router.push('/');
+      return;
     }
+
+    const isBooking = callbackUrl.includes('booking');
+
+    toast({
+      title: '¡Bienvenido!',
+      description: isBooking
+        ? 'Sesión iniciada. Redirigiendo a tu reserva...'
+        : 'Has ingresado correctamente al sistema.'
+    });
+
+    router.refresh();
+    router.push(callbackUrl);
   };
 
-  const { data: session } = useSession();
-  console.log(session);
-
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Form {...form}>
-        <form
-          className="max-w-md w-full p-4 border border-gray-300 rounded-md" // CORREGIDO (Línea 67)
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl className="relative">
-                  <div className="relative">
-                    <Input
-                      className="w-full rounded-lg border border-stroke bg-white py-4 pl-6 pr-10 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" // CORREGIDO (Línea 79)
-                      placeholder="email@example.com" // CORREGIDO (Línea 80)
-                      type="email"
-                      {...field}
-                    />
-                    <span className="absolute right-4 top-4">
-                      <svg
-                        className="fill-current"
-                        fill="none"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        width="22"
-                        xmlns="http://www.w3.org/2000/svg" // CORREGIDO (Líneas 87, 88, 89)
-                      >
-                        <g opacity="0.5">
-                          <path
-                            d="M19.2516 3.30005H2.75156C1.58281 3.30005 0.585938 4.26255 0.585938 5.46567V16.6032C0.585938 17.7719 1.54844 18.7688 2.75156 18.7688H19.2516C20.4203 18.7688 21.4172 17.8063 21.4172 16.6032V5.4313C21.4172 4.26255 20.4203 3.30005 19.2516 3.30005ZM19.2516 4.84692C19.2859 4.84692 19.3203 4.84692 19.3547 4.84692L11.0016 10.2094L2.64844 4.84692C2.68281 4.84692 2.71719 4.84692 2.75156 4.84692H19.2516ZM19.2516 17.1532H2.75156C2.40781 17.1532 2.13281 16.8782 2.13281 16.5344V6.35942L10.1766 11.5157C10.4172 11.6875 10.6922 11.7563 10.9672 11.7563C11.2422 11.7563 11.5172 11.6875 11.7578 11.5157L19.8016 6.35942V16.5688C19.8703 16.9125 19.5953 17.1532 19.2516 17.1532Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl className="relative">
-                  <div className="relative">
-                    <Input
-                      placeholder="Enter your password" // CORREGIDO (Línea 116)
-                      type="password"
-                      {...field}
-                    />
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-100/50 dark:bg-orange-900/10 blur-3xl" />
+        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 dark:bg-blue-900/10 blur-3xl" />
+      </div>
 
-                    <span className="absolute right-4 top-4">
-                      <svg
-                        className="fill-current"
-                        fill="none"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        width="22"
-                        xmlns="http://www.w3.org/2000/svg" // CORREGIDO (Líneas 124, 125, 126)
-                      >
-                        <g opacity="0.5">
-                          <path
-                            d="M16.1547 6.80626V5.91251C16.1547 3.16251 14.0922 0.825009 11.4797 0.618759C10.0359 0.481259 8.59219 0.996884 7.52656 1.95938C6.46094 2.92188 5.84219 4.29688 5.84219 5.70626V6.80626C3.84844 7.18438 2.33594 8.93751 2.33594 11.0688V17.2906C2.33594 19.5594 4.19219 21.3813 6.42656 21.3813H15.5016C17.7703 21.3813 19.6266 19.525 19.6266 17.2563V11C19.6609 8.93751 18.1484 7.21876 16.1547 6.80626ZM8.55781 3.09376C9.31406 2.40626 10.3109 2.06251 11.3422 2.16563C13.1641 2.33751 14.6078 3.98751 14.6078 5.91251V6.70313H7.38906V5.67188C7.38906 4.70938 7.80156 3.78126 8.55781 3.09376ZM18.1141 17.2906C18.1141 18.7 16.9453 19.8688 15.5359 19.8688H6.46094C5.05156 19.8688 3.91719 18.7344 3.91719 17.325V11.0688C3.91719 9.52189 5.15469 8.28438 6.70156 8.28438H15.2953C16.8422 8.28438 18.1141 9.52188 18.1141 11V17.2906Z"
-                            fill=""
-                          />
-                          <path
-                            d="M10.9977 11.8594C10.5852 11.8594 10.207 12.2031 10.207 12.65V16.2594C10.207 16.6719 10.5508 17.05 10.9977 17.05C11.4102 17.05 11.7883 16.7063 11.7883 16.2594V12.6156C11.7883 12.2031 11.4102 11.8594 10.9977 11.8594Z"
-                            fill=""
-                          />
-                        </g>
-                      </svg>
-                    </span>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="mt-2 text-right">
-            <Link
-              className="text-sm text-blue-700 hover:underline" // CORREGIDO (Línea 151)
-              href="/forgot-password"
-            >
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </div>
-
-          <div className="mb-5 mt-4">
-            <Button
-              className="w-full " // CORREGIDO (Línea 161)
-              type="submit"
-              value="Iniciar sesion"
-              variant={'save'}
-            >
-              Iniciar sesion
-            </Button>
-          </div>
-
-          <div className="flex items-center mt-4">
-            <div className="flex-grow border-b border-gray-300"></div>
-            <div className="mx-4">or</div>
-            <div className="flex-grow border-b border-gray-300"></div>
-          </div>
-          <div className="mt-6 text-center">
-            <p>
-              Si no tienes una cuenta?{' '}
-              <Link className="text-blue-700  " href="/sign-up">
-                Registrate
-              </Link>
+      <div className="z-10 w-full max-w-md">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="bg-slate-900 p-8 text-center text-white">
+            <div className="inline-flex p-3 rounded-xl bg-orange-500 mb-4 shadow-lg shadow-orange-500/20">
+              <LogIn className="h-6 w-6 text-white" />
+            </div>
+            <h1 className="text-2xl font-black tracking-tight">
+              Bienvenido de nuevo
+            </h1>
+            <p className="text-slate-400 text-sm mt-2">
+              Ingresa tus credenciales para acceder
             </p>
           </div>
-        </form>
-      </Form>
+
+          <div className="p-8">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-5"
+              >
+                {/* EMAIL */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-bold text-slate-700 dark:text-slate-300">
+                        Correo Electrónico
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
+                            placeholder="nombre@ejemplo.com"
+                            type="email"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs font-medium" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* PASSWORD */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between">
+                        <FormLabel className="font-bold text-slate-700 dark:text-slate-300">
+                          Contraseña
+                        </FormLabel>
+                        {/* OLVIDASTE TU CONTRASEÑA */}
+                        <Link
+                          href="/forgot-password"
+                          className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                        >
+                          ¿Olvidaste tu contraseña?
+                        </Link>
+                      </div>
+                      <FormControl>
+                        <div className="relative">
+                          <KeyRound className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
+                            type="password"
+                            placeholder="••••••••"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs font-medium" />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 shadow-md shadow-orange-600/10 transition-all active:scale-[0.98]"
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    'Iniciar Sesión'
+                  )}
+                </Button>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 dark:text-slate-400 font-medium">
+                      O continúa con
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    ¿No tienes una cuenta aún?{' '}
+                    <Link
+                      className="text-blue-600 font-bold hover:text-blue-700 transition-colors inline-flex items-center gap-1"
+                      href={`/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+                    >
+                      <UserPlus className="h-3 w-3" /> Regístrate aquí
+                    </Link>
+                  </p>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </div>
+
+        <p className="text-center text-slate-400 text-xs mt-8 font-medium uppercase tracking-widest">
+          Sistema de Reservas © 2026
+        </p>
+      </div>
     </div>
   );
 };
