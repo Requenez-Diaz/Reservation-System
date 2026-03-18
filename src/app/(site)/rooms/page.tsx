@@ -33,27 +33,44 @@ interface RawBedroom {
   ReservationDetails?: RawReservationDetail[];
 }
 
-
-
 export default async function RoomsPage({
   searchParams
 }: {
   readonly searchParams?: Promise<{
     readonly from?: string;
     readonly to?: string;
+    // New/legacy params
+    readonly capacityCalled?: string;
+    readonly capacities?: string;
     readonly capacity?: string;
   }>;
 }) {
   const queryParams = await searchParams;
 
+  // Determine capacity filter (new API supports an array of capacities)
+  const capacityFromCalled = queryParams?.capacityCalled
+    ? Number(queryParams.capacityCalled)
+    : queryParams?.capacity
+      ? Number(queryParams.capacity)
+      : undefined;
+
+  let capacitiesArray: number[] | undefined;
+  if (queryParams?.capacities) {
+    try {
+      capacitiesArray = JSON.parse(queryParams.capacities) as number[];
+    } catch {
+      capacitiesArray = undefined;
+    }
+  }
+
   const rawData = await findAvailableRooms({
     startDate: queryParams?.from,
     endDate: queryParams?.to,
-    capacity: queryParams?.capacity ? Number(queryParams.capacity) : undefined
+    capacity: capacityFromCalled,
+    capacities: capacitiesArray
   });
 
   const rawBedrooms = (rawData || []) as RawBedroom[];
-
   const mappedRooms = rawBedrooms.map((bedroom) => {
     const firstImage = bedroom.galleryImages?.[0];
     const typeName = bedroom.TypeBedrooms?.nameType || 'Habitación Estándar';

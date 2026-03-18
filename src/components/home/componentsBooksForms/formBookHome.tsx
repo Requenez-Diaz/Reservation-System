@@ -109,17 +109,14 @@ export function BedroomSearchForm() {
       });
       return;
     }
-    
 
     const fromDate = dateRange.from;
     const toDate = dateRange.to ?? dateRange.from;
     const from = format(fromDate, 'yyyy-MM-dd');
     const to = format(toDate, 'yyyy-MM-dd');
-    const params = new URLSearchParams({
-      from,
-      to,
-      capacity: guests.toString()
-    });
+    const params = new URLSearchParams({ from, to });
+    params.set('capacityCalled', guests.toString());
+    params.set('capacities', JSON.stringify(guestDistribution));
 
     router.push(`/rooms?${params.toString()}`);
   };

@@ -5,16 +5,18 @@ import prisma from '@/lib/db';
 export const findAvailableRooms = async ({
   startDate,
   endDate,
-  capacity
+  capacity,
+  capacities
 }: {
   startDate?: string;
   endDate?: string;
   capacity?: number;
+  capacities?: number[];
 }) => {
   try {
     // Convert string dates to Date objects for proper comparison
     const parsedStartDate = startDate ? new Date(startDate) : undefined;
-    const parsedEndDate = endDate ? new Date(endDate)  : undefined;
+    const parsedEndDate = endDate ? new Date(endDate) : undefined;
 
     const hasDateRange =
       parsedStartDate instanceof Date &&
@@ -22,13 +24,24 @@ export const findAvailableRooms = async ({
       parsedEndDate instanceof Date &&
       !isNaN(parsedEndDate.getTime());
 
+    // Build dynamic capacity filter using guard clauses for readability
+    let capacityFilter = {};
+    if (capacities && capacities.length > 0) {
+      const maxCap = Math.max(...capacities);
+      const minCap = Math.min(...capacities);
+      capacityFilter = {
+        OR: [
+          { capacity: { gt: maxCap } },
+          { capacity: { gt: minCap } }
+        ]
+      };
+    } else if (typeof capacity === 'number') {
+      capacityFilter = { capacity: { gte: capacity } };
+    }
+
     const rooms = await prisma.bedroom.findMany({
       where: {
-        ...(capacity && {
-          capacity: {
-            gte: capacity
-          }
-        }),
+        ...capacityFilter,
         // Only filter by availability when date range is provided
         ...(hasDateRange && {
           NOT: {
