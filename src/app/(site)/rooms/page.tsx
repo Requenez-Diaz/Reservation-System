@@ -1,5 +1,4 @@
-// @/app/(site)/bedrooms/page.tsx
-import { getAllBedrooms } from '@/app/actions/get-bedrooms';
+import { findAvailableRooms } from '@/app/actions/searchRooms';
 import { RoomSelection } from '@/components/home/componentsBooksForms/room-selection';
 
 export const dynamic = 'force-dynamic';
@@ -34,8 +33,25 @@ interface RawBedroom {
   ReservationDetails?: RawReservationDetail[];
 }
 
-export default async function RoomsPage() {
-  const rawData = await getAllBedrooms();
+
+
+export default async function RoomsPage({
+  searchParams
+}: {
+  readonly searchParams?: Promise<{
+    readonly from?: string;
+    readonly to?: string;
+    readonly capacity?: string;
+  }>;
+}) {
+  const queryParams = await searchParams;
+
+  const rawData = await findAvailableRooms({
+    startDate: queryParams?.from,
+    endDate: queryParams?.to,
+    capacity: queryParams?.capacity ? Number(queryParams.capacity) : undefined
+  });
+
   const rawBedrooms = (rawData || []) as RawBedroom[];
 
   const mappedRooms = rawBedrooms.map((bedroom) => {

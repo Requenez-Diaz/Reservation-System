@@ -240,7 +240,7 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
         </h1>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {availableRooms.map((room) => {
+          {allBedrooms.map((room) => {
             const isSelected = selectedRooms.includes(room.id);
             const isHigh = isHighSeasonActive(room);
             const currentPrice = isHigh

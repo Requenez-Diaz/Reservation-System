@@ -2,7 +2,9 @@ import { PrismaClient } from '@prisma/client';
 
 // Función para crear una instancia de Prisma
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  return new PrismaClient({
+    log: ['query']
+  });
 };
 
 // Declaramos globalThis para mantener la instancia en desarrollo

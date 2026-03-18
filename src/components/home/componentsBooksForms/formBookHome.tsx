@@ -1,21 +1,7 @@
 'use client';
 
-import * as React from 'react';
-import { Users, Calendar, Bed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { useToast } from '@/components/ui/use-toast';
-import type { DateRange } from 'react-day-picker';
-import { useRouter } from 'next/navigation';
-import { getAllBedrooms } from '@/app/actions/get-bedrooms';
 import {
   Dialog,
   DialogContent,
@@ -24,30 +10,19 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-
-interface Booking {
-  dateStart: string;
-  dateEnd?: string;
-  status: string;
-  Reservation?: {
-    status: string;
-  };
-}
-
-interface Bedroom {
-  id: string;
-  name: string;
-  capacity: number;
-  status: boolean;
-  lowSeasonPrice: number;
-  highSeasonPrice: number;
-  ReservationDetails?: Booking[];
-  Seasons?: {
-    dateStart: string;
-    dateEnd: string;
-    nameSeason: string;
-  } | null;
-}
+import { Label } from '@/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { useToast } from '@/components/ui/use-toast';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Bed, Calendar, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import type { DateRange } from 'react-day-picker';
 
 export function BedroomSearchForm() {
   const [guests, setGuests] = React.useState(1);
@@ -58,55 +33,16 @@ export function BedroomSearchForm() {
   const [showDistributionDialog, setShowDistributionDialog] =
     React.useState(false);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
-  const [bedrooms, setBedrooms] = React.useState<Bedroom[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
 
   React.useEffect(() => {
-    const fetchBedroomsAndLoadState = async () => {
-      try {
-        const savedDates = localStorage.getItem('selectedDates');
-        const savedGuests = localStorage.getItem('selectedGuests');
-        const savedRoomCount = localStorage.getItem('selectedRoomCount');
-        const savedDistribution = localStorage.getItem('guestDistribution');
-
-        if (savedDates) {
-          const { from, to } = JSON.parse(savedDates);
-          if (from) {
-            setDateRange({
-              from: new Date(from),
-              to: to ? new Date(to) : new Date(from)
-            });
-          }
-        }
-
-        if (savedGuests) {
-          setGuests(Number.parseInt(savedGuests, 10) || 1);
-        }
-        if (savedRoomCount) {
-          setRoomCount(Number.parseInt(savedRoomCount, 10) || 1);
-        }
-        if (savedDistribution) {
-          setGuestDistribution(JSON.parse(savedDistribution));
-        }
-
-        const response = await getAllBedrooms();
-        setBedrooms(response as unknown as Bedroom[]);
-      } catch (error) {
-        console.error('Error al inicializar:', error);
-      }
-    };
-
-    fetchBedroomsAndLoadState();
-  }, [toast]);
-
-  React.useEffect(() => {
     if (guestDistribution.length !== roomCount) {
       const avgGuests = Math.floor(guests / roomCount);
       const remainder = guests % roomCount;
-      const newDistribution = Array(roomCount)
+      const newDistribution = new Array(roomCount)
         .fill(avgGuests)
         .map((val, idx) => (idx < remainder ? val + 1 : val));
       setGuestDistribution(newDistribution);
@@ -173,102 +109,19 @@ export function BedroomSearchForm() {
       });
       return;
     }
+    
 
-    // --- LÓGICA DE BÚSQUEDA MEJORADA (Normalización a Medianoche) ---
-    const searchStart = new Date(dateRange.from);
-    searchStart.setHours(0, 0, 0, 0);
-
-    const searchEnd = new Date(dateRange.to || dateRange.from);
-    searchEnd.setHours(0, 0, 0, 0);
-
-    // 1. Encontrar TODAS las habitaciones disponibles en el rango
-    const availableRoomsInRange = bedrooms.filter((bedroom) => {
-      // Un dormitorio está disponible si su status es true (no está en mantenimiento/fuera de servicio)
-      // Y no tiene reservas confirmadas o pendientes que se solapen con el rango buscado
-      const statusMatch = bedroom.status === true;
-
-      let dateMatch = true;
-      if (bedroom.ReservationDetails && bedroom.ReservationDetails.length > 0) {
-        const hasConflict = bedroom.ReservationDetails.some((booking) => {
-          // Extraemos YYYY-MM-DD para evitar el desfase por zona horaria de UTC a Local
-          const parseSafeDate = (d: string | Date) => {
-            const iso = typeof d === 'string' ? d : new Date(d).toISOString();
-            const [y, m, day] = iso.split('T')[0].split('-').map(Number);
-            return new Date(y, m - 1, day, 0, 0, 0, 0);
-          };
-
-          const bookingStart = parseSafeDate(booking.dateStart);
-          const bookingEnd = booking.dateEnd ? parseSafeDate(booking.dateEnd) : parseSafeDate(booking.dateStart);
-
-          // Solapamiento total o parcial (lógica exclusiva [start, end))
-          const isOverlapping = searchStart < bookingEnd && searchEnd > bookingStart;
-
-          // Solo hay conflicto si se solapa Y la reserva no está CANCELADA
-          // Verificamos tanto el detalle como la cabecera (Reservation) porque el admin puede cancelar la cabecera
-          const isNotCancelled = booking.status !== 'CANCELLED' && booking.Reservation?.status !== 'CANCELLED';
-          return isOverlapping && isNotCancelled;
-        });
-        dateMatch = !hasConflict;
-      }
-      return statusMatch && dateMatch;
+    const fromDate = dateRange.from;
+    const toDate = dateRange.to ?? dateRange.from;
+    const from = format(fromDate, 'yyyy-MM-dd');
+    const to = format(toDate, 'yyyy-MM-dd');
+    const params = new URLSearchParams({
+      from,
+      to,
+      capacity: guests.toString()
     });
 
-    // 2. Intentar cumplir con la distribución solicitada priorizando las más baratas
-    const usedRoomIds = new Set<string>();
-    const selectedRooms: Bedroom[] = [];
-
-    // Función para obtener el precio actual de una habitación
-    const getActivePrice = (bedroom: Bedroom) => {
-      const today = new Date();
-      if (bedroom.Seasons) {
-        const start = new Date(bedroom.Seasons.dateStart);
-        const end = new Date(bedroom.Seasons.dateEnd);
-        if (today >= start && today <= end) {
-          return bedroom.Seasons.nameSeason.toLowerCase().includes('alta')
-            ? bedroom.highSeasonPrice
-            : bedroom.lowSeasonPrice;
-        }
-      }
-      return bedroom.lowSeasonPrice;
-    };
-
-    for (const guestsNeeded of guestDistribution) {
-      const candidates = availableRoomsInRange
-        .filter((r) => !usedRoomIds.has(r.id) && r.capacity >= guestsNeeded)
-        .sort((a, b) => getActivePrice(a) - getActivePrice(b));
-
-      if (candidates.length > 0) {
-        const bestCandidate = candidates[0];
-        selectedRooms.push(bestCandidate);
-        usedRoomIds.add(bestCandidate.id);
-      }
-    }
-
-    setIsLoading(false);
-
-    // Guardamos TODAS las disponibles para que RoomSelection las muestre
-    // Pero mantenemos selectedRooms para saber cuáles sugirió el sistema inicialmente si quisiéramos
-    if (availableRoomsInRange.length > 0) {
-      localStorage.setItem(
-        'filteredRooms',
-        JSON.stringify(availableRoomsInRange)
-      );
-      localStorage.setItem('suggestedRooms', JSON.stringify(selectedRooms));
-
-      toast({
-        title: 'Búsqueda completada',
-        description: `Encontramos ${availableRoomsInRange.length} habitaciones disponibles.`
-      });
-
-      router.push('/rooms');
-    } else {
-      toast({
-        title: 'Sin disponibilidad',
-        description:
-          'No hay habitaciones disponibles para los criterios seleccionados.',
-        variant: 'destructive'
-      });
-    }
+    router.push(`/rooms?${params.toString()}`);
   };
 
   return (
@@ -278,7 +131,9 @@ export function BedroomSearchForm() {
           <div className="grid gap-4 md:grid-cols-[2fr,1fr,auto,auto,1fr,auto] md:items-end">
             {/* Habitaciones */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-700 dark:text-gray-300">Habitaciones</Label>
+              <Label className="text-sm text-gray-700 dark:text-gray-300">
+                Habitaciones
+              </Label>
               <div className="flex items-center">
                 <Button
                   className="h-10 w-10"
@@ -305,7 +160,9 @@ export function BedroomSearchForm() {
 
             {/* Huéspedes */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-700 dark:text-gray-300">Huéspedes</Label>
+              <Label className="text-sm text-gray-700 dark:text-gray-300">
+                Huéspedes
+              </Label>
               <div className="flex items-center">
                 <Button
                   className="h-10 w-10"
@@ -342,7 +199,9 @@ export function BedroomSearchForm() {
 
             {/* Calendario */}
             <div className="space-y-2">
-              <Label className="text-sm text-gray-700 dark:text-gray-300">Fechas</Label>
+              <Label className="text-sm text-gray-700 dark:text-gray-300">
+                Fechas
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
