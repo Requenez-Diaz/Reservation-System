@@ -102,8 +102,8 @@ model ReservationDetails {
   id             Int         @id @default(autoincrement())
   reservation_id Int
   price          Int
-  dateStart      DateTime
-  dateEnd        DateTime
+  dateStart      DateTime    @db.Date
+  dateEnd        DateTime    @db.Date
   promotion_id   Int?
   status         Status
   created_at     DateTime    @default(now())

@@ -1,4 +1,5 @@
 import { findAvailableRooms } from '@/app/actions/searchRooms';
+import { NoAvailableRooms } from '@/components/home/componentsBooksForms/no-available-rooms';
 import { RoomSelection } from '@/components/home/componentsBooksForms/room-selection';
 
 export const dynamic = 'force-dynamic';
@@ -101,9 +102,15 @@ export default async function RoomsPage({
     };
   });
 
+  const hasSearchParams = queryParams?.from && queryParams?.to;
+
   return (
     <div className="container mx-auto py-10">
-      <RoomSelection allBedrooms={mappedRooms} />
+      {hasSearchParams && mappedRooms.length === 0 ? (
+        <NoAvailableRooms />
+      ) : (
+        <RoomSelection allBedrooms={mappedRooms} />
+      )}
     </div>
   );
 }
