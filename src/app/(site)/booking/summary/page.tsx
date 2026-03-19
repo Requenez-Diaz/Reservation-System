@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { startOfDay } from 'date-fns';
 import { ArrowLeft, Calendar, CheckCircle, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -296,9 +298,9 @@ export default function BookingSummaryPage() {
                   Check-in:
                 </span>
                 <span className="font-bold text-slate-900 dark:text-slate-200">
-                  {/* {format(searchData.dateRange!.from, "dd 'de' MMMM yyyy", {
+                  {format(searchData.dateRange!.from, "dd 'de' MMMM yyyy", {
                     locale: es
-                  })} */}
+                  })}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -306,9 +308,9 @@ export default function BookingSummaryPage() {
                   Check-out:
                 </span>
                 <span className="font-bold text-slate-900 dark:text-slate-200">
-                  {/* {format(searchData.dateRange!.to!, "dd 'de' MMMM yyyy", {
+                  {format(searchData.dateRange!.to!, "dd 'de' MMMM yyyy", {
                     locale: es
-                  })} */}
+                  })}
                 </span>
               </div>
               <div className="flex justify-between items-center border-t dark:border-slate-800 pt-3">
