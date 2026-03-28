@@ -64,66 +64,92 @@ export function BookingForm({
     onGuestsChange(validCount);
   };
 
+  const formatDateRange = () => {
+    if (!dateRange?.from) {
+      return 'Seleccionar fechas';
+    }
+    if (!dateRange.to) {
+      return format(dateRange.from, 'dd MMM', { locale: es });
+    }
+    return `${format(dateRange.from, 'dd MMM', { locale: es })} - ${format(dateRange.to, 'dd MMM', { locale: es })}`;
+  };
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div className="space-y-4">
-        <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
-          <User className="h-4 w-4" /> Tus Datos
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
+          <User className="h-4 w-4 text-teal-600 dark:text-teal-400" /> Tus
+          Datos
         </h3>
         <div className="space-y-3">
-          <div className="space-y-1">
-            <Label className="text-[11px] font-bold uppercase text-slate-500">
+          <div className="space-y-1.5">
+            <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
               Nombre
             </Label>
             <Input
               value={clientName}
               onChange={(e) => onNameChange(e.target.value)}
-              className="bg-slate-50/50 dark:bg-slate-800"
+              placeholder="Tu nombre completo"
+              className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
             />
           </div>
-          <div className="space-y-1">
-            <Label className="text-[11px] font-bold uppercase text-slate-500">
+          <div className="space-y-1.5">
+            <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
               Email
             </Label>
             <Input
               type="email"
               value={clientEmail}
               onChange={(e) => onEmailChange(e.target.value)}
-              className="bg-slate-50/50 dark:bg-slate-800"
+              placeholder="tu@email.com"
+              className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
             />
           </div>
         </div>
       </div>
 
       <div className="space-y-4">
-        <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
-          <Calendar className="h-4 w-4" /> Estancia
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
+          <Calendar className="h-4 w-4 text-teal-600 dark:text-teal-400" />{' '}
+          Estancia
         </h3>
         <div className="space-y-3">
-          <div className="space-y-1">
-            <Label className="text-[11px] font-bold uppercase text-slate-500">
+          <div className="space-y-1.5">
+            <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
               Rango de Fechas
             </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-xs font-bold border-dashed border-slate-300"
+                  className="w-full justify-start text-xs font-bold border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700"
                 >
-                  {dateRange?.from
-                    ? dateRange.to
-                      ? `${format(dateRange.from, 'dd MMM', { locale: es })} - ${format(dateRange.to, 'dd MMM', { locale: es })}`
-                      : format(dateRange.from, 'dd MMM', { locale: es })
-                    : 'Seleccionar fechas'}
+                  {formatDateRange()}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent
+                className="w-auto p-0 bg-white dark:bg-slate-800"
+                align="start"
+              >
                 <CalendarComponent
                   mode="range"
                   selected={dateRange}
                   onSelect={onDateSelect}
                   numberOfMonths={2}
                   locale={es}
+                  className="dark:text-slate-100"
+                  styles={{
+                    caption: { color: 'var(--primary)' },
+                    head_cell: { color: 'var(--muted-foreground)' },
+                    cell: { color: 'inherit' },
+                    day: { color: 'inherit' }
+                  }}
+                  modifiersClassNames={{
+                    selected: 'bg-orange-600 text-white hover:bg-orange-600',
+                    today: 'font-bold text-orange-600 dark:text-orange-500',
+                    disabled:
+                      'text-slate-300 dark:text-slate-600 line-through opacity-50'
+                  }}
                   disabled={(date) => {
                     const today = startOfDay(new Date());
                     const isPast = date < today;
@@ -143,29 +169,36 @@ export function BookingForm({
               </PopoverContent>
             </Popover>
           </div>
-          <div className="space-y-1">
-            <Label className="text-[11px] font-bold uppercase text-slate-500">
+          <div className="space-y-1.5">
+            <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
               Huéspedes
             </Label>
-            <div className="flex items-center border rounded-lg h-10 overflow-hidden dark:border-slate-700">
+            <div className="flex items-center border rounded-lg h-10 overflow-hidden border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
               <Button
+                type="button"
                 variant="ghost"
-                className="h-full rounded-none px-3"
+                className="h-full rounded-none px-4 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                 onClick={() => updateGuests(guests - 1)}
+                disabled={guests <= 1}
               >
-                -
+                <span className="text-lg font-bold">−</span>
               </Button>
-              <span className="flex-1 text-center text-sm font-bold">
+              <span className="flex-1 text-center text-sm font-bold text-slate-900 dark:text-slate-100">
                 {guests}
               </span>
               <Button
+                type="button"
                 variant="ghost"
-                className="h-full rounded-none px-3"
+                className="h-full rounded-none px-4 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                 onClick={() => updateGuests(guests + 1)}
+                disabled={guests >= capacity}
               >
-                +
+                <span className="text-lg font-bold">+</span>
               </Button>
             </div>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500">
+              Máximo {capacity} huéspedes
+            </p>
           </div>
         </div>
       </div>
