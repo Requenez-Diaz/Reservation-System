@@ -71,6 +71,52 @@ export default async function ReservationDetailPage({ params }: PageProps) {
 
   const reservation = result.reservation as ReservationResult;
 
+  // --- FUNCIONES DE CORRECCIÓN DE FECHA ---
+
+  /**
+   * Ajusta la fecha para que se muestre según el valor UTC guardado en la DB
+   * evitando que el navegador le reste horas por zona horaria.
+   */
+  const formatDateSafe = (dateSource: Date | string) => {
+    const d = new Date(dateSource);
+    // Creamos un objeto fecha usando los valores UTC exactos
+    const dateUTC = new Date(
+      d.getUTCFullYear(),
+      d.getUTCMonth(),
+      d.getUTCDate(),
+      12,
+      0,
+      0
+    );
+    return format(dateUTC, 'dd MMM, yyyy', { locale: es });
+  };
+
+  /**
+   * Calcula noches usando timestamps UTC para evitar errores de cambio de hora
+   */
+  const calculateNights = (
+    dateStart: Date | string,
+    dateEnd: Date | string
+  ) => {
+    const start = new Date(dateStart);
+    const end = new Date(dateEnd);
+
+    const utc1 = Date.UTC(
+      start.getUTCFullYear(),
+      start.getUTCMonth(),
+      start.getUTCDate()
+    );
+    const utc2 = Date.UTC(
+      end.getUTCFullYear(),
+      end.getUTCMonth(),
+      end.getUTCDate()
+    );
+
+    return Math.max(1, Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24)));
+  };
+
+  // --- FIN DE CORRECCIONES ---
+
   const getStatusBadge = (status: string) => {
     const config = {
       PENDING: {
@@ -102,19 +148,6 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     );
   };
 
-  const calculateNights = (
-    dateStart: Date | string,
-    dateEnd: Date | string
-  ) => {
-    return Math.max(
-      1,
-      Math.ceil(
-        (new Date(dateEnd).getTime() - new Date(dateStart).getTime()) /
-        (1000 * 60 * 60 * 24)
-      )
-    );
-  };
-
   const totalPrice = (reservation.ReservationDetails || []).reduce(
     (sum: number, detail: ReservationDetail) => sum + detail.price,
     0
@@ -143,6 +176,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
               <p className="text-slate-500 dark:text-slate-400 flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 Registrada el{' '}
+                {/* Usamos formatDateSafe también aquí si createdAt es tipo Date sin hora */}
                 {format(new Date(reservation.createdAt), 'PPP', { locale: es })}
               </p>
             </div>
@@ -206,7 +240,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                             C${detail.price.toLocaleString()}
                           </p>
                           <p className="text-[10px] text-slate-400 font-bold uppercase">
-                            {nights} Noches
+                            {nights} {nights === 1 ? 'Noche' : 'Noches'}
                           </p>
                         </div>
                       </div>
@@ -227,11 +261,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                             Entrada
                           </span>
                           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                            {format(
-                              new Date(detail.dateStart),
-                              'dd MMM, yyyy',
-                              { locale: es }
-                            )}
+                            {formatDateSafe(detail.dateStart)}
                           </span>
                         </div>
                         <div className="flex flex-col">
@@ -239,9 +269,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                             Salida
                           </span>
                           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                            {format(new Date(detail.dateEnd), 'dd MMM, yyyy', {
-                              locale: es
-                            })}
+                            {formatDateSafe(detail.dateEnd)}
                           </span>
                         </div>
                       </div>
@@ -254,6 +282,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
         </div>
 
         <div className="space-y-6">
+          {/* Card de Titular y Ocupación igual que antes... */}
           <Card className="border-none shadow-sm bg-orange-500 text-white overflow-hidden">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm uppercase tracking-widest opacity-70">
@@ -288,9 +317,8 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             <CardContent>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 La capacidad total de esta reserva está configurada para recibir
-                a un total de
+                a un total de{' '}
                 <span className="font-bold text-slate-900 dark:text-slate-100">
-                  {' '}
                   {reservation.ReservationDetails.reduce(
                     (acc: number, detail: ReservationDetail) =>
                       acc + detail.guestQuantity,

@@ -1,27 +1,22 @@
 'use client';
 
 import * as React from 'react';
-import { X, Calendar, Users, Bed, User, CheckCircle2 } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format, differenceInDays, startOfDay } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useToast } from '@/components/ui/use-toast';
 import type { DateRange } from 'react-day-picker';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { createQuickReservation } from '@/app/actions/reservations/create-quick-reservations';
 import { useSession } from 'next-auth/react';
+import {
+  BookingHeader,
+  BookingPriceSummary,
+  BookingForm
+} from './booking-components';
 
 interface Bedroom {
-  id: string;
+  id: string | number;
   name: string;
   description: string;
   capacity: number;
@@ -31,12 +26,9 @@ interface Bedroom {
   highSeasonPrice: number;
   BedroomImages?: Array<{ id: string; image: string }>;
   bookingsDetails?: Array<{
-    dateStart: string;
-    dateEnd?: string;
+    dateStart: string | Date;
+    dateEnd?: string | Date;
     status: string;
-    Reservation?: {
-      status: string;
-    };
   }>;
   Season?: {
     id: number;
@@ -58,42 +50,77 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
   const { data: session } = useSession();
   const { toast } = useToast();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
-  const [guests, setGuests] = React.useState(1);
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
+    () => {
+      const from = searchParams.get('from');
+      const to = searchParams.get('to');
+      return {
+        from: from ? new Date(`${from}T12:00:00`) : undefined,
+        to: to ? new Date(`${to}T12:00:00`) : undefined
+      };
+    }
+  );
+
+  const [guests, setGuests] = React.useState(() => {
+    const guestsParam = searchParams.get('guests');
+    return guestsParam
+      ? Math.min(bedroom.capacity, parseInt(guestsParam, 10))
+      : 1;
+  });
+
   const [clientName, setClientName] = React.useState('');
   const [clientEmail, setClientEmail] = React.useState('');
-  const [clientPhone] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const parseSafeDate = React.useCallback((d: string | Date) => {
-    const iso = typeof d === 'string' ? d : new Date(d).toISOString();
-    const [y, m, day] = iso.split('T')[0].split('-').map(Number);
-    return new Date(y, m - 1, day, 0, 0, 0, 0);
-  }, []);
+  const updateUrl = (newRange?: DateRange, newGuests?: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    const range = newRange !== undefined ? newRange : dateRange;
+    if (range?.from) {
+      params.set('from', format(range.from, 'yyyy-MM-dd'));
+    } else {
+      params.delete('from');
+    }
+    if (range?.to) {
+      params.set('to', format(range.to, 'yyyy-MM-dd'));
+    } else {
+      params.delete('to');
+    }
+
+    const gCount = newGuests !== undefined ? newGuests : guests;
+    if (gCount > 1) {
+      params.set('guests', gCount.toString());
+    } else {
+      params.delete('guests');
+    }
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleDateSelect = (range: DateRange | undefined) => {
+    setDateRange(range);
+    updateUrl(range, guests);
+  };
 
   const activePrice = React.useMemo(() => {
     const season = bedroom.Season;
-
     if (!season || !season.dateStart || !season.dateEnd) {
       return bedroom.lowSeasonPrice;
     }
 
-    // Verificar si hoy está en temporada alta
     const today = startOfDay(new Date());
     const seasonStart = startOfDay(new Date(season.dateStart));
     const seasonEnd = startOfDay(new Date(season.dateEnd));
 
-    const isTodayInSeason = today >= seasonStart && today <= seasonEnd;
-
-    if (isTodayInSeason && season.nameSeason.toUpperCase() === 'ALTA') {
-      return bedroom.highSeasonPrice;
-    }
-
-    return bedroom.lowSeasonPrice;
+    return today >= seasonStart &&
+      today <= seasonEnd &&
+      season.nameSeason.toUpperCase() === 'ALTA'
+      ? bedroom.highSeasonPrice
+      : bedroom.lowSeasonPrice;
   }, [bedroom]);
-
-  const isHighSeasonActive = activePrice === bedroom.highSeasonPrice;
 
   const nightsCount = React.useMemo(() => {
     if (!dateRange?.from || !dateRange?.to) {
@@ -123,25 +150,37 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
       });
       return;
     }
+
     setIsLoading(true);
     try {
       const result = await createQuickReservation({
         clientEmail,
         clientName,
-        clientPhone,
         bedroomId: bedroom.id,
         dateStart: dateRange.from,
         dateEnd: dateRange.to,
-        guests
+        guests,
+        clientPhone: ''
       });
-      if (result.success && result.reservation) {
-        toast({ title: '¡Reserva confirmada!' });
+
+      if (result.success && result.reservation?.id) {
+        toast({
+          title: '¡Reserva confirmada!',
+          description: 'Se ha registrado tu estancia.'
+        });
+        onClose();
         router.push(`/reservaciones/${result.reservation.id}`);
+      } else {
+        toast({
+          title: 'No se pudo completar',
+          description: result.error || 'Ocurrió un detalle técnico.',
+          variant: 'destructive'
+        });
       }
-    } catch (error) {
+    } catch {
       toast({
-        title: 'Error',
-        description: 'Error al procesar reserva.',
+        title: 'Error de red',
+        description: 'No se pudo conectar con el servidor.',
         variant: 'destructive'
       });
     } finally {
@@ -157,7 +196,6 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 shadow-2xl max-h-[95vh] overflow-y-auto">
-        {/* BOTÓN CERRAR */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-10 rounded-full bg-white/90 dark:bg-slate-800/90 p-2 shadow-md hover:bg-white dark:hover:bg-slate-700 transition-all"
@@ -165,189 +203,31 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
           <X className="h-5 w-5 text-slate-900 dark:text-slate-100" />
         </button>
 
-        {/* HEADER IMAGEN */}
-        <div className="relative h-56">
-          <img
-            src={imageUrl}
-            alt={bedroom.name}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-          <div className="absolute bottom-6 left-6 text-white">
-            <h2 className="text-3xl font-black italic tracking-tighter uppercase">
-              {bedroom.name}
-            </h2>
-            <div className="flex items-center gap-3 mt-1 text-slate-200">
-              <span className="flex items-center gap-1 text-sm">
-                <Bed className="h-4 w-4" /> Hab. {bedroom.numberBedroom}
-              </span>
-              <span className="flex items-center gap-1 text-sm">
-                <Users className="h-4 w-4" /> Cap. {bedroom.capacity}
-              </span>
-            </div>
-          </div>
-        </div>
+        <BookingHeader bedroom={bedroom} imageUrl={imageUrl} />
 
         <div className="p-8 space-y-8">
-          {/* SECCIÓN PRECIO ACTUAL - AHORA ES FIJO */}
-          <div className="bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest mb-1">
-                Precio por noche (Temporada Actual)
-              </p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-black text-orange-600">
-                  C${activePrice.toLocaleString()}
-                </span>
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">
-                  / noche
-                </span>
-              </div>
-            </div>
-            <Badge
-              className={
-                isHighSeasonActive
-                  ? 'bg-orange-600 animate-pulse'
-                  : 'bg-emerald-600'
-              }
-            >
-              Temporada {isHighSeasonActive ? 'Alta' : 'Baja'}
-            </Badge>
-          </div>
+          <BookingPriceSummary
+            pricePerNight={activePrice}
+            highSeasonPrice={bedroom.highSeasonPrice}
+            nightsCount={nightsCount}
+            totalAmount={totalAmount}
+          />
 
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* TUS DATOS */}
-            <div className="space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
-                <User className="h-4 w-4" /> Tus Datos
-              </h3>
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
-                    Nombre Completo
-                  </Label>
-                  <Input
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    className="bg-slate-50/50 dark:bg-slate-800"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
-                    Correo Electrónico
-                  </Label>
-                  <Input
-                    type="email"
-                    value={clientEmail}
-                    onChange={(e) => setClientEmail(e.target.value)}
-                    className="bg-slate-50/50 dark:bg-slate-800"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ESTANCIA */}
-            <div className="space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 underline decoration-teal-500 underline-offset-4">
-                <Calendar className="h-4 w-4" /> Estancia
-              </h3>
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
-                    Rango de Fechas
-                  </Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-xs font-bold border-dashed border-slate-300"
-                      >
-                        {dateRange?.from
-                          ? dateRange.to
-                            ? `${format(dateRange.from, 'dd MMM')} - ${format(dateRange.to, 'dd MMM')}`
-                            : format(dateRange.from, 'dd MMM')
-                          : 'Seleccionar fechas'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="range"
-                        selected={dateRange}
-                        onSelect={setDateRange}
-                        numberOfMonths={2}
-                        locale={es}
-                        disabled={(date) => {
-                          const today = startOfDay(new Date());
-                          const isPast = date < today;
-                          const isReserved = bedroom.bookingsDetails?.some(
-                            (booking) => {
-                              if (booking.status === 'CANCELLED') {
-                                return false;
-                              }
-                              const bStart = parseSafeDate(booking.dateStart);
-                              const bEnd = booking.dateEnd
-                                ? parseSafeDate(booking.dateEnd)
-                                : bStart;
-                              return date >= bStart && date < bEnd;
-                            }
-                          );
-                          return isPast || !!isReserved;
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">
-                    Huéspedes
-                  </Label>
-                  <div className="flex items-center border dark:border-slate-700 rounded-lg h-10 overflow-hidden">
-                    <Button
-                      variant="ghost"
-                      className="h-full rounded-none px-3"
-                      onClick={() => setGuests((p) => Math.max(1, p - 1))}
-                    >
-                      -
-                    </Button>
-                    <span className="flex-1 text-center text-sm font-bold">
-                      {guests}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      className="h-full rounded-none px-3"
-                      onClick={() =>
-                        setGuests((p) => Math.min(bedroom.capacity, p + 1))
-                      }
-                    >
-                      +
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* DESGLOSE FINAL */}
-          {nightsCount > 0 && (
-            <div className="bg-orange-50/50 dark:bg-orange-950/30 p-4 rounded-xl border border-orange-100 dark:border-orange-900/50 space-y-2">
-              <div className="flex justify-between text-xs text-orange-700 font-bold uppercase">
-                <span>Resumen de cargos ({nightsCount} noches)</span>
-              </div>
-              <div className="flex justify-between items-end pt-2">
-                <div>
-                  <p className="text-2xl font-black text-slate-900 dark:text-slate-100">
-                    Total: C${totalAmount.toLocaleString()}
-                  </p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">
-                    IMPUESTOS INCLUIDOS
-                  </p>
-                </div>
-                <div className="flex items-center gap-1 text-orange-600 text-xs font-bold bg-white dark:bg-slate-800 px-2 py-1 rounded-full shadow-sm">
-                  <CheckCircle2 className="h-3 w-3" /> Precio Garantizado
-                </div>
-              </div>
-            </div>
-          )}
+          <BookingForm
+            clientName={clientName}
+            clientEmail={clientEmail}
+            guests={guests}
+            dateRange={dateRange}
+            capacity={bedroom.capacity}
+            bookingsDetails={bedroom.bookingsDetails}
+            onNameChange={setClientName}
+            onEmailChange={setClientEmail}
+            onGuestsChange={(count) => {
+              setGuests(count);
+              updateUrl(dateRange, count);
+            }}
+            onDateSelect={handleDateSelect}
+          />
 
           <div className="flex gap-4 pt-2">
             <Button
@@ -360,7 +240,7 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
             </Button>
             <Button
               onClick={handleReserve}
-              className="flex-[2] bg-blue-600 hover:bg-blue-700 h-12 text-md font-black shadow-lg"
+              className="flex-[2] bg-blue-600 hover:bg-blue-700 h-12 text-md font-black shadow-lg text-white"
               disabled={isLoading}
             >
               {isLoading ? 'Procesando...' : 'CONFIRMAR RESERVA'}

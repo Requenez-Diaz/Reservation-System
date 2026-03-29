@@ -8,7 +8,7 @@ export type QuickReservationData = {
   clientEmail: string;
   clientName: string;
   clientPhone: string;
-  bedroomId: string;
+  bedroomId: string | number;
   dateStart: Date;
   dateEnd: Date;
   guests: number;
@@ -31,17 +31,16 @@ export async function createQuickReservation(data: QuickReservationData) {
       });
     }
 
-    const bedroomIdNumber = Number.parseInt(data.bedroomId);
+    // 2. Obtener Habitación y Temporada
+    const bedroomIdNumber = Number(data.bedroomId);
     const bedroom = await prisma.bedroom.findUnique({
       where: { id: bedroomIdNumber },
-      include: { Season: true } // Incluimos la temporada para saber el precio real
+      include: { Season: true }
     });
 
     if (!bedroom) {
-      throw new Error('Habitación no encontrada');
+      return { success: false, error: 'Habitación no encontrada.' };
     }
-
-    // --- VERIFICACIÓN DE DISPONIBILIDAD ---
     const start = startOfDay(new Date(data.dateStart));
     const end = startOfDay(new Date(data.dateEnd));
 
@@ -52,10 +51,10 @@ export async function createQuickReservation(data: QuickReservationData) {
         OR: [
           {
             dateStart: { lte: start },
-            dateEnd: { gte: start }
+            dateEnd: { gt: start }
           },
           {
-            dateStart: { lte: end },
+            dateStart: { lt: end },
             dateEnd: { gte: end }
           },
           {
@@ -67,31 +66,35 @@ export async function createQuickReservation(data: QuickReservationData) {
     });
 
     if (overlappingReservation) {
-      throw new Error(
-        'La habitación ya está reservada para estas fechas. Por favor elige otras fechas.'
-      );
+      return {
+        success: false,
+        error:
+          'La habitación ya está reservada para estas fechas. Por favor elige otras fechas.'
+      };
     }
 
-    // Usamos differenceInDays para obtener noches exactas (ej: entrada 10, salida 12 = 2 noches)
+    // 4. Cálculos de Estancia
     const nights = Math.max(1, differenceInDays(end, start));
 
-    // --- CORRECCIÓN DE PRECIO DINÁMICO ---
+    // --- CÁLCULO DE PRECIO DINÁMICO ---
     const now = new Date();
     const season = bedroom.Season;
 
-    // Verificamos si estamos en la temporada asignada a la habitación
-    const isHighSeason =
-      season &&
-      now >= new Date(season.dateStart) &&
-      now <= new Date(season.dateEnd) &&
-      season.nameSeason.toLowerCase().includes('alta');
+    let isHighSeason = false;
+    if (season && season.dateStart && season.dateEnd) {
+      const sStart = new Date(season.dateStart);
+      const sEnd = new Date(season.dateEnd);
+      isHighSeason =
+        now >= sStart &&
+        now <= sEnd &&
+        season.nameSeason.toUpperCase() === 'ALTA';
+    }
 
     const pricePerNight = isHighSeason
       ? bedroom.highSeasonPrice
       : bedroom.lowSeasonPrice;
     const totalPrice = pricePerNight * nights;
 
-    // --- MANEJO DE PROMOCIÓN ---
     let defaultPromotion = await prisma.promotions.findFirst({
       where: { codePromotions: 'NO_PROMOTION' }
     });
@@ -99,7 +102,10 @@ export async function createQuickReservation(data: QuickReservationData) {
     if (!defaultPromotion) {
       const anySeason = await prisma.season.findFirst();
       if (!anySeason) {
-        throw new Error('No hay temporadas disponibles');
+        return {
+          success: false,
+          error: 'Configuración de temporadas incompleta en el sistema.'
+        };
       }
 
       defaultPromotion = await prisma.promotions.create({
@@ -117,7 +123,7 @@ export async function createQuickReservation(data: QuickReservationData) {
 
     const reservation = await prisma.reservation.create({
       data: {
-        User: { connect: { id: user.id } },
+        user_id: user.id,
         status: 'PENDING',
         isRead: false,
         ReservationDetails: {
@@ -127,8 +133,8 @@ export async function createQuickReservation(data: QuickReservationData) {
             price: totalPrice,
             guestQuantity: data.guests,
             status: 'PENDING',
-            Bedrooms: { connect: { id: bedroomIdNumber } },
-            Promotions: { connect: { id: defaultPromotion.id } }
+            bedrooms_id: bedroomIdNumber,
+            promotion_id: defaultPromotion.id
           }
         }
       },
@@ -148,14 +154,16 @@ export async function createQuickReservation(data: QuickReservationData) {
     return {
       success: true,
       reservation,
-      message: `Reserva creada por ${nights} noche(s). Total: $${totalPrice}`
+      message: `Reserva creada exitosamente por ${nights} noche(s).`
     };
   } catch (error) {
-    console.error('Error creating quick reservation:', error);
+    console.error('Error al crear la reserva rápida:', error);
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : 'Error al crear la reserva'
+        error instanceof Error
+          ? error.message
+          : 'Error interno al procesar la reserva.'
     };
   }
 }

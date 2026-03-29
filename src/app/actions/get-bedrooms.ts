@@ -4,7 +4,7 @@ import prisma from '@/lib/db';
 import { unstable_noStore as noStore } from 'next/cache'; // Importar noStore
 
 export const getAllBedrooms = async () => {
-  noStore(); // Esto deshabilita el caché para esta función específica
+  noStore();
   try {
     const bedrooms = await prisma.bedroom.findMany({
       // ... resto de tu código igual

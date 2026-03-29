@@ -1,19 +1,19 @@
-// @/app/(site)/booking/summary/page.tsx
 'use client';
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
-import { format, startOfDay } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { ArrowLeft, Calendar, Users, CheckCircle } from 'lucide-react';
 import {
   createReservation,
   getOrCreateGuestUser
 } from '@/app/actions/reservations/reservations';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/components/ui/use-toast';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { startOfDay } from 'date-fns';
+import { ArrowLeft, Calendar, CheckCircle, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
 
 interface BedroomFromDB {
   id: string;

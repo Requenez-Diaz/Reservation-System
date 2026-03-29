@@ -35,7 +35,7 @@ model Role {
 
 model Reservation {
   id                 Int                  @id @default(autoincrement())
-  createdAt          DateTime             @default(now())
+  createdAt          DateTime             @default(now()) @db.Date
   isRead             Boolean              @default(false)
   user_id            Int
   status             BookingsStatus       @default(PENDING)
@@ -102,8 +102,8 @@ model ReservationDetails {
   id             Int         @id @default(autoincrement())
   reservation_id Int
   price          Int
-  dateStart      DateTime
-  dateEnd        DateTime
+  dateStart      DateTime    @db.Date
+  dateEnd        DateTime    @db.Date
   promotion_id   Int?
   status         Status
   created_at     DateTime    @default(now())
