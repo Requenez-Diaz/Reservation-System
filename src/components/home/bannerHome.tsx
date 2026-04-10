@@ -78,7 +78,7 @@ export function BannerHome() {
   };
 
   return (
-    <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden bg-primary">
+    <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden bg-slate-900">
       {/* Slides */}
       {slides.map((slide, index) => (
         <div
@@ -94,7 +94,7 @@ export function BannerHome() {
               className="w-full h-full object-cover"
               src={slide.bgImage || '/placeholder.svg'}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/60" />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/80 to-slate-800/60" />
           </div>
 
           {/* Content */}
@@ -102,15 +102,15 @@ export function BannerHome() {
             <div className="container mx-auto px-4 md:px-6 lg:px-8">
               <div className="max-w-3xl">
                 {/* Title */}
-                <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-primary-foreground mb-4 text-balance leading-tight">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-4 text-balance leading-tight tracking-tight">
                   {slide.title}
                 </h1>
                 {/* Subtitle */}
-                <p className="text-lg md:text-2xl lg:text-3xl text-primary-foreground/90 mb-4 md:mb-6 text-pretty">
+                <p className="text-xl md:text-2xl lg:text-3xl text-white/90 mb-4 md:mb-6 text-pretty font-semibold">
                   {slide.subtitle}
                 </p>
                 {/* Description */}
-                <p className="text-base md:text-xl text-primary-foreground/80 mb-6 md:mb-8">
+                <p className="text-base md:text-xl text-white/75 mb-6 md:mb-8">
                   {slide.description}
                 </p>
 
@@ -119,13 +119,13 @@ export function BannerHome() {
                     {slide.features.map((feature, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center gap-3 text-primary-foreground/90"
+                        className="flex items-center gap-3 text-white/85"
                       >
                         {feature.icon && (
-                          <feature.icon className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 text-accent" />
+                          <feature.icon className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0 text-orange-500" />
                         )}
                         {!feature.icon && (
-                          <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
+                          <div className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
                         )}
                         <span className="text-sm md:text-base lg:text-lg">
                           {feature.text}
@@ -137,35 +137,35 @@ export function BannerHome() {
                 {/* CTA Section */}
                 {slide.cta && (
                   <div className="space-y-4 md:space-y-6">
-                    <div className="flex items-center gap-2 text-primary-foreground">
-                      <Clock className="w-5 h-5 md:w-6 md:h-6 text-accent" />
+                    <div className="flex items-center gap-2 text-white">
+                      <Clock className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
                       <span className="text-lg md:text-xl font-semibold">
                         Abiertos 24/7
                       </span>
                     </div>
 
                     <div className="space-y-3 md:space-y-4">
-                      <p className="text-xl md:text-2xl font-bold text-accent uppercase tracking-wide">
+                      <p className="text-xl md:text-2xl font-bold text-orange-500 uppercase tracking-wide">
                         Reservaciones
                       </p>
 
-                      <div className="flex flex-col  sm:flex-row gap-3 md:gap-4">
+                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                         <a
-                          className="flex items-center justify-center gap-3 bg-white hover:bg-blue/90 text-blue-foreground px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg"
-                          href="tel:084383204"
+                          className="flex items-center justify-center gap-3 bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg font-semibold"
+                          href="tel:50584383204"
                         >
                           <Phone className="w-4 h-4 md:w-5 md:h-5" />
-                          <span className="text-base md:text-lg font-semibold">
+                          <span className="text-base md:text-lg">
                             505 8438 3204
                           </span>
                         </a>
 
                         <a
-                          className="flex items-center justify-center gap-3 bg-white hover:bg-blue/90 text-blue-foreground px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg"
-                          href="tel:086477819"
+                          className="flex items-center justify-center gap-3 bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 md:px-6 md:py-4 rounded-lg transition-colors shadow-lg font-semibold"
+                          href="tel:50586477819"
                         >
                           <Phone className="w-4 h-4 md:w-5 md:h-5" />
-                          <span className="text-base md:text-lg font-semibold">
+                          <span className="text-base md:text-lg">
                             505 8647 7819
                           </span>
                         </a>
@@ -182,7 +182,7 @@ export function BannerHome() {
       {/* Navigation Arrows */}
       <button
         aria-label="Previous slide"
-        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground p-2 md:p-3 rounded-full transition-colors z-10"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 md:p-3 rounded-full transition-colors z-10"
         onClick={prevSlide}
       >
         <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
@@ -190,7 +190,7 @@ export function BannerHome() {
 
       <button
         aria-label="Next slide"
-        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground p-2 md:p-3 rounded-full transition-colors z-10"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 md:p-3 rounded-full transition-colors z-10"
         onClick={nextSlide}
       >
         <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
@@ -203,8 +203,8 @@ export function BannerHome() {
             aria-label={`Go to slide ${index + 1}`}
             className={`transition-all ${
               index === currentSlide
-                ? 'w-8 md:w-12 h-2 md:h-3 bg-accent'
-                : 'w-2 md:w-3 h-2 md:h-3 bg-primary-foreground/40 hover:bg-primary-foreground/60'
+                ? 'w-8 md:w-12 h-2 md:h-3 bg-orange-500'
+                : 'w-2 md:w-3 h-2 md:h-3 bg-white/40 hover:bg-white/60'
             } rounded-full`}
             key={index}
             onClick={() => goToSlide(index)}
