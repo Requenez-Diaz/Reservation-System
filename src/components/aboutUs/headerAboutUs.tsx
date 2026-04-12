@@ -1,20 +1,23 @@
+'use client';
+
 import Image from 'next/image';
-import React from 'react';
 
 const HeaderAboutUs = () => {
   return (
-    <div className="relative h-96">
+    <div className="relative h-64 md:h-80 lg:h-96">
       <Image
-        alt=""
-        className="bg-opacity-70"
-        layout="fill"
-        objectFit="cover"
+        alt="Hotel Madroño"
         src="/pexels-helena-lopes-2017802.jpg"
+        fill
+        className="object-cover"
+        priority
       />
 
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/50 to-transparent" />
+
       <div className="absolute inset-0 flex items-center justify-center">
-        <h1 className="animate-in mt-10 mb-10 text-5xl font-bold text-center text-white">
-          Sobre nosotros
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white text-center tracking-tight">
+          Sobre Nosotros
         </h1>
       </div>
     </div>
