@@ -1,62 +1,91 @@
-import Image from 'next/image';
-import React from 'react';
+'use client';
 
-const Info = () => {
+import Image from 'next/image';
+import { MapPin, Star, Clock, Shield, Coffee, Wifi } from 'lucide-react';
+
+const features = [
+  { icon: MapPin, text: 'Ubicación céntrica y accesible' },
+  { icon: Coffee, text: 'Desayuno incluidas' },
+  { icon: Shield, text: 'Seguridad 24/7' },
+  { icon: Wifi, text: 'Wi-Fi de alta velocidad' },
+  { icon: Star, text: 'Limpieza diaria' },
+  { icon: Clock, text: 'Atención 24 horas' }
+];
+
+export default function Info() {
   return (
-    <div className="grid grid-cols-2 gap-x-4 mx-5 my-10 content-center justify-center p-6 bg-white shadow-lg ">
-      <div className="mx-10 ">
-        <h1 className="text-2xl font-bold text-center mb-4">Quienes somos?</h1>
-        <p className="text-black-400 mb-4 text-justify">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mx-4 md:mx-8 my-10 p-6 bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800">
+      {/* Info Section */}
+      <div className="mx-2 md:mx-6">
+        <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-4">
+          ¿Quiénes somos?
+        </h2>
+        <p className="text-slate-600 dark:text-slate-300 mb-4 text-justify">
           Somos un equipo de profesionales con más de 3 años de experiencia en
-          Nicaragua, desarrolladores de software, especializados en el
-          desarrollo de aplicaciones web y móviles. Nuestro objetivo es brindar
-          soluciones tecnológicas a la medida de nuestros clientes, con el fin
-          de mejorar sus procesos y aumentar su productividad.
+          Nicaragua, especializados en el desarrollo de aplicaciones web y
+          móviles. Nuestro objetivo es brinebrar soluciones tecnológicas a la
+          medida de nuestros clientes, con el fin de mejorar sus procesos y
+          aumentar su productividad.
         </p>
-        <p className="text-black-400 mb-4 text-justify">
+        <p className="text-slate-600 dark:text-slate-300 mb-6 text-justify">
           Nuestro equipo está conformado por profesionales altamente calificados
-          en el desarrollo de software, diseño gráfico, marketing digital y
+          en desarrollo de software, diseño gráfico, marketing digital y
           administración de proyectos.
         </p>
-        <div className="flex flex-row mb-4">
-          <div className="mr-4">
-            <h1 className="font-bold mt-4">Mision</h1>
-            <p className="text-justify">
-            En SIRM, nuestra misión es proporcionar a nuestros clientes una experiencia
-            de reservación de alojamiento en línea excepcional, ofreciendo una amplia
-            selección de habitaciones y apartamentos en la ciudad de Nueva Guinea. Nos
-            comprometemos a brindar comodidad, conveniencia y calidad en cada etapa del
-            proceso de reserva, asegurando que nuestros clientes encuentren el alojamiento
-            perfecto para sus necesidades y disfruten de una estancia inolvidable.
+
+        {/* Mission & Vision */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+            <h3 className="font-bold text-orange-600 dark:text-orange-500 mb-2">
+              Misión
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Brindar una experiencia de reservación de alojamiento en línea
+              excepcional, ofreciendo comodidad y calidad en cada etapa del
+              proceso.
             </p>
           </div>
-          <div>
-            <h1 className="font-bold mt-4">Vision</h1>
-            <p className="text-justify">
-            Nuestra visión en SIRM es convertirnos en el principal destino en línea para
-            la reserva de alojamiento en la ciudad de Nueva Guinea, reconocidos por nuestra
-            dedicación a la excelencia en el servicio al cliente, la innovación tecnológica
-            y la oferta de una experiencia de hospedaje incomparable. Nos esforzamos por ser
-            líderes en la industria hotelera en línea, superando las expectativas de nuestros
-            clientes y estableciendo nuevos estándares de calidad y conveniencia en el sector.
+          <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl">
+            <h3 className="font-bold text-orange-600 dark:text-orange-500 mb-2">
+              Visión
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Convertirnos en el principal destino en línea para la reserva de
+              alojamiento, superando las expectativas de nuestros clientes.
             </p>
           </div>
         </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {features.map((feature, idx) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={idx}
+                className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800"
+              >
+                <Icon className="w-4 h-4 text-orange-600 dark:text-orange-500 flex-shrink-0" />
+                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  {feature.text}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      <div
-        className="animate-in bg-slate-600 flex items-center justify-center bg-gradient-to-tr from-blue-500 to-purple-500 rounded-r-3xl shadow-lg"
-        style={{ margin: '0 auto', clipPath: 'circle(50% at 40% 50%)' }}
-      >
-        <Image
-          src={'/javascript-flatline.svg'}
-          alt=""
-          width={600}
-          height={600}
-        />
+      {/* Image Section */}
+      <div className="flex items-center justify-center order-first lg:order-last">
+        <div className="relative w-64 h-64 md:w-80 md:h-80">
+          <Image
+            src="/javascript-flatline.svg"
+            alt="Hotel Madroño"
+            fill
+            className="object-contain"
+          />
+        </div>
       </div>
     </div>
   );
-};
-
-export default Info;
+}
