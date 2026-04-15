@@ -18,6 +18,7 @@ import { format, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { NoAvailableRooms } from './no-available-rooms';
 
 interface BedroomFromDB {
   id: string;
@@ -39,6 +40,7 @@ interface BedroomFromDB {
 
 interface RoomSelectionProps {
   allBedrooms: BedroomFromDB[];
+  canAccommodateAllGuests: boolean;
 }
 
 interface SearchData {
@@ -51,7 +53,7 @@ interface SavedRoom {
   id: string;
 }
 
-export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
+export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSelectionProps) {
   const [selectedRooms, setSelectedRooms] = React.useState<string[]>([]);
   const [searchData, setSearchData] = React.useState<SearchData>({
     guests: 2,
@@ -233,6 +235,8 @@ export function RoomSelection({ allBedrooms }: RoomSelectionProps) {
           </div>
         </div>
       )}
+
+      {!canAccommodateAllGuests && <NoAvailableRooms />}
 
       <div className="mx-auto max-w-7xl px-4 py-8 pb-32">
         <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-slate-100">

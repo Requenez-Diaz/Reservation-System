@@ -117,6 +117,7 @@ export function BedroomSearchForm() {
     const params = new URLSearchParams({ from, to });
     params.set('capacityCalled', guests.toString());
     params.set('capacities', JSON.stringify(guestDistribution));
+    params.set('roomCount', roomCount.toString());
 
     router.push(`/rooms?${params.toString()}`);
   };

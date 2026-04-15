@@ -44,6 +44,7 @@ export default async function RoomsPage({
     readonly capacityCalled?: string;
     readonly capacities?: string;
     readonly capacity?: string;
+    readonly roomCount?: string;
   }>;
 }) {
   const queryParams = await searchParams;
@@ -70,6 +71,19 @@ export default async function RoomsPage({
     capacity: capacityFromCalled,
     capacities: capacitiesArray
   });
+
+  const requestedRooms = Number(queryParams?.roomCount) || 0;
+  const foundRooms = rawData?.length || 0;
+  const totalAvailableCapacity =
+    rawData?.reduce((sum, room) => sum + (room.capacity || 0), 0) || 0;
+  const requestedGuests =
+    capacitiesArray?.reduce((sum, cap) => sum + cap, 0) ||
+    capacityFromCalled ||
+    0;
+
+    console.log({ totalAvailableCapacity, requestedGuests });
+    
+  const canAccommodateAllGuests = foundRooms >= requestedRooms;
 
   const rawBedrooms = (rawData || []) as RawBedroom[];
   const mappedRooms = rawBedrooms.map((bedroom) => {
@@ -109,7 +123,10 @@ export default async function RoomsPage({
       {hasSearchParams && mappedRooms.length === 0 ? (
         <NoAvailableRooms />
       ) : (
-        <RoomSelection allBedrooms={mappedRooms} />
+        <RoomSelection
+          allBedrooms={mappedRooms}
+          canAccommodateAllGuests={canAccommodateAllGuests}
+        />
       )}
     </div>
   );

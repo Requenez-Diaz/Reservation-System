@@ -31,8 +31,8 @@ export const findAvailableRooms = async ({
       const minCap = Math.min(...capacities);
       capacityFilter = {
         OR: [
-          { capacity: { gt: maxCap } },
-          { capacity: { gt: minCap } }
+          { capacity: { gte: maxCap } },
+          { capacity: { gte: minCap } }
         ]
       };
     } else if (typeof capacity === 'number') {

@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export function NoAvailableRooms() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+    <div className="flex flex-col items-center text-center px-4 mt-8">
       <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-8 max-w-md">
         <SearchX className="h-16 w-16 mx-auto mb-4 text-amber-600 dark:text-amber-400" />
         <h2 className="text-2xl font-bold text-amber-900 dark:text-amber-200 mb-2">
