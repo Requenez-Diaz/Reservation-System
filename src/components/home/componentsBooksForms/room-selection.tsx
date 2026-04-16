@@ -1,8 +1,13 @@
-// @/components/home/componentsBooksForms/room-selection.tsx
 'use client';
 
 import * as React from 'react';
-import { Check, Users, ArrowRight } from 'lucide-react';
+import {
+  Check,
+  Users,
+  ArrowRight,
+  AlertTriangle,
+  ArrowLeft
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,7 +23,14 @@ import { format, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { NoAvailableRooms } from './no-available-rooms';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 
 interface BedroomFromDB {
   id: string;
@@ -53,7 +65,10 @@ interface SavedRoom {
   id: string;
 }
 
-export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSelectionProps) {
+export function RoomSelection({
+  allBedrooms,
+  canAccommodateAllGuests
+}: RoomSelectionProps) {
   const [selectedRooms, setSelectedRooms] = React.useState<string[]>([]);
   const [searchData, setSearchData] = React.useState<SearchData>({
     guests: 2,
@@ -63,6 +78,8 @@ export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSele
     []
   );
   const [isPageLoading, setIsPageLoading] = React.useState(true);
+  const [showWarningDialog, setShowWarningDialog] = React.useState(false);
+  const [hasAcceptedWarning, setHasAcceptedWarning] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -143,6 +160,12 @@ export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSele
     }
   }, [allBedrooms]);
 
+  React.useEffect(() => {
+    if (!canAccommodateAllGuests && !hasAcceptedWarning) {
+      setShowWarningDialog(true);
+    }
+  }, [canAccommodateAllGuests, hasAcceptedWarning]);
+
   const toggleRoomSelection = (roomId: string) => {
     setSelectedRooms((prev) => {
       if (prev.includes(roomId)) {
@@ -183,7 +206,6 @@ export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSele
       selectedRooms.includes(room.id)
     );
 
-    // Incluir la información de temporada al guardar
     const roomsWithSeason = details.map((room) => ({
       ...room,
       Season: room.Season
@@ -194,6 +216,19 @@ export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSele
       JSON.stringify(roomsWithSeason)
     );
     router.push('/booking/form');
+  };
+
+  const handleGoBack = () => {
+    router.push('/');
+  };
+
+  const handleAcceptWarning = () => {
+    setHasAcceptedWarning(true);
+    setShowWarningDialog(false);
+    toast({
+      title: 'Advertencia aceptada',
+      description: 'Puedes continuar con la selección de habitaciones.'
+    });
   };
 
   if (isPageLoading) {
@@ -236,7 +271,19 @@ export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSele
         </div>
       )}
 
-      {!canAccommodateAllGuests && <NoAvailableRooms />}
+      {/* Warning Banner */}
+      {!canAccommodateAllGuests && !hasAcceptedWarning && (
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800 px-4 py-3">
+          <div className="mx-auto max-w-7xl flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0" />
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              <strong>Advertencia:</strong> La cantidad de habitaciones
+              disponibles es menor a la solicitada. Puede continuar con menos
+              habitaciones de las requeridas.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="mx-auto max-w-7xl px-4 py-8 pb-32">
         <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-slate-100">
@@ -328,6 +375,62 @@ export function RoomSelection({ allBedrooms, canAccommodateAllGuests }: RoomSele
           </div>
         )}
       </div>
+
+      {/* Warning Dialog */}
+      <Dialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-500">
+              <AlertTriangle className="h-5 w-5" />
+              Habitaciones Limitadas
+            </DialogTitle>
+            <DialogDescription>
+              No hay suficientes habitaciones disponibles para acomodar a todos
+              los huéspedes ({searchData.guests} huéspedes en{' '}
+              {searchData.roomCount} habitaciones solicitadas).
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+              <h4 className="font-semibold text-amber-900 dark:text-amber-200 mb-2">
+                ¿Qué puedes hacer?
+              </h4>
+              <ul className="text-sm text-amber-800 dark:text-amber-300 space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-600">•</span>
+                  Puedes seleccionar menos habitaciones de las solicitadas
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-600">•</span>
+                  Los huéspedes se distribuirán en las habitaciones disponibles
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-amber-600">•</span>
+                  Puedes volver y buscar otras fechas
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={handleGoBack}
+              className="w-full sm:w-auto"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Volver
+            </Button>
+            <Button
+              onClick={handleAcceptWarning}
+              className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700"
+            >
+              Continuar de todos modos
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
