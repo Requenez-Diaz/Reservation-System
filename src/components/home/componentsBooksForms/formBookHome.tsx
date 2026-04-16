@@ -19,7 +19,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Bed, Calendar, Users } from 'lucide-react';
+import { Bed, Calendar, Users, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import type { DateRange } from 'react-day-picker';
@@ -32,6 +32,7 @@ export function BedroomSearchForm() {
   ]);
   const [showDistributionDialog, setShowDistributionDialog] =
     React.useState(false);
+  const [hasDistributed, setHasDistributed] = React.useState(false);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -79,10 +80,11 @@ export function BedroomSearchForm() {
   const applyDistribution = () => {
     const total = getTotalFromDistribution();
     setGuests(total);
+    setHasDistributed(true);
     setShowDistributionDialog(false);
     toast({
       title: 'Distribución aplicada',
-      description: `Se distribuyeron ${total} huésped(es) en ${roomCount} habitación(es).`
+      description: `${total} huésped(es) en ${roomCount} habitación(es).`
     });
   };
 
@@ -122,6 +124,15 @@ export function BedroomSearchForm() {
     router.push(`/rooms?${params.toString()}`);
   };
 
+  const handleRoomCountChange = (increment: boolean) => {
+    if (increment) {
+      setRoomCount((prev) => prev + 1);
+    } else {
+      setRoomCount((prev) => Math.max(1, prev - 1));
+    }
+    setHasDistributed(false);
+  };
+
   return (
     <>
       <div className="relative z-10 mx-auto max-w-6xl px-4 pt-20">
@@ -135,7 +146,7 @@ export function BedroomSearchForm() {
               <div className="flex items-center">
                 <Button
                   className="h-10 w-10"
-                  onClick={() => setRoomCount((prev) => Math.max(1, prev - 1))}
+                  onClick={() => handleRoomCountChange(false)}
                   size="icon"
                   variant="outline"
                 >
@@ -147,7 +158,7 @@ export function BedroomSearchForm() {
                 </div>
                 <Button
                   className="h-10 w-10"
-                  onClick={() => setRoomCount((prev) => prev + 1)}
+                  onClick={() => handleRoomCountChange(true)}
                   size="icon"
                   variant="outline"
                 >
@@ -161,28 +172,43 @@ export function BedroomSearchForm() {
               <Label className="text-sm text-gray-700 dark:text-gray-300">
                 Huéspedes
               </Label>
-              <div className="flex items-center">
+
+              {roomCount > 1 && hasDistributed ? (
                 <Button
-                  className="h-10 w-10"
-                  onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
-                  size="icon"
                   variant="outline"
+                  className="w-full h-10 bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/50"
+                  onClick={() => setShowDistributionDialog(true)}
                 >
-                  -
+                  <Check className="h-4 w-4 mr-2 text-orange-600 dark:text-orange-500" />
+                  <span className="font-medium text-orange-700 dark:text-orange-400">
+                    {guests} huéspedes
+                  </span>
                 </Button>
-                <div className="flex items-center gap-2 px-4">
-                  <Users className="h-4 w-4" />
-                  <span className="font-medium tabular-nums">{guests}</span>
+              ) : (
+                <div className="flex items-center">
+                  <Button
+                    className="h-10 w-10"
+                    onClick={() => setGuests((prev) => Math.max(1, prev - 1))}
+                    size="icon"
+                    variant="outline"
+                  >
+                    -
+                  </Button>
+                  <div className="flex items-center gap-2 px-4">
+                    <Users className="h-4 w-4" />
+                    <span className="font-medium tabular-nums">{guests}</span>
+                  </div>
+                  <Button
+                    className="h-10 w-10"
+                    onClick={() => setGuests((prev) => prev + 1)}
+                    size="icon"
+                    variant="outline"
+                  >
+                    +
+                  </Button>
                 </div>
-                <Button
-                  className="h-10 w-10"
-                  onClick={() => setGuests((prev) => prev + 1)}
-                  size="icon"
-                  variant="outline"
-                >
-                  +
-                </Button>
-              </div>
+              )}
+
               {roomCount > 1 && (
                 <Button
                   variant="outline"
@@ -190,7 +216,9 @@ export function BedroomSearchForm() {
                   className="w-full mt-2 text-xs bg-transparent"
                   onClick={() => setShowDistributionDialog(true)}
                 >
-                  Distribuir huéspedes
+                  {hasDistributed
+                    ? 'Editar distribución'
+                    : 'Distribuir huéspedes'}
                 </Button>
               )}
             </div>
