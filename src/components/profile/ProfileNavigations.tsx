@@ -35,7 +35,6 @@ export function ProfileNavigation({
   const textMuted = 'text-gray-600 dark:text-gray-400';
   const textActive = 'text-blue-800 dark:text-blue-300';
 
-  // 🔹 Componente interno NavLink corregido y limpio
   const NavLink: React.FC<{
     tab: SettingsTab;
     icon: React.ReactNode;

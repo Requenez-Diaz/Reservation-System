@@ -28,7 +28,7 @@ export default function NavbarTwoPass({ session }: NavbarTwoPassProps) {
   return (
     <nav className="bg-white dark:bg-slate-900 dark:border-b dark:border-slate-700 p-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="https://www.facebook.com/hotelito.madrono">
+        <Link href="/">
           <Image
             alt="Hotel Madroño"
             height={55}
