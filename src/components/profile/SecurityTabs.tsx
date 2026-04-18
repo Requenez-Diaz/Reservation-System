@@ -7,13 +7,7 @@ import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   PasswordFormValues,
   passwordSchema
@@ -60,9 +54,6 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
         <CardTitle className={`text-2xl ${accentText}`}>
           Seguridad de la Cuenta
         </CardTitle>
-        <CardDescription className="text-gray-600 dark:text-gray-400">
-          Configura tu contraseña y autenticación de dos factores.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className={`p-4 rounded-xl bg-gray-50 dark:bg-slate-800`}>
@@ -99,7 +90,7 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
           {isPasswordFormOpen && (
             <form
               className="space-y-4 pt-4"
-              onSubmit={handleSubmit(handlePasswordChange)} // CORREGIDO (Línea 101)
+              onSubmit={handleSubmit(handlePasswordChange)}
             >
               <div className="grid gap-2">
                 <Label className={accentText} htmlFor="currentPassword">
@@ -167,24 +158,6 @@ export function SecurityTab({ onPasswordSubmit }: SecurityTabProps) {
               </Button>
             </form>
           )}
-        </div>
-
-        <div className="flex justify-between items-center p-4 rounded-xl bg-gray-50 dark:bg-slate-800">
-          <div>
-            <p className={`font-medium ${accentText}`}>
-              Autenticación de Dos Factores (2FA)
-            </p>
-            <p className="text-sm text-blue-700/80">
-              Añade una capa extra de seguridad a tu cuenta.
-            </p>
-          </div>
-          <Button
-            className="text-gray-400 border-gray-300"
-            disabled
-            variant="outline"
-          >
-            Activar
-          </Button>
         </div>
       </CardContent>
     </Card>
