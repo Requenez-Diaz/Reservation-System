@@ -188,7 +188,7 @@ export function ReserveRoomDialog({
                     {bedroom.typeBedroom}
                   </p>
                 )}
-                {/* LÍNEA 263 corregida (Badge): className, variant */}
+    
                 <Badge className="ml-0 text-xs" variant="info">
                   ID: {bedroom.id}
                 </Badge>
@@ -245,14 +245,13 @@ export function ReserveRoomDialog({
 
             <div className="space-y-3">
               <div className="space-y-2">
-                {/* La prop htmlFor de Label ya está ordenada */}
+  
                 <Label className="text-sm font-medium" htmlFor="guestName">
                   <span className="flex items-center gap-2">
                     <User2 className="h-4 w-4" />
                     Nombre completo
                   </span>
                 </Label>
-                {/* LÍNEA 280 corregida (Input): className, defaultValue, id, name, placeholder, required */}
                 <Input
                   className="w-full"
                   defaultValue={currentUser?.username || ''}
@@ -267,7 +266,6 @@ export function ReserveRoomDialog({
                 <Label className="text-sm font-medium" htmlFor="guestEmail">
                   Email
                 </Label>
-                {/* LÍNEA 295 corregida (Input): className, defaultValue, id, name, placeholder, required, type */}
                 <Input
                   className="w-full"
                   defaultValue={currentUser?.email || ''}
@@ -285,7 +283,6 @@ export function ReserveRoomDialog({
                 <Label className="text-sm font-medium" htmlFor="guests">
                   Huéspedes
                 </Label>
-                {/* LÍNEA 313 corregida (Input): className, defaultValue, id, max, min, name, required, type */}
                 <Input
                   className="w-full"
                   defaultValue="2"
@@ -301,7 +298,6 @@ export function ReserveRoomDialog({
                 <Label className="text-sm font-medium" htmlFor="rooms">
                   Habitaciones
                 </Label>
-                {/* LÍNEA 331 corregida (Input): className, defaultValue, id, max, min, name, required, type */}
                 <Input
                   className="w-full"
                   defaultValue="1"
@@ -355,7 +351,6 @@ export function ReserveRoomDialog({
             </div>
 
             <DialogFooter className="pt-4">
-              {/* Las props del Button ya están ordenadas alfabéticamente */}
               <Button
                 className="w-full sm:w-auto min-w-32"
                 disabled={isSubmitting || !currentUser}
