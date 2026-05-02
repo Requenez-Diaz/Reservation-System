@@ -48,7 +48,7 @@ interface Reservation {
   ReservationDetails: ReservationDetail[];
 }
 
-// --- COMPONENTE INTERNO: ReservationCard ---
+
 function ReservationCard({ reservation }: { reservation: Reservation }) {
   if (!reservation) {
     return null;
@@ -59,12 +59,18 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
   const bedroom = firstDetail?.Bedrooms;
   const imageUrl = bedroom?.galleryImages?.[0]?.imageContent;
 
-  // Calculamos totales de la reserva completa
-  const totalGuests = details.reduce(
+  // Calculamos totales de TODAS las habitaciones (incluyendo canceladas)
+  const totalPriceAll = details.reduce((sum, d) => sum + (d.price || 0), 0);
+  
+  // Calculamos totales solo de habitaciones NO canceladas
+  const activeDetails = details.filter(d => d.status !== 'CANCELLED');
+  const cancelledCount = details.length - activeDetails.length;
+  
+  const totalGuests = activeDetails.reduce(
     (sum, d) => sum + (d.guestQuantity || 0),
     0
   );
-  const totalPrice = details.reduce((sum, d) => sum + (d.price || 0), 0);
+  const totalPrice = activeDetails.reduce((sum, d) => sum + (d.price || 0), 0);
   const extraRooms = details.length - 1;
 
   const getStatusColor = (status: string) => {
@@ -101,6 +107,14 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
             <Badge className="bg-orange-700/80 text-white border-none backdrop-blur-md font-bold px-2 py-1">
               +{extraRooms}{' '}
               {extraRooms === 1 ? 'habitación extra' : 'habitaciones extras'}
+            </Badge>
+          </div>
+        )}
+
+        {cancelledCount > 0 && (
+          <div className="absolute bottom-3 right-3">
+            <Badge className="bg-red-600/80 text-white border-none backdrop-blur-md text-[10px]">
+              {cancelledCount} cancelada(s)
             </Badge>
           </div>
         )}
@@ -148,9 +162,21 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
           <span className="text-xs text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider">
             Total Estancia:
           </span>
-          <span className="text-xl font-black text-orange-600">
-            C$ {totalPrice.toLocaleString()}
-          </span>
+          <div className="text-right">
+            <span className="text-xl font-black text-orange-600">
+              C$ {(cancelledCount === details.length ? totalPriceAll : totalPrice).toLocaleString()}
+            </span>
+            {cancelledCount > 0 && cancelledCount < details.length && (
+              <p className="text-[10px] text-red-500 mt-1">
+                {cancelledCount} cancelada(s) (Total: C$ {totalPriceAll.toLocaleString()})
+              </p>
+            )}
+            {cancelledCount === details.length && (
+              <p className="text-[10px] text-red-500 mt-1">
+                Todas canceladas (Total: C$ {totalPriceAll.toLocaleString()})
+              </p>
+            )}
+          </div>
         </div>
       </CardContent>
 
