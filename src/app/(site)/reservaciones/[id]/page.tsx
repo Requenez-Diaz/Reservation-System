@@ -10,12 +10,10 @@ import {
   Mail,
   ArrowLeft,
   CheckCircle,
-  Clock,
   XCircle,
   Info,
   BedDouble
 } from 'lucide-react';
-
 import Link from 'next/link';
 import { getReservationById } from '@/app/actions/reservations/get-reservation';
 import { CancelButton } from '../cancel-button';
@@ -35,6 +33,7 @@ interface ReservationDetail {
   dateStart: Date | string;
   dateEnd: Date | string;
   guestQuantity: number;
+  status: string;
   Bedrooms: Bedroom;
 }
 
@@ -71,29 +70,17 @@ export default async function ReservationDetailPage({ params }: PageProps) {
 
   const reservation = result.reservation as ReservationResult;
 
-  // --- FUNCIONES DE CORRECCIÓN DE FECHA ---
-
-  /**
-   * Ajusta la fecha para que se muestre según el valor UTC guardado en la DB
-   * evitando que el navegador le reste horas por zona horaria.
-   */
   const formatDateSafe = (dateSource: Date | string) => {
     const d = new Date(dateSource);
-    // Creamos un objeto fecha usando los valores UTC exactos
     const dateUTC = new Date(
       d.getUTCFullYear(),
       d.getUTCMonth(),
       d.getUTCDate(),
-      12,
-      0,
-      0
+      12, 0, 0
     );
     return format(dateUTC, 'dd MMM, yyyy', { locale: es });
   };
 
-  /**
-   * Calcula noches usando timestamps UTC para evitar errores de cambio de hora
-   */
   const calculateNights = (
     dateStart: Date | string,
     dateEnd: Date | string
@@ -115,13 +102,11 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     return Math.max(1, Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24)));
   };
 
-  // --- FIN DE CORRECCIONES ---
-
   const getStatusBadge = (status: string) => {
     const config = {
       PENDING: {
         color: 'bg-amber-100 text-amber-700 border-amber-200',
-        icon: Clock,
+        icon: Calendar,
         label: 'Pendiente'
       },
       CONFIRMED: {
@@ -148,13 +133,22 @@ export default async function ReservationDetailPage({ params }: PageProps) {
     );
   };
 
-  const totalPrice = (reservation.ReservationDetails || []).reduce(
-    (sum: number, detail: ReservationDetail) => sum + detail.price,
-    0
-  );
+  const totalPrice = (reservation.ReservationDetails || [])
+    .filter((detail: ReservationDetail) => detail.status !== 'CANCELLED')
+    .reduce((sum: number, detail: ReservationDetail) => sum + detail.price, 0);
+
+  const totalGuests = (reservation.ReservationDetails || [])
+    .filter((detail: ReservationDetail) => detail.status !== 'CANCELLED')
+    .reduce((sum: number, detail: ReservationDetail) => sum + detail.guestQuantity, 0);
+
+  const confirmedCount = (reservation.ReservationDetails || [])
+    .filter((detail: ReservationDetail) => detail.status === 'CONFIRMED').length;
+
+  const cancelledCount = (reservation.ReservationDetails || [])
+    .filter((detail: ReservationDetail) => detail.status === 'CANCELLED').length;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 pb-20">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 pb-20">
       <div className="bg-white dark:bg-slate-950 border-b dark:border-slate-800 shadow-sm">
         <div className="mx-auto max-w-5xl px-4 py-8">
           <Link
@@ -176,7 +170,6 @@ export default async function ReservationDetailPage({ params }: PageProps) {
               <p className="text-slate-500 dark:text-slate-400 flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 Registrada el{' '}
-                {/* Usamos formatDateSafe también aquí si createdAt es tipo Date sin hora */}
                 {format(new Date(reservation.createdAt), 'PPP', { locale: es })}
               </p>
             </div>
@@ -187,6 +180,11 @@ export default async function ReservationDetailPage({ params }: PageProps) {
               <p className="text-4xl font-black text-orange-600">
                 C${totalPrice.toLocaleString()}
               </p>
+              {cancelledCount > 0 && (
+                <p className="text-xs text-red-500 mt-1">
+                  {cancelledCount} habitación(es) cancelada(s)
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -197,20 +195,26 @@ export default async function ReservationDetailPage({ params }: PageProps) {
           <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             <BedDouble className="h-5 w-5 text-orange-600" />
             Configuración de Habitaciones
+            {confirmedCount > 0 && cancelledCount > 0 && (
+              <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+                {confirmedCount} activa(s), {cancelledCount} cancelada(s)
+              </Badge>
+            )}
           </h2>
 
           {reservation.ReservationDetails.map((detail: ReservationDetail) => {
             const bedroom = detail.Bedrooms;
             const nights = calculateNights(detail.dateStart, detail.dateEnd);
             const imageUrl = bedroom.galleryImages?.[0]?.imageContent;
+            const isCancelled = detail.status === 'CANCELLED';
 
             return (
               <Card
                 key={detail.id}
-                className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all dark:bg-slate-800"
+                className={`overflow-hidden border-none shadow-sm hover:shadow-md transition-all dark:bg-slate-800 ${isCancelled ? 'opacity-60' : ''}`}
               >
                 <div className="flex flex-col sm:flex-row">
-                  <div className="sm:w-56 h-48 sm:h-auto relative bg-slate-200">
+                  <div className="sm:w-56 h-48 sm:h-auto relative bg-slate-200 dark:bg-slate-700">
                     {imageUrl ? (
                       <img
                         src={imageUrl}
@@ -218,13 +222,20 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-slate-400 bg-slate-100">
+                      <div className="absolute inset-0 flex items-center justify-center text-slate-400">
                         <BedDouble className="h-8 w-8 opacity-20" />
+                      </div>
+                    )}
+                    {isCancelled && (
+                      <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center">
+                        <Badge className="bg-red-500 text-white border-none">
+                          CANCELADA
+                        </Badge>
                       </div>
                     )}
                   </div>
 
-                  <CardContent className="flex-1 p-6">
+                  <CardContent className="flex-1 p-4 md:p-6">
                     <div className="flex flex-col h-full">
                       <div className="flex justify-between items-start mb-3">
                         <div>
@@ -273,6 +284,15 @@ export default async function ReservationDetailPage({ params }: PageProps) {
                           </span>
                         </div>
                       </div>
+
+                      {isCancelled && (
+                        <div className="mt-3 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg">
+                          <p className="text-sm text-red-600 dark:text-red-400 font-medium flex items-center gap-2">
+                            <XCircle className="h-4 w-4" />
+                            Esta habitación ha sido cancelada. El precio no se incluye en el total.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </div>
@@ -282,7 +302,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
         </div>
 
         <div className="space-y-6">
-          {/* Card de Titular y Ocupación igual que antes... */}
+          {/* Card de Titular */}
           <Card className="border-none shadow-sm bg-orange-500 text-white overflow-hidden">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm uppercase tracking-widest opacity-70">
@@ -306,6 +326,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             </CardContent>
           </Card>
 
+          {/* Card de Ocupación */}
           <Card className="border-none shadow-sm overflow-hidden dark:bg-slate-800">
             <div className="h-2 bg-orange-500" />
             <CardHeader>
@@ -316,18 +337,22 @@ export default async function ReservationDetailPage({ params }: PageProps) {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                La capacidad total de esta reserva está configurada para recibir
+                La capacidad de esta reserva está configurada para recibir
                 a un total de{' '}
                 <span className="font-bold text-slate-900 dark:text-slate-100">
-                  {reservation.ReservationDetails.reduce(
-                    (acc: number, detail: ReservationDetail) =>
-                      acc + detail.guestQuantity,
-                    0
-                  )}{' '}
+                  {totalGuests}{' '}
                   huéspedes
                 </span>
                 .
               </p>
+              {cancelledCount > 0 && (
+                <div className="mt-3 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {cancelledCount} habitación(es) cancelada(s). 
+                    Total de huéspedes recalculado.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
