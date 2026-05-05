@@ -38,15 +38,23 @@ export const saveUsers = async (formData: FormData) => {
     });
     const hashedPassword = await hash(rawFormUser.password, 10);
 
-    //Validate if the email exists
+    // Validate if the email or username exists
     const userExists = await prisma.user.findFirst({
       where: {
-        email: rawFormUser.email
+        OR: [
+          { email: rawFormUser.email },
+          { username: rawFormUser.username }
+        ]
       }
     });
 
     if (userExists) {
-      throw new Error('Email already exists');
+      if (userExists.email === rawFormUser.email) {
+        throw new Error('Email already exists');
+      }
+      if (userExists.username === rawFormUser.username) {
+        throw new Error('Username already exists');
+      }
     }
 
     const user = await prisma.user.create({
@@ -60,8 +68,9 @@ export const saveUsers = async (formData: FormData) => {
     });
 
     return user;
-  } catch (error) {
-    return { error: (error as Error).message };
+    } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return { error: message };
   }
 };
 

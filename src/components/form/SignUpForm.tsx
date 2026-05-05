@@ -18,32 +18,34 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useToast } from '../ui/use-toast';
 import { saveUsers } from '@/app/actions/users/saveUsers';
-import { signIn } from 'next-auth/react';
-import {
-  Mail,
-  UserIcon,
-  Eye,
-  EyeOff,
-  KeyRound,
-  UserPlus,
-  ArrowRight
-} from 'lucide-react';
 import { useState } from 'react';
+import { Mail, UserPlus, Eye, EyeOff, KeyRound, ArrowRight } from 'lucide-react';
 
 const FormSchema = z
   .object({
-    username: z.string().min(1, 'El usuario es requerido').max(100),
+    username: z
+      .string()
+      .min(1, 'El usuario es requerido')
+      .max(100, 'Máximo 100 caracteres')
+      .regex(
+        /^[a-zA-Z0-9_.-]+$/,
+        'Solo letras, números, guiones y puntos'
+      ),
     email: z
       .string()
       .min(1, 'El email es requerido')
-      .email('Email es invalido'),
+      .email('Email inválido'),
     password: z
       .string()
       .min(1, 'La contraseña es requerida')
-      .min(8, 'La contraseña debe tener al menos 8 caracteres'),
+      .min(8, 'Mínimo 8 caracteres')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+        'Debe tener al menos una mayúscula, una minúscula y un número'
+      ),
     confirmPassword: z
       .string()
-      .min(1, 'La confirmación de la contraseña es requerida')
+      .min(1, 'Confirma tu contraseña')
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
@@ -73,56 +75,53 @@ const SignUpForm = () => {
       formDataObj.append('password', formData.password);
       formDataObj.append('confirmPassword', formData.confirmPassword);
 
-      const user = await saveUsers(formDataObj);
+      const result = await saveUsers(formDataObj) as { error?: string; id?: number };
 
-      if (user) {
-        const callbackUrl = localStorage.getItem('authCallbackUrl');
+      if (result.error) {
+        const message = result.error.toLowerCase();
 
-        if (callbackUrl) {
+        if (message.includes('email') && message.includes('exists')) {
           toast({
-            description: 'Por favor inicia sesión con tus nuevas credenciales.',
-            title: 'Usuario registrado con éxito',
-            variant: 'default'
+            description: 'Este correo electrónico ya está registrado. Usa otro email.',
+            title: 'Email duplicado',
+            variant: 'destructive'
           });
-          router.push('/sign-in');
+        } else if (message.includes('username') && message.includes('exists')) {
+          toast({
+            description: 'Este nombre de usuario ya existe. Elige otro nombre.',
+            title: 'Usuario duplicado',
+            variant: 'destructive'
+          });
+        } else if (message.includes('password') || message.includes('must')) {
+          toast({
+            description: 'La contraseña no cumple con los requisitos mínimos.',
+            title: 'Contraseña inválida',
+            variant: 'destructive'
+          });
         } else {
-          const signInResult = await signIn('credentials', {
-            email: formData.email,
-            password: formData.password,
-            redirect: false
+          toast({
+            description: `Error: ${result.error}`,
+            title: 'Error de registro',
+            variant: 'destructive'
           });
-
-          if (signInResult?.error) {
-            toast({
-              description:
-                'No se pudo iniciar sesión automáticamente. Por favor, inténtelo manualmente.',
-              title: 'Error de autenticación',
-              variant: 'destructive'
-            });
-          } else {
-            toast({
-              description: 'Será redirigido al panel de control.',
-              title: 'Usuario registrado con éxito',
-              variant: 'default'
-            });
-            router.push('/');
-          }
         }
+        return;
+      }
+
+      if (result && result.id) {
+        toast({
+          description: 'Usuario registrado. Por favor inicia sesión.',
+          title: 'Registro exitoso',
+          variant: 'default'
+        });
+        router.push('/sign-in');
       }
     } catch (error: unknown) {
-      if (error instanceof Error && error.message === 'Email already exists') {
-        toast({
-          description: 'Este correo electrónico ya está registrado.',
-          title: 'Error de registro',
-          variant: 'destructive'
-        });
-      } else {
-        toast({
-          description: 'Ocurrió un error inesperado al registrar el usuario.',
-          title: 'Error de registro',
-          variant: 'destructive'
-        });
-      }
+      toast({
+        description: 'Ocurrió un error inesperado al registrar el usuario.',
+        title: 'Error de registro',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -174,7 +173,7 @@ const SignUpForm = () => {
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <UserIcon className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <UserPlus className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                           <Input
                             className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 transition-all"
                             placeholder="Tu apodo favorito"
