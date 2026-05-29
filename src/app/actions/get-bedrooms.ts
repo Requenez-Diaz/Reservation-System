@@ -20,9 +20,13 @@ export const getAllBedrooms = async () => {
         },
         galleryImages: {
           select: {
+            id: true,
             fileName: true,
             mimeType: true,
             imageContent: true
+          },
+          orderBy: {
+            createdAt: 'asc'
           }
         },
         Season: true,

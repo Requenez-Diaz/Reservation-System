@@ -18,10 +18,17 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { generateWhatsappUrl } from '@/components/bedrooms/messages/message-encode';
 import { startOfDay } from 'date-fns';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '@/components/ui/carousel';
 
 // Definir interfaces para los datos crudos
 interface RawGalleryImage {
-  id?: string | number;
+  id: number;
   imageContent?: string | null;
 }
 
@@ -108,43 +115,56 @@ export default function HabitacionesPage() {
     return bedroom.lowSeasonPrice;
   };
 
-  React.useEffect(() => {
-    async function fetchBedrooms() {
-      try {
-        const data = (await getAllBedrooms()) as RawBedroom[];
-        const mappedBedrooms: Bedroom[] = (data || []).map((b: RawBedroom) => ({
-          id: String(b.id),
-          name: b.TypeBedrooms?.nameType || 'Habitación Confort',
-          description: b.description || 'Sin descripción disponible',
-          capacity: b.capacity,
-          numberBedroom: b.numberBedroom,
-          status: b.status,
-          lowSeasonPrice: b.lowSeasonPrice,
-          highSeasonPrice: b.highSeasonPrice,
-          slug: b.slug || '',
-          image: b.image,
-          BedroomImages:
-            b.galleryImages?.map((img: RawGalleryImage) => ({
-              id: String(img.id || Math.random()),
-              image: img.imageContent || ''
-            })) || [],
-          bookingsDetails:
-            b.ReservationDetails?.map((r: RawReservationDetail) => ({
-              dateStart: new Date(r.dateStart).toISOString(),
-              dateEnd: new Date(r.dateEnd).toISOString(),
-              status: r.status
-            })) || [],
-          Season: b.Season
-        }));
-        setBedrooms(mappedBedrooms);
-      } catch (error) {
-        console.error('Error cargando habitaciones:', error);
-      } finally {
-        setIsLoading(false);
-      }
+  const fetchBedrooms = React.useCallback(async () => {
+    try {
+      const data = (await getAllBedrooms()) as RawBedroom[];
+      const mappedBedrooms: Bedroom[] = (data || []).map((b: RawBedroom) => ({
+        id: String(b.id),
+        name: b.TypeBedrooms?.nameType || 'Habitación Confort',
+        description: b.description || 'Sin descripción disponible',
+        capacity: b.capacity,
+        numberBedroom: b.numberBedroom,
+        status: b.status,
+        lowSeasonPrice: b.lowSeasonPrice,
+        highSeasonPrice: b.highSeasonPrice,
+        slug: b.slug || '',
+        image: b.image,
+        BedroomImages:
+          b.galleryImages?.map((img: RawGalleryImage) => ({
+            id: String(img.id),
+            image: img.imageContent || ''
+          })) || [],
+        bookingsDetails:
+          b.ReservationDetails?.map((r: RawReservationDetail) => ({
+            dateStart: new Date(r.dateStart).toISOString(),
+            dateEnd: new Date(r.dateEnd).toISOString(),
+            status: r.status
+          })) || [],
+        Season: b.Season
+      }));
+      setBedrooms(mappedBedrooms);
+    } catch (error) {
+      console.error('Error cargando habitaciones:', error);
+    } finally {
+      setIsLoading(false);
     }
-    fetchBedrooms();
   }, []);
+
+  React.useEffect(() => {
+    fetchBedrooms();
+  }, [fetchBedrooms]);
+
+  React.useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchBedrooms();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchBedrooms]);
 
   const handleReserveClick = (bedroom: Bedroom) => {
     if (!session?.user) {
@@ -212,10 +232,11 @@ export default function HabitacionesPage() {
             );
 
             const isOccupied = !bedroom.status || hasActiveReservation;
-            const imageUrl =
-              bedroom.BedroomImages?.[0]?.image ||
-              bedroom.image ||
-              DEFAULT_IMAGE;
+            const galleryImages = bedroom.BedroomImages?.length
+              ? bedroom.BedroomImages
+              : bedroom.image
+                ? [{ id: 'default', image: bedroom.image }]
+                : [{ id: 'default', image: DEFAULT_IMAGE }];
 
             return (
               <Card
@@ -223,11 +244,29 @@ export default function HabitacionesPage() {
                 className="group overflow-hidden border-none shadow-sm hover:shadow-2xl transition-all duration-500 bg-white dark:bg-slate-900 flex flex-col"
               >
                 <div className="relative h-72 overflow-hidden">
-                  <img
-                    src={imageUrl}
-                    alt={bedroom.name}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  {galleryImages.length > 1 ? (
+                    <Carousel className="h-full w-full">
+                      <CarouselContent className="h-full">
+                        {galleryImages.map((img) => (
+                          <CarouselItem key={img.id} className="h-full">
+                            <img
+                              src={img.image}
+                              alt={bedroom.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/80 hover:bg-white text-slate-800 border-none shadow-md" />
+                      <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/80 hover:bg-white text-slate-800 border-none shadow-md" />
+                    </Carousel>
+                  ) : (
+                    <img
+                      src={galleryImages[0].image}
+                      alt={bedroom.name}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  )}
 
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
                     <Badge className="bg-white/95 backdrop-blur-sm text-slate-900 border-none font-bold shadow-sm">

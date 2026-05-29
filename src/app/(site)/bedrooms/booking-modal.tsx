@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { X } from 'lucide-react';
+import { X, Bed, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format, differenceInDays, startOfDay } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
@@ -10,7 +10,13 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { createQuickReservation } from '@/app/actions/reservations/create-quick-reservations';
 import { useSession } from 'next-auth/react';
 import {
-  BookingHeader,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '@/components/ui/carousel';
+import {
   BookingPriceSummary,
   BookingForm
 } from './booking-components';
@@ -191,7 +197,10 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
   if (!isOpen) {
     return null;
   }
-  const imageUrl = bedroom.BedroomImages?.[0]?.image || DEFAULT_PLACEHOLDER;
+  const galleryImages =
+    bedroom.BedroomImages?.length
+      ? bedroom.BedroomImages
+      : [{ id: 'default', image: DEFAULT_PLACEHOLDER }];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
@@ -203,7 +212,45 @@ export function BookingModal({ isOpen, onClose, bedroom }: BookingModalProps) {
           <X className="h-5 w-5 text-slate-900 dark:text-slate-100" />
         </button>
 
-        <BookingHeader bedroom={bedroom} imageUrl={imageUrl} />
+        <div className="relative h-56">
+          {galleryImages.length > 1 ? (
+            <Carousel className="h-full w-full">
+              <CarouselContent className="h-full">
+                {galleryImages.map((img) => (
+                  <CarouselItem key={img.id} className="h-full">
+                    <img
+                      src={img.image}
+                      alt={bedroom.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/80 hover:bg-white text-slate-800 border-none shadow-md" />
+              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/80 hover:bg-white text-slate-800 border-none shadow-md" />
+            </Carousel>
+          ) : (
+            <img
+              src={galleryImages[0].image}
+              alt={bedroom.name}
+              className="h-full w-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute bottom-6 left-6 text-white">
+            <h2 className="text-3xl font-black italic tracking-tighter uppercase">
+              {bedroom.name}
+            </h2>
+            <div className="flex items-center gap-4 mt-2 text-slate-200">
+              <span className="flex items-center gap-1.5 text-sm font-medium">
+                <Bed /> Hab. #{bedroom.numberBedroom}
+              </span>
+              <span className="flex items-center gap-1.5 text-sm font-medium">
+                <Users /> Cap. {bedroom.capacity}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div className="p-8 space-y-8">
           <BookingPriceSummary
